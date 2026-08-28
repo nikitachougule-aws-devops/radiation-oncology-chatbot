@@ -5,9 +5,3 @@ faiss-cpu
 pypdf
 python-dotenv
 openai
-langchain-community
-langchain-text-splitters
-sentence-transformers
-langchain-huggingface
-transformers
-torch
