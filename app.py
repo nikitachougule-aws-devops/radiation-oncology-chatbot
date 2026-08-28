@@ -620,26 +620,6 @@ FAQS_AFTER = [
                "- तीव्र ताप\n- गंभीर रक्तस्राव\n- श्वास घेण्यास त्रास\n- तीव्र वेदना\n- अनियंत्रित उलट्या\n"
                "- इतर कोणतीही तातडीची लक्षणे"),
     },
-    {
-        "en": (
-        "What is VMAT?",
-        "VMAT stands for Volumetric Modulated Arc Therapy. It is an advanced form of radiation therapy in which the radiation machine rotates around the patient while delivering radiation from different angles.\n\n"
-        "The treatment is carefully planned to deliver radiation to the target area while helping reduce radiation exposure to nearby healthy tissues.\n\n"
-        "VMAT is planned by the radiation oncology team based on the patient's treatment needs. Patients should follow the treatment plan and instructions provided by their healthcare team."
-    ),
-    "hi": (
-        "VMAT क्या है?",
-        "VMAT का मतलब वॉल्यूमेट्रिक मॉड्यूलेटेड आर्क थेरेपी है। यह रेडिएशन थेरेपी का एक आधुनिक रूप है जिसमें रेडिएशन मशीन मरीज के चारों ओर घूमती है और विभिन्न कोणों से रेडिएशन देती है।\n\n"
-        "यह इलाज इस तरह योजनाबद्ध किया जाता है ताकि ट्यूमर या प्रभावित क्षेत्र तक सटीक मात्रा में रेडिएशन पहुंचे और आसपास के स्वस्थ ऊतकों को कम से कम नुकसान हो।\n\n"
-        "VMAT की योजना रेडिएशन ऑन्कोलॉजी टीम द्वारा मरीज की जरूरतों के अनुसार बनाई जाती है। मरीजों को अपनी स्वास्थ्य टीम द्वारा दिए गए निर्देशों का पालन करना चाहिए।"
-    ),
-    "mr": (
-        "VMAT म्हणजे काय?",
-        "VMAT म्हणजे व्हॉल्युमेट्रिक मॉड्युलेटेड आर्क थेरपी (Volumetric Modulated Arc Therapy). हा रेडिएशन थेरपीचा एक प्रगत प्रकार आहे ज्यामध्ये रेडिएशन मशीन रुग्णाभोवती फिरून वेगवेगळ्या कोनातून रेडिएशन देते.\n\n"
-        "हे उपचार अशा प्रकारे तयार केले जातात ज्यामुळे मुख्य भागाला अचूक रेडिएशन मिळते आणि सभोवतालच्या निरोगी उतींवर रेडिएशनचा प्रभाव कमी होण्यास मदत होते.\n\n"
-        "VMAT चे नियोजन रेडिएशन ऑन्कोलॉजी टीमद्वारे रुग्णाच्या गरजेनुसार केले जाते. रुग्णांनी त्यांच्या आरोग्य टीमने दिलेल्या सूचनांचे आणि उपचार योजनेचे पालन करावे."
-    )
-    },
 ]
 
 STAGE_META = [
@@ -731,27 +711,27 @@ with tab_chat:
         with st.chat_message("user", avatar="🧑"):
             st.write(prompt)
 
-        # Zero-cost RAG + local AI.
-        # FAISS retrieves approved context first; the local model answers from that context.
-        response = None
+        # Zero-cost RAG + local AI:
+        # 1) FAISS retrieves relevant hospital-approved information.
+        # 2) The local open-source model turns that information into a concise answer.
         rag_results = []
-
         try:
             rag_results = search_knowledge(prompt, k=3)
         except Exception as e:
             print(f"RAG retrieval error: {e}")
+
+        response = None
 
         if rag_results:
             context_parts = []
             sources = []
 
             for doc in rag_results:
-                text = getattr(doc, "page_content", "").strip()
+                text = doc.page_content.strip()
                 if text and text not in context_parts:
                     context_parts.append(text)
 
-                metadata = getattr(doc, "metadata", {}) or {}
-                source = metadata.get("source", "Hospital knowledge base")
+                source = doc.metadata.get("source", "Hospital knowledge base")
                 source = Path(source).name if source else "Hospital knowledge base"
                 if source not in sources:
                     sources.append(source)
@@ -767,7 +747,7 @@ with tab_chat:
                 if response:
                     response += "\n\n---\n**Source:** " + ", ".join(sources)
 
-        # Keep the existing doctor-approved FAQ as a safe fallback.
+        # Safe fallback to the existing doctor-approved FAQ matching.
         if not response:
             match = find_best_faq_answer(prompt)
             if match:
