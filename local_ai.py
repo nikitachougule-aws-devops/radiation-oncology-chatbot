@@ -10,7 +10,7 @@ def get_generator():
 
     if _generator is None:
         _generator = pipeline(
-            "text2text-generation",
+            "text-generation",
             model=MODEL_NAME,
             device=-1
         )
@@ -46,4 +46,10 @@ Answer:
         do_sample=False
     )
 
-    return result[0]["generated_text"].strip()
+    generated = result[0]["generated_text"]
+
+    # Return only the newly generated portion when possible.
+    if generated.startswith(prompt):
+        generated = generated[len(prompt):]
+
+    return generated.strip()
