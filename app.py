@@ -711,27 +711,27 @@ with tab_chat:
         with st.chat_message("user", avatar="🧑"):
             st.write(prompt)
 
-        # Zero-cost RAG + local AI:
-        # 1) FAISS retrieves relevant hospital-approved information.
-        # 2) The local open-source model turns that information into a concise answer.
+        # Zero-cost RAG + local AI.
+        # FAISS retrieves approved context first; the local model answers from that context.
+        response = None
         rag_results = []
+
         try:
             rag_results = search_knowledge(prompt, k=3)
         except Exception as e:
             print(f"RAG retrieval error: {e}")
-
-        response = None
 
         if rag_results:
             context_parts = []
             sources = []
 
             for doc in rag_results:
-                text = doc.page_content.strip()
+                text = getattr(doc, "page_content", "").strip()
                 if text and text not in context_parts:
                     context_parts.append(text)
 
-                source = doc.metadata.get("source", "Hospital knowledge base")
+                metadata = getattr(doc, "metadata", {}) or {}
+                source = metadata.get("source", "Hospital knowledge base")
                 source = Path(source).name if source else "Hospital knowledge base"
                 if source not in sources:
                     sources.append(source)
@@ -747,7 +747,7 @@ with tab_chat:
                 if response:
                     response += "\n\n---\n**Source:** " + ", ".join(sources)
 
-        # Safe fallback to the existing doctor-approved FAQ matching.
+        # Keep the existing doctor-approved FAQ as a safe fallback.
         if not response:
             match = find_best_faq_answer(prompt)
             if match:
