@@ -1,7 +1,5 @@
 streamlit
-langchain
-langchain-community
-faiss-cpu
-pypdf
-python-dotenv
-openai
+sentence-transformers
+chromadb
+torch
+numpy
