@@ -1,3 +1,4 @@
+from rag import search_knowledge
 import streamlit as st
 from datetime import datetime
 from pathlib import Path
@@ -664,17 +665,28 @@ tab_chat, tab_info, tab_video, tab_faq = st.tabs(
 with tab_chat:
     st.markdown(T["chat_intro"])
 
-    live_query = st.text_input(T["suggest_label"], key="live_faq_query", placeholder="e.g. skin care, exercise, side effects...")
+    live_query = st.text_input(
+        T["suggest_label"],
+        key="live_faq_query",
+        placeholder="e.g. skin care, exercise, side effects...",
+    )
+
     if live_query:
         matches = get_top_matches(live_query, n=3)
         if matches:
-            st.markdown('<div class="suggestion-note">Tap a suggestion for the approved answer instantly:</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="suggestion-note">Tap a suggestion for the approved answer instantly:</div>',
+                unsafe_allow_html=True,
+            )
             cols = st.columns(len(matches))
             for i, (stage, q, a) in enumerate(matches):
                 with cols[i]:
                     if st.button(f"❓ {q}", key=f"sugg_{i}_{q[:20]}"):
                         st.session_state.messages.append({"role": "user", "content": q})
-                        st.session_state.messages.append({"role": "assistant", "content": f"**{stage} — _{q}_**\n\n{a}"})
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": f"**{stage} — _{q}_**\n\n{a}",
+                        })
                         st.rerun()
         else:
             st.caption("No instant matches yet — keep typing or ask below.")
@@ -709,15 +721,49 @@ with tab_chat:
         with st.chat_message("user", avatar="🧑"):
             st.write(prompt)
 
-        match = find_best_faq_answer(prompt)
-        if match:
-            matched_stage, matched_q, matched_a = match
-            response = f"**{matched_stage} — _{matched_q}_**\n\n{matched_a}"
+        # STEP 5: Retrieve relevant information from the FAISS knowledge base.
+        rag_results = []
+        try:
+            rag_results = search_knowledge(prompt, k=3)
+        except Exception as e:
+            print(f"RAG retrieval error: {e}")
+
+        if rag_results:
+            # Show the most relevant approved knowledge retrieved from the RAG index.
+            # We are not using an LLM yet; that will be added in the next step.
+            retrieved_parts = []
+            sources = []
+
+            for doc in rag_results:
+                text = doc.page_content.strip()
+                if text and text not in retrieved_parts:
+                    retrieved_parts.append(text)
+
+                source = doc.metadata.get("source", "Hospital knowledge base")
+                source = Path(source).name if source else "Hospital knowledge base"
+                if source not in sources:
+                    sources.append(source)
+
+            if retrieved_parts:
+                response = "\n\n".join(retrieved_parts)
+                response += "\n\n---\n**Source:** " + ", ".join(sources)
+            else:
+                response = (
+                    "I don't have an approved answer for that specific question yet. "
+                    "Please reach out to your care team directly, or check the FAQs tab for related topics."
+                )
         else:
-            response = (
-                "I don't have an approved answer for that specific question yet. "
-                "Please reach out to your care team directly, or check the FAQs tab for related topics."
-            )
+            # Safe fallback to the existing doctor-approved FAQ matching.
+            match = find_best_faq_answer(prompt)
+            if match:
+                matched_stage, matched_q, matched_a = match
+                response = f"**{matched_stage} — _{matched_q}_**\n\n{matched_a}"
+            else:
+                response = (
+                    "I don't have an approved answer for that specific question yet. "
+                    "Please reach out to your care team directly, or check the FAQs tab for related topics."
+                )
+
         st.session_state.messages.append({"role": "assistant", "content": response})
         with st.chat_message("assistant", avatar="🎗️"):
             st.write(response)
