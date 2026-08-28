@@ -409,4 +409,12 @@ FAQS_AFTER = [
                "- तीव्र ताप\n- गंभीर रक्तस्राव\n- श्वास घेण्यास त्रास\n- तीव्र वेदना\n- अनियंत्रित उलट्या\n"
                "- इतर कोणतीही तातडीची लक्षणे"),
     },
+QUESTION: What is VMAT?
+
+ANSWER:
+VMAT stands for Volumetric Modulated Arc Therapy. It is an advanced form of radiation therapy in which the radiation machine rotates around the patient while delivering radiation from different angles.
+
+The treatment is carefully planned to deliver radiation to the target area while helping reduce radiation exposure to nearby healthy tissues.
+
+VMAT is planned by the radiation oncology team based on the patient's treatment needs. Patients should follow the treatment plan and instructions provided by their healthcare team.
 ]
