@@ -1,5 +1,3 @@
-from rag import search_knowledge
-from local_ai import generate_answer
 import streamlit as st
 from datetime import datetime
 from pathlib import Path
@@ -711,54 +709,15 @@ with tab_chat:
         with st.chat_message("user", avatar="🧑"):
             st.write(prompt)
 
-        # Zero-cost RAG + local AI:
-        # 1) FAISS retrieves relevant hospital-approved information.
-        # 2) The local open-source model turns that information into a concise answer.
-        rag_results = []
-        try:
-            rag_results = search_knowledge(prompt, k=3)
-        except Exception as e:
-            print(f"RAG retrieval error: {e}")
-
-        response = None
-
-        if rag_results:
-            context_parts = []
-            sources = []
-
-            for doc in rag_results:
-                text = doc.page_content.strip()
-                if text and text not in context_parts:
-                    context_parts.append(text)
-
-                source = doc.metadata.get("source", "Hospital knowledge base")
-                source = Path(source).name if source else "Hospital knowledge base"
-                if source not in sources:
-                    sources.append(source)
-
-            if context_parts:
-                context = "\n\n---\n\n".join(context_parts)
-                try:
-                    response = generate_answer(prompt, context)
-                except Exception as e:
-                    print(f"Local AI error: {e}")
-                    response = None
-
-                if response:
-                    response += "\n\n---\n**Source:** " + ", ".join(sources)
-
-        # Safe fallback to the existing doctor-approved FAQ matching.
-        if not response:
-            match = find_best_faq_answer(prompt)
-            if match:
-                matched_stage, matched_q, matched_a = match
-                response = f"**{matched_stage} — _{matched_q}_**\n\n{matched_a}"
-            else:
-                response = (
-                    "I don't have an approved answer for that specific question yet. "
-                    "Please reach out to your care team directly, or check the FAQs tab for related topics."
-                )
-
+        match = find_best_faq_answer(prompt)
+        if match:
+            matched_stage, matched_q, matched_a = match
+            response = f"**{matched_stage} — _{matched_q}_**\n\n{matched_a}"
+        else:
+            response = (
+                "I don't have an approved answer for that specific question yet. "
+                "Please reach out to your care team directly, or check the FAQs tab for related topics."
+            )
         st.session_state.messages.append({"role": "assistant", "content": response})
         with st.chat_message("assistant", avatar="🎗️"):
             st.write(response)
