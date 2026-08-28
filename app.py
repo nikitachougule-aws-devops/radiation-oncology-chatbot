@@ -620,6 +620,26 @@ FAQS_AFTER = [
                "- तीव्र ताप\n- गंभीर रक्तस्राव\n- श्वास घेण्यास त्रास\n- तीव्र वेदना\n- अनियंत्रित उलट्या\n"
                "- इतर कोणतीही तातडीची लक्षणे"),
     },
+    {
+        "en": (
+        "What is VMAT?",
+        "VMAT stands for Volumetric Modulated Arc Therapy. It is an advanced form of radiation therapy in which the radiation machine rotates around the patient while delivering radiation from different angles.\n\n"
+        "The treatment is carefully planned to deliver radiation to the target area while helping reduce radiation exposure to nearby healthy tissues.\n\n"
+        "VMAT is planned by the radiation oncology team based on the patient's treatment needs. Patients should follow the treatment plan and instructions provided by their healthcare team."
+    ),
+    "hi": (
+        "VMAT क्या है?",
+        "VMAT का मतलब वॉल्यूमेट्रिक मॉड्यूलेटेड आर्क थेरेपी है। यह रेडिएशन थेरेपी का एक आधुनिक रूप है जिसमें रेडिएशन मशीन मरीज के चारों ओर घूमती है और विभिन्न कोणों से रेडिएशन देती है।\n\n"
+        "यह इलाज इस तरह योजनाबद्ध किया जाता है ताकि ट्यूमर या प्रभावित क्षेत्र तक सटीक मात्रा में रेडिएशन पहुंचे और आसपास के स्वस्थ ऊतकों को कम से कम नुकसान हो।\n\n"
+        "VMAT की योजना रेडिएशन ऑन्कोलॉजी टीम द्वारा मरीज की जरूरतों के अनुसार बनाई जाती है। मरीजों को अपनी स्वास्थ्य टीम द्वारा दिए गए निर्देशों का पालन करना चाहिए।"
+    ),
+    "mr": (
+        "VMAT म्हणजे काय?",
+        "VMAT म्हणजे व्हॉल्युमेट्रिक मॉड्युलेटेड आर्क थेरपी (Volumetric Modulated Arc Therapy). हा रेडिएशन थेरपीचा एक प्रगत प्रकार आहे ज्यामध्ये रेडिएशन मशीन रुग्णाभोवती फिरून वेगवेगळ्या कोनातून रेडिएशन देते.\n\n"
+        "हे उपचार अशा प्रकारे तयार केले जातात ज्यामुळे मुख्य भागाला अचूक रेडिएशन मिळते आणि सभोवतालच्या निरोगी उतींवर रेडिएशनचा प्रभाव कमी होण्यास मदत होते.\n\n"
+        "VMAT चे नियोजन रेडिएशन ऑन्कोलॉजी टीमद्वारे रुग्णाच्या गरजेनुसार केले जाते. रुग्णांनी त्यांच्या आरोग्य टीमने दिलेल्या सूचनांचे आणि उपचार योजनेचे पालन करावे."
+    )
+    },
 ]
 
 STAGE_META = [
