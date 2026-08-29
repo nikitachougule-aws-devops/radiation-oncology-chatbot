@@ -2,6 +2,8 @@ import streamlit as st
 from datetime import datetime
 from pathlib import Path
 
+from rag import retrieve_documents
+
 st.set_page_config(
     page_title="Jupiter Hospital | Radiation Oncology AI",
     page_icon="🎗️",
@@ -665,19 +667,63 @@ with tab_chat:
     st.markdown(T["chat_intro"])
 
     live_query = st.text_input(T["suggest_label"], key="live_faq_query", placeholder="e.g. skin care, exercise, side effects...")
-    if live_query:
-        matches = get_top_matches(live_query, n=3)
-        if matches:
-            st.markdown('<div class="suggestion-note">Tap a suggestion for the approved answer instantly:</div>', unsafe_allow_html=True)
-            cols = st.columns(len(matches))
-            for i, (stage, q, a) in enumerate(matches):
+        if live_query:
+        rag_matches = retrieve_documents(
+            live_query,
+            top_k=3
+        )
+
+        if rag_matches:
+            st.markdown(
+                '<div class="suggestion-note">'
+                'Tap a suggestion for the approved answer instantly:'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            cols = st.columns(len(rag_matches))
+
+            for i, result in enumerate(rag_matches):
+
+                question = result["text"].split(
+                    "Answer:", 1
+                )[0].replace(
+                    "Question:", ""
+                ).strip()
+
+                answer = result["text"].split(
+                    "Answer:", 1
+                )[1].strip()
+
                 with cols[i]:
-                    if st.button(f"❓ {q}", key=f"sugg_{i}_{q[:20]}"):
-                        st.session_state.messages.append({"role": "user", "content": q})
-                        st.session_state.messages.append({"role": "assistant", "content": f"**{stage} — _{q}_**\n\n{a}"})
+                    if st.button(
+                        f"❓ {question}",
+                        key=f"rag_sugg_{i}"
+                    ):
+                        st.session_state.messages.append(
+                            {
+                                "role": "user",
+                                "content": question
+                            }
+                        )
+
+                        st.session_state.messages.append(
+                            {
+                                "role": "assistant",
+                                "content": (
+                                    f"{answer}\n\n"
+                                    "_Source: Approved Radiation Oncology FAQ_"
+                                )
+                            }
+                        )
+
                         st.rerun()
+
         else:
-            st.caption("No instant matches yet — keep typing or ask below.")
+            st.caption(
+                "No approved FAQ matches yet — "
+                "keep typing or ask your question below."
+            )
 
     st.divider()
 
