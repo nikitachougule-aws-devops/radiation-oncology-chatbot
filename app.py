@@ -316,7 +316,7 @@ with st.sidebar:
         <div class="credit-card">
             <div class="credit-row">
                 <div>
-                    <div class="credit-label">Developed by</div>
+                    <div class="credit-label">AI Chatbot Developed by</div>
                     <div class="credit-name">Nikita Chougule</div>
                 </div>
             </div>
