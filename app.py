@@ -90,16 +90,16 @@ st.markdown(
 
         /* ---- Compact sidebar styling ---- */
         section[data-testid="stSidebar"] h2 {
-            font-size: 1.1rem !important;
-            margin-bottom: 0.1rem !important;
+            font-size: 1.35rem !important;
+            margin-bottom: 0.2rem !important;
         }
 
         section[data-testid="stSidebar"] p,
         section[data-testid="stSidebar"] .stMarkdown p,
         section[data-testid="stSidebar"] .stCaption {
-            font-size: 0.8rem !important;
-            line-height: 1.25rem !important;
-            margin-bottom: 0.3rem !important;
+            font-size: 0.95rem !important;
+            line-height: 1.5rem !important;
+            margin-bottom: 0.35rem !important;
         }
 
         section[data-testid="stSidebar"] .stMarkdown {
@@ -107,11 +107,11 @@ st.markdown(
         }
 
         section[data-testid="stSidebar"] hr {
-            margin: 0.6rem 0 !important;
+            margin: 0.7rem 0 !important;
         }
 
         section[data-testid="stSidebar"] label {
-            font-size: 0.8rem !important;
+            font-size: 0.95rem !important;
         }
     </style>
     """,
