@@ -824,10 +824,14 @@ with tab_video:
 with tab_faq:
 
     st.markdown(
-        "###  Approved Patient FAQs"
+        "### Approved Patient FAQs"
     )
 
-    all_faqs = []
+    stage_order = [
+        "FAQS_BEFORE",
+        "FAQS_DURING",
+        "FAQS_AFTER",
+    ]
 
     stage_names = {
         "FAQS_BEFORE": "Before Treatment",
@@ -835,7 +839,32 @@ with tab_faq:
         "FAQS_AFTER": "After Treatment",
     }
 
-    for stage_key, questions in FAQ_DATA.items():
+    search = st.text_input(
+        "🔍 Search FAQs",
+        placeholder="Example: side effects, pain, food..."
+    )
+
+    search_lower = search.lower().strip() if search else ""
+
+    faq_before, faq_during, faq_after = st.tabs(
+        [
+            "🩺 Before Treatment",
+            "☀️ During Treatment",
+            "🌿 After Treatment",
+        ]
+    )
+
+    stage_tabs = {
+        "FAQS_BEFORE": faq_before,
+        "FAQS_DURING": faq_during,
+        "FAQS_AFTER": faq_after,
+    }
+
+    for stage_key in stage_order:
+
+        questions = FAQ_DATA.get(stage_key, [])
+
+        stage_faqs = []
 
         for item in questions:
 
@@ -843,50 +872,30 @@ with tab_faq:
                 st.session_state.language
             ]
 
-            all_faqs.append(
-                (
-                    stage_names.get(
-                        stage_key,
-                        "Radiation Oncology"
-                    ),
-                    question,
-                    answer,
+            stage_faqs.append((question, answer))
+
+        if search_lower:
+
+            stage_faqs = [
+                item
+                for item in stage_faqs
+                if (
+                    search_lower in item[0].lower()
+                    or search_lower in item[1].lower()
                 )
+            ]
+
+        with stage_tabs[stage_key]:
+
+            st.caption(
+                f"{len(stage_faqs)} FAQ(s) found"
             )
 
-    search = st.text_input(
-        "🔍 Search FAQs",
-        placeholder="Example: side effects, pain, food..."
-    )
+            for question, answer in stage_faqs:
 
-    if search:
+                with st.expander(question):
 
-        search_lower = search.lower()
-
-        filtered = [
-            item
-            for item in all_faqs
-            if (
-                search_lower in item[1].lower()
-                or search_lower in item[2].lower()
-            )
-        ]
-
-    else:
-
-        filtered = all_faqs
-
-    st.caption(
-        f"{len(filtered)} approved FAQ(s) found"
-    )
-
-    for stage, question, answer in filtered:
-
-        with st.expander(
-            f"❓ {question}  ·  {stage}"
-        ):
-
-            st.markdown(answer)
+                    st.markdown(answer)
 
 
 # ============================================================
