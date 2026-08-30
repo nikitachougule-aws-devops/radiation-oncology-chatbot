@@ -41,13 +41,36 @@ st.markdown(
             background: linear-gradient(
                 120deg,
                 #0b3d66 0%,
-                #1a6fb5 60%,
-                #2f9bd6 100%
+                #1a6fb5 45%,
+                #2f9bd6 75%,
+                #1a6fb5 100%
             );
+            background-size: 250% 250%;
+            animation: heroShimmer 10s ease-in-out infinite;
 
             padding: 1.6rem 2rem;
             border-radius: 20px;
             margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes heroShimmer {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                circle at 85% -10%,
+                rgba(255, 255, 255, 0.18) 0%,
+                rgba(255, 255, 255, 0) 55%
+            );
+            pointer-events: none;
         }
 
         .hero-inner {
@@ -69,6 +92,18 @@ st.markdown(
             object-fit: cover;
             border-radius: 14px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .hero-image:hover {
+            transform: scale(1.03) rotate(-0.3deg);
+            box-shadow: 0 10px 26px rgba(0,0,0,0.32);
+        }
+
+        .hero-inner, .hero h1, .hero p {
+            position: relative;
+            z-index: 1;
         }
 
         .hero h1 {
@@ -97,6 +132,24 @@ st.markdown(
             border-radius: 16px;
             padding: 1.2rem;
             box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2f9bd6, #0b3d66);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(11, 61, 102, 0.14);
         }
 
         .glass-card h4 {
@@ -104,11 +157,22 @@ st.markdown(
             margin-bottom: 0.4rem;
         }
 
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
         .footer-note {
             text-align: center;
             color: #7a8ba0;
             font-size: 0.8rem;
-            margin-top: 2rem;
+            margin-top: 2.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #d9e5ef;
+        }
+
+        .footer-note b {
+            color: #0b3d66;
         }
 
         section[data-testid="stSidebar"] {
@@ -145,47 +209,185 @@ st.markdown(
             font-size: 0.95rem !important;
         }
 
-        .credit-card {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 14px;
-            padding: 0.9rem 1rem;
+        .team-block {
+            margin-top: 0.2rem;
         }
 
-        .credit-row {
+        .team-heading {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: #7f9bb8 !important;
+            margin-bottom: 0.7rem;
+        }
+
+        .team-heading-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .team-card {
+            display: flex;
+            align-items: center;
             gap: 0.7rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 0.65rem 0.8rem;
+            margin-bottom: 0.6rem;
+            transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
         }
 
-        .credit-row + .credit-row {
-            margin-top: 0.8rem;
-            padding-top: 0.8rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        .team-card:hover {
+            transform: translateX(3px);
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
-        .credit-icon {
-            font-size: 1.3rem;
-            line-height: 1.3rem;
+        .avatar {
+            flex: 0 0 auto;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: white !important;
+            letter-spacing: 0.02em;
         }
 
-        .credit-label {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #9fb7cf !important;
-            margin-bottom: 0.1rem;
+        .avatar-dev {
+            background: linear-gradient(135deg, #2f9bd6 0%, #0b3d66 100%);
         }
 
-        .credit-name {
+        .avatar-med {
+            background: linear-gradient(135deg, #f4b942 0%, #d97706 100%);
+        }
+
+        .team-info {
+            min-width: 0;
+        }
+
+        .team-name {
             font-size: 0.9rem;
             font-weight: 700;
             color: #eaf1f8 !important;
+            margin-bottom: 0.15rem;
         }
 
-        .credit-subtext {
-            font-size: 0.8rem;
-            color: #b8cadf !important;
+        .team-badge {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.12rem 0.5rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .badge-dev {
+            background: rgba(47, 155, 214, 0.2);
+            color: #a9d8f5 !important;
+        }
+
+        .badge-med {
+            background: rgba(244, 185, 66, 0.18);
+            color: #f9d68b !important;
+        }
+
+        /* ---- Pill-style tabs ---- */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 6px;
+            background: rgba(11, 61, 102, 0.06);
+            padding: 6px;
+            border-radius: 999px;
+        }
+
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 999px !important;
+            padding: 0.4rem 1.1rem !important;
+            font-weight: 600;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(120deg, #0b3d66, #2f9bd6) !important;
+            color: white !important;
+            box-shadow: 0 3px 10px rgba(11, 61, 102, 0.25);
+        }
+
+        .stTabs [data-baseweb="tab-highlight"] {
+            display: none;
+        }
+
+        /* ---- Buttons ---- */
+        .stButton > button {
+            border-radius: 999px !important;
+            border: 1px solid #d9e5ef !important;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .stButton > button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(11, 61, 102, 0.18);
+            border-color: #2f9bd6 !important;
+        }
+
+        /* ---- Chat messages ---- */
+        [data-testid="stChatMessage"] {
+            border-radius: 16px !important;
+            box-shadow: 0 2px 10px rgba(11, 61, 102, 0.06);
+            animation: fadeInUp 0.35s ease;
+        }
+
+        [data-testid="stChatInput"] textarea {
+            border-radius: 14px !important;
+        }
+
+        /* ---- Inputs & selects ---- */
+        .stTextInput input,
+        .stSelectbox [data-baseweb="select"] {
+            border-radius: 12px !important;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stTextInput input:focus {
+            box-shadow: 0 0 0 3px rgba(47, 155, 214, 0.25) !important;
+            border-color: #2f9bd6 !important;
+        }
+
+        /* ---- FAQ expanders ---- */
+        .streamlit-expanderHeader,
+        [data-testid="stExpander"] summary {
+            border-radius: 12px !important;
+            transition: background 0.2s ease;
+        }
+
+        [data-testid="stExpander"] summary:hover {
+            background: rgba(47, 155, 214, 0.08) !important;
+        }
+
+        /* ---- Custom scrollbar ---- */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(11, 61, 102, 0.35);
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(11, 61, 102, 0.55);
         }
     </style>
     """,
@@ -286,7 +488,8 @@ with st.sidebar:
 
     st.markdown(
         """
-        **Dr. Vikas Kothavade - Radiation Oncologist**
+        **Dr. Vikas Kothavade**  
+        *Radiation Oncologist*
 
         &nbsp;
 
@@ -313,18 +516,26 @@ with st.sidebar:
 
     st.markdown(
         """
-        <div class="credit-card">
-            <div class="credit-row">
-                <div>
-                    <div class="credit-label">AI Chatbot Developed by</div>
-                    <div class="credit-name">Nikita Chougule</div>
+        <div class="team-block">
+            <div class="team-heading">
+                <span class="team-heading-line"></span>
+                <span>BUILT WITH CARE BY</span>
+                <span class="team-heading-line"></span>
+            </div>
+
+            <div class="team-card">
+                <div class="avatar avatar-dev">NC</div>
+                <div class="team-info">
+                    <div class="team-name">Nikita Chougule</div>
+                    <div class="team-badge badge-dev">💻 App Developer</div>
                 </div>
             </div>
-            <div class="credit-row">
-                <div>
-                    <div class="credit-label">Medical Content Support</div>
-                    <div class="credit-name">Mayur Deokar</div>
-                    <div class="credit-subtext">Senior Radiation Therapist</div>
+
+            <div class="team-card">
+                <div class="avatar avatar-med">MD</div>
+                <div class="team-info">
+                    <div class="team-name">Mayur Deokar</div>
+                    <div class="team-badge badge-med">⚕️ Senior Radiation Therapist</div>
                 </div>
             </div>
         </div>
@@ -1098,7 +1309,7 @@ with tab_faq:
 st.markdown(
     """
     <div class="footer-note">
-        This chatbot provides patient education information
+        🛡️ This chatbot provides <b>patient education information</b>
         from an approved knowledge base. It does not replace
         advice from your treating doctor or healthcare team.
     </div>
