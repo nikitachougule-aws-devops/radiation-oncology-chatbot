@@ -573,8 +573,7 @@ with st.sidebar:
     st.markdown(
         f"""
 <div class="doctor-info">
-    <div class="doctor-name">Dr. Vikas Kothavade</div>
-    <div class="doctor-title">Radiation Oncologist</div>
+    <div class="doctor-name">Dr. Vikas Kothavade - Radiation Oncologist</div>
     {get_opd_status_badge()}
     <div class="info-line">📍 Prathamesh Park, Baner, Pune</div>
     <div class="info-line">🕒 OPD: 9 AM – 5:30 PM</div>
@@ -615,14 +614,14 @@ with st.sidebar:
         <div class="avatar avatar-dev">NC</div>
         <div class="team-info">
             <div class="team-name">Nikita Chougule</div>
-            <div class="team-badge badge-dev">💻 App Developer</div>
+            <div class="team-badge badge-dev">AI Chatbot Developer</div>
         </div>
     </div>
     <div class="team-card">
         <div class="avatar avatar-med">MD</div>
         <div class="team-info">
-            <div class="team-name">Mayur Deokar</div>
-            <div class="team-badge badge-med">⚕️ Senior Radiation Therapist</div>
+            <div class="team-name">Mayur Deokar - Senior Radiation Therapist</div>
+            <div class="team-badge badge-med">Medical Content Support</div>
         </div>
     </div>
 </div>
