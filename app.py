@@ -180,17 +180,13 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("**Radiation Oncologist**")
-    st.markdown("Dr. Vikas Kothavade")
+    st.markdown("**Dr. Vikas Kothavade - Radiation Oncologist**")
 
-    st.markdown("**📍 Location**")
-    st.markdown("Prathamesh Park, Baner, Pune")
-
-    st.markdown("**🕒 OPD Hours**")
-    st.markdown("9 AM – 5:30 PM")
-
-    st.markdown("**☎️ Emergency**")
-    st.markdown("+91-9890400264")
+    st.markdown("**📍 Location - Prathamesh Park, Baner, Pune**")
+    
+    st.markdown("**🕒 OPD Hours- 9 AM – 5:30 PM**")
+    
+    st.markdown("**☎️ Emergency - +91-9890400264**")
 
     st.divider()
 
@@ -212,8 +208,7 @@ with st.sidebar:
     )
 
     st.caption(
-        "Medical Content Support by Mayur Deokar — "
-        "Senior Radiation Therapist"
+        "Medical Content Support by Mayur Deokar — Senior Radiation Therapist"
     )
 
 
