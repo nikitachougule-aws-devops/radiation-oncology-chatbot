@@ -209,7 +209,9 @@ with st.sidebar:
     st.markdown(
         """
         **Dr. Vikas Kothavade**  
-        *Radiation Oncologist*  
+        *Radiation Oncologist*
+
+        &nbsp;
 
         📍 Prathamesh Park, Baner, Pune  
         🕒 OPD: 9 AM – 5:30 PM  
