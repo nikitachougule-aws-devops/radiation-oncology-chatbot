@@ -516,29 +516,27 @@ with st.sidebar:
 
     st.markdown(
         """
-        <div class="team-block">
-            <div class="team-heading">
-                <span class="team-heading-line"></span>
-                <span>BUILT WITH CARE BY</span>
-                <span class="team-heading-line"></span>
-            </div>
-
-            <div class="team-card">
-                <div class="avatar avatar-dev">NC</div>
-                <div class="team-info">
-                    <div class="team-name">Nikita Chougule</div>
-                    <div class="team-badge badge-dev">💻 App Developer</div>
-                </div>
-            </div>
-
-            <div class="team-card">
-                <div class="avatar avatar-med">MD</div>
-                <div class="team-info">
-                    <div class="team-name">Mayur Deokar</div>
-                    <div class="team-badge badge-med">⚕️ Senior Radiation Therapist</div>
-                </div>
-            </div>
+<div class="team-block">
+    <div class="team-heading">
+        <span class="team-heading-line"></span>
+        <span>BUILT WITH CARE BY</span>
+        <span class="team-heading-line"></span>
+    </div>
+    <div class="team-card">
+        <div class="avatar avatar-dev">NC</div>
+        <div class="team-info">
+            <div class="team-name">Nikita Chougule</div>
+            <div class="team-badge badge-dev">💻 App Developer</div>
         </div>
+    </div>
+    <div class="team-card">
+        <div class="avatar avatar-med">MD</div>
+        <div class="team-info">
+            <div class="team-name">Mayur Deokar</div>
+            <div class="team-badge badge-med">⚕️ Senior Radiation Therapist</div>
+        </div>
+    </div>
+</div>
         """,
         unsafe_allow_html=True,
     )
