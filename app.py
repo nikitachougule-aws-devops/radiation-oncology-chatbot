@@ -1,6 +1,8 @@
 import streamlit as st
 from pathlib import Path
 import ast
+import csv
+from datetime import datetime
 import chromadb
 from sentence_transformers import SentenceTransformer
 
@@ -191,8 +193,12 @@ if "messages" not in st.session_state:
                 "👋 Hello! I'm your Patient Information Assistant. "
                 "How can I help you today?"
             ),
+            "question": None,
         }
     ]
+
+if "feedback_given" not in st.session_state:
+    st.session_state.feedback_given = {}
 
 
 # ============================================================
@@ -575,6 +581,98 @@ def check_guardrails(user_question):
 
 
 # ============================================================
+# FEEDBACK LOGGING (zero-cost, local CSV log)
+# ============================================================
+
+FEEDBACK_LOG_PATH = (
+    Path(__file__).resolve().parent
+    / "feedback_log.csv"
+)
+
+
+def log_feedback(question, answer, feedback):
+
+    file_exists = FEEDBACK_LOG_PATH.exists()
+
+    with open(
+        FEEDBACK_LOG_PATH,
+        mode="a",
+        newline="",
+        encoding="utf-8"
+    ) as log_file:
+
+        writer = csv.writer(log_file)
+
+        if not file_exists:
+
+            writer.writerow(
+                [
+                    "timestamp",
+                    "language",
+                    "question",
+                    "answer",
+                    "feedback",
+                ]
+            )
+
+        writer.writerow(
+            [
+                datetime.now().isoformat(
+                    timespec="seconds"
+                ),
+                st.session_state.language,
+                question,
+                answer,
+                feedback,
+            ]
+        )
+
+
+def render_feedback_widget(message_index, question, answer):
+
+    # Skip feedback UI for messages with no associated question
+    # (e.g. the initial greeting message).
+    if not question:
+        return
+
+    already_given = st.session_state.feedback_given.get(
+        message_index
+    )
+
+    if already_given:
+
+        icon = "👍" if already_given == "up" else "👎"
+
+        st.caption(
+            f"{icon} Thanks for your feedback!"
+        )
+
+        return
+
+    col_up, col_down, _ = st.columns([1, 1, 10])
+
+    with col_up:
+
+        if st.button(
+            "👍",
+            key=f"feedback_up_{message_index}"
+        ):
+            log_feedback(question, answer, "up")
+            st.session_state.feedback_given[message_index] = "up"
+            st.rerun()
+
+    with col_down:
+
+        if st.button(
+            "👎",
+            key=f"feedback_down_{message_index}"
+        ):
+            log_feedback(question, answer, "down")
+            st.session_state.feedback_given[message_index] = "down"
+            st.rerun()
+
+
+# ============================================================
 # MAIN TABS
 # ============================================================
 
@@ -599,7 +697,9 @@ with tab_chat:
     st.divider()
 
     # Show previous messages
-    for message in st.session_state.messages:
+    for message_index, message in enumerate(
+        st.session_state.messages
+    ):
 
         avatar = (
             "🎗️"
@@ -616,6 +716,14 @@ with tab_chat:
                 message["content"]
             )
 
+            if message["role"] == "assistant":
+
+                render_feedback_widget(
+                    message_index,
+                    message.get("question"),
+                    message["content"],
+                )
+
     prompt = st.chat_input(
         T["placeholder"]
     )
@@ -629,13 +737,6 @@ with tab_chat:
                 "content": prompt,
             }
         )
-
-        with st.chat_message(
-            "user",
-            avatar="🧑"
-        ):
-
-            st.markdown(prompt)
 
         # ----------------------------------------------------
         # GUARDRAIL CHECK
@@ -683,20 +784,19 @@ with tab_chat:
 
                 response = T["unknown"]
 
-        # Save answer
+        # Save answer, linked to the question that produced it
         st.session_state.messages.append(
             {
                 "role": "assistant",
                 "content": response,
+                "question": prompt,
             }
         )
 
-        with st.chat_message(
-            "assistant",
-            avatar="🎗️"
-        ):
-
-            st.markdown(response)
+        # Rerun so the history loop above renders both the new
+        # user message and assistant reply (with feedback buttons)
+        # consistently, instead of duplicating the rendering logic here.
+        st.rerun()
 
 
 # ============================================================
