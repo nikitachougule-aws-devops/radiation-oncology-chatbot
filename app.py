@@ -526,14 +526,14 @@ with st.sidebar:
         <div class="avatar avatar-dev">NC</div>
         <div class="team-info">
             <div class="team-name">Nikita Chougule</div>
-            <div class="team-badge badge-dev">💻 App Developer</div>
+            <div class="team-badge badge-dev">AI Chatbot Developed</div>
         </div>
     </div>
     <div class="team-card">
         <div class="avatar avatar-med">MD</div>
         <div class="team-info">
-            <div class="team-name">Mayur Deokar</div>
-            <div class="team-badge badge-med">⚕️ Senior Radiation Therapist</div>
+            <div class="team-name">Mayur Deokar (Senior Radiation Therapist)</div>
+            <div class="team-badge badge-med">Medical Content Support</div>
         </div>
     </div>
 </div>
