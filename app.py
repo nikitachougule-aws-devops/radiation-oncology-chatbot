@@ -578,12 +578,12 @@ def check_guardrails(user_question):
 # MAIN TABS
 # ============================================================
 
-tab_chat, tab_info, tab_video, tab_faq = st.tabs(
+tab_chat, tab_info, tab_faq, tab_video = st.tabs(
     [
         "💬 Chat Assistant",
         "📖 Treatment Info",
+        "❓ FAQs",
         "🎥 Video Guide",
-        " FAQs",
     ]
 )
 
@@ -824,7 +824,7 @@ with tab_video:
 with tab_faq:
 
     st.markdown(
-        "###  Approved Patient FAQs"
+        "### ❓ Approved Patient FAQs"
     )
 
     all_faqs = []
@@ -883,7 +883,7 @@ with tab_faq:
     for stage, question, answer in filtered:
 
         with st.expander(
-            f" {question}  ·  {stage}"
+            f"❓ {question}  ·  {stage}"
         ):
 
             st.markdown(answer)
