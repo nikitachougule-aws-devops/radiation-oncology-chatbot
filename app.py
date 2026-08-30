@@ -2,7 +2,7 @@ import streamlit as st
 from pathlib import Path
 import ast
 import csv
-from datetime import datetime
+from datetime import datetime, time as dtime, timezone, timedelta
 import chromadb
 from sentence_transformers import SentenceTransformer
 
@@ -207,6 +207,61 @@ st.markdown(
 
         section[data-testid="stSidebar"] label {
             font-size: 0.95rem !important;
+        }
+
+        .doctor-info {
+            margin-bottom: 0.4rem;
+        }
+
+        .doctor-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #eaf1f8 !important;
+        }
+
+        .doctor-title {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #b8cadf !important;
+            margin-bottom: 0.7rem;
+        }
+
+        .opd-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.22rem 0.65rem;
+            border-radius: 999px;
+            margin-bottom: 0.8rem;
+        }
+
+        .opd-open {
+            background: rgba(34, 197, 94, 0.18);
+            color: #86efac !important;
+        }
+
+        .opd-closed {
+            background: rgba(248, 113, 113, 0.18);
+            color: #fca5a5 !important;
+        }
+
+        .info-line {
+            font-size: 0.9rem;
+            color: #d7e9f8 !important;
+            margin-bottom: 0.4rem;
+        }
+
+        .emergency-link {
+            color: #ffb4b4 !important;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dashed rgba(255, 180, 180, 0.5);
+            transition: color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .emergency-link:hover {
+            color: #ff8a8a !important;
+            border-color: #ff8a8a;
         }
 
         .team-block {
@@ -476,6 +531,35 @@ if "feedback_given" not in st.session_state:
 
 
 # ============================================================
+# LIVE OPD STATUS (zero-cost, computed locally)
+# ============================================================
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+OPD_START = dtime(9, 0)
+OPD_END = dtime(17, 30)
+
+
+def get_opd_status_badge():
+
+    now_ist = datetime.now(IST).time()
+
+    is_open = OPD_START <= now_ist <= OPD_END
+
+    if is_open:
+
+        return (
+            '<span class="opd-badge opd-open">'
+            '🟢 OPD Open Now</span>'
+        )
+
+    return (
+        '<span class="opd-badge opd-closed">'
+        '🔴 OPD Closed</span>'
+    )
+
+
+# ============================================================
 # SIDEBAR
 # ============================================================
 
@@ -487,15 +571,21 @@ with st.sidebar:
     st.divider()
 
     st.markdown(
-        """
-        **Dr. Vikas Kothavade - Radiation Oncologist**
-
-        &nbsp;
-
-        📍 Prathamesh Park, Baner, Pune  
-        🕒 OPD: 9 AM – 5:30 PM  
-        ☎️ Emergency: +91-9890400264
-        """
+        f"""
+<div class="doctor-info">
+    <div class="doctor-name">Dr. Vikas Kothavade</div>
+    <div class="doctor-title">Radiation Oncologist</div>
+    {get_opd_status_badge()}
+    <div class="info-line">📍 Prathamesh Park, Baner, Pune</div>
+    <div class="info-line">🕒 OPD: 9 AM – 5:30 PM</div>
+    <div class="info-line">
+        ☎️ <a class="emergency-link" href="tel:+919890400264">
+            Emergency: +91-9890400264
+        </a>
+    </div>
+</div>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.divider()
@@ -525,14 +615,14 @@ with st.sidebar:
         <div class="avatar avatar-dev">NC</div>
         <div class="team-info">
             <div class="team-name">Nikita Chougule</div>
-            <div class="team-badge badge-dev">AI Chatbot Developed</div>
+            <div class="team-badge badge-dev">💻 App Developer</div>
         </div>
     </div>
     <div class="team-card">
         <div class="avatar avatar-med">MD</div>
         <div class="team-info">
-            <div class="team-name">Mayur Deokar (Senior Radiation Therapist)</div>
-            <div class="team-badge badge-med">Medical Content Support</div>
+            <div class="team-name">Mayur Deokar</div>
+            <div class="team-badge badge-med">⚕️ Senior Radiation Therapist</div>
         </div>
     </div>
 </div>
