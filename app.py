@@ -286,8 +286,7 @@ with st.sidebar:
 
     st.markdown(
         """
-        **Dr. Vikas Kothavade**  
-        *Radiation Oncologist*
+        **Dr. Vikas Kothavade - Radiation Oncologist**
 
         &nbsp;
 
