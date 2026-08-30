@@ -87,6 +87,32 @@ st.markdown(
         section[data-testid="stSidebar"] * {
             color: #eaf1f8 !important;
         }
+
+        /* ---- Compact sidebar styling ---- */
+        section[data-testid="stSidebar"] h2 {
+            font-size: 1.1rem !important;
+            margin-bottom: 0.1rem !important;
+        }
+
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] .stMarkdown p,
+        section[data-testid="stSidebar"] .stCaption {
+            font-size: 0.8rem !important;
+            line-height: 1.25rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+
+        section[data-testid="stSidebar"] .stMarkdown {
+            margin-bottom: 0 !important;
+        }
+
+        section[data-testid="stSidebar"] hr {
+            margin: 0.6rem 0 !important;
+        }
+
+        section[data-testid="stSidebar"] label {
+            font-size: 0.8rem !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -180,13 +206,16 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("**Dr. Vikas Kothavade - Radiation Oncologist**")
+    st.markdown(
+        """
+        **Dr. Vikas Kothavade**  
+        *Radiation Oncologist*  
 
-    st.markdown("**📍 Location - Prathamesh Park, Baner, Pune**")
-    
-    st.markdown("**🕒 OPD Hours- 9 AM – 5:30 PM**")
-    
-    st.markdown("**☎️ Emergency - +91-9890400264**")
+        📍 Prathamesh Park, Baner, Pune  
+        🕒 OPD: 9 AM – 5:30 PM  
+        ☎️ Emergency: +91-9890400264
+        """
+    )
 
     st.divider()
 
