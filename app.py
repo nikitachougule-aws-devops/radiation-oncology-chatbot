@@ -583,7 +583,7 @@ tab_chat, tab_info, tab_video, tab_faq = st.tabs(
         "💬 Chat Assistant",
         "📖 Treatment Info",
         "🎥 Video Guide",
-        "❓ FAQs",
+        " FAQs",
     ]
 )
 
@@ -824,7 +824,7 @@ with tab_video:
 with tab_faq:
 
     st.markdown(
-        "### ❓ Approved Patient FAQs"
+        "###  Approved Patient FAQs"
     )
 
     all_faqs = []
@@ -883,7 +883,7 @@ with tab_faq:
     for stage, question, answer in filtered:
 
         with st.expander(
-            f"❓ {question}  ·  {stage}"
+            f" {question}  ·  {stage}"
         ):
 
             st.markdown(answer)
