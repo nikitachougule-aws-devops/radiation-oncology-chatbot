@@ -144,6 +144,49 @@ st.markdown(
         section[data-testid="stSidebar"] label {
             font-size: 0.95rem !important;
         }
+
+        .credit-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 0.9rem 1rem;
+        }
+
+        .credit-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+        }
+
+        .credit-row + .credit-row {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .credit-icon {
+            font-size: 1.3rem;
+            line-height: 1.3rem;
+        }
+
+        .credit-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #9fb7cf !important;
+            margin-bottom: 0.1rem;
+        }
+
+        .credit-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #eaf1f8 !important;
+        }
+
+        .credit-subtext {
+            font-size: 0.8rem;
+            color: #b8cadf !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -243,7 +286,8 @@ with st.sidebar:
 
     st.markdown(
         """
-        **Dr. Vikas Kothavade - Radiation Oncologist**
+        **Dr. Vikas Kothavade**  
+        *Radiation Oncologist*
 
         &nbsp;
 
@@ -268,12 +312,25 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption(
-        "AI Chatbot Developed by Nikita Chougule"
-    )
-
-    st.caption(
-        "Medical Content Support by Mayur Deokar — Senior Radiation Therapist"
+    st.markdown(
+        """
+        <div class="credit-card">
+            <div class="credit-row">
+                <div>
+                    <div class="credit-label">Developed by</div>
+                    <div class="credit-name">Nikita Chougule</div>
+                </div>
+            </div>
+            <div class="credit-row">
+                <div>
+                    <div class="credit-label">Medical Content Support</div>
+                    <div class="credit-name">Mayur Deokar</div>
+                    <div class="credit-subtext">Senior Radiation Therapist</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
 
