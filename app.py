@@ -530,33 +530,6 @@ if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
 
 
-# ============================================================
-# LIVE OPD STATUS (zero-cost, computed locally)
-# ============================================================
-
-IST = timezone(timedelta(hours=5, minutes=30))
-
-OPD_START = dtime(9, 0)
-OPD_END = dtime(17, 30)
-
-
-def get_opd_status_badge():
-
-    now_ist = datetime.now(IST).time()
-
-    is_open = OPD_START <= now_ist <= OPD_END
-
-    if is_open:
-
-        return (
-            '<span class="opd-badge opd-open">'
-            '🟢 OPD Open Now</span>'
-        )
-
-    return (
-        '<span class="opd-badge opd-closed">'
-        '🔴 OPD Closed</span>'
-    )
 
 
 # ============================================================
