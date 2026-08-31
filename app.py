@@ -759,9 +759,51 @@ def check_guardrails(question):
 
     text = question.lower().strip()
 
+    # ========================================================
+    # 1. PROMPT INJECTION / JAILBREAK PROTECTION
+    # ========================================================
 
-    # Prompt injection protection
-    for pattern in PROMPT_INJECTION_PATTERNS:
+    injection_patterns = [
+
+        # English
+        "ignore previous instructions",
+        "ignore all instructions",
+        "ignore your instructions",
+        "ignore the instructions",
+        "forget your instructions",
+        "forget your rules",
+        "show system prompt",
+        "show your system prompt",
+        "reveal system prompt",
+        "reveal your prompt",
+        "show developer message",
+        "reveal developer message",
+        "show hidden instructions",
+        "reveal hidden instructions",
+        "jailbreak",
+        "bypass your rules",
+        "bypass safety",
+        "disable safety",
+        "remove safety",
+        "act as an unrestricted ai",
+        "act as dan",
+        "do anything now",
+
+        # Hindi
+        "निर्देशों को अनदेखा",
+        "पिछले निर्देशों को अनदेखा",
+        "सिस्टम प्रॉम्प्ट दिखाओ",
+        "अपने निर्देश दिखाओ",
+
+        # Marathi
+        "सूचनांकडे दुर्लक्ष",
+        "मागील सूचना दुर्लक्षित",
+        "सिस्टम प्रॉम्प्ट दाखवा",
+        "तुमच्या सूचना दाखवा",
+    ]
+
+
+    for pattern in injection_patterns:
 
         if pattern in text:
 
@@ -771,8 +813,49 @@ def check_guardrails(question):
             )
 
 
-    # Personal medical decision protection
-    for pattern in MEDICAL_DECISION_PATTERNS:
+    # ========================================================
+    # 2. PERSONAL MEDICAL DECISION PROTECTION
+    # ========================================================
+
+    medical_patterns = [
+
+        # English
+        "diagnose me",
+        "what disease do i have",
+        "what cancer do i have",
+        "change my medicine",
+        "change my medication",
+        "stop my medicine",
+        "stop my medication",
+        "increase my medicine",
+        "decrease my medicine",
+        "increase my medication",
+        "decrease my medication",
+        "what dose should i take",
+        "what dosage should i take",
+        "prescribe medicine",
+        "prescribe medication",
+        "give me a prescription",
+
+        # Hindi
+        "मेरा निदान करो",
+        "मुझे कौन सी बीमारी है",
+        "मुझे कौन सा कैंसर है",
+        "मेरी दवा बदलो",
+        "मेरी दवा बंद कर दूं",
+        "दवा की खुराक",
+
+        # Marathi
+        "माझे निदान करा",
+        "मला कोणता आजार आहे",
+        "मला कोणता कर्करोग आहे",
+        "माझे औषध बदला",
+        "औषध बंद करू का",
+        "औषधाचा डोस",
+    ]
+
+
+    for pattern in medical_patterns:
 
         if pattern in text:
 
@@ -781,6 +864,10 @@ def check_guardrails(question):
                 T["medical"]
             )
 
+
+    # ========================================================
+    # 3. QUESTION IS SAFE
+    # ========================================================
 
     return True, None
 
