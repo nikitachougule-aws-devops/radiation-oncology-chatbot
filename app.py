@@ -1238,15 +1238,44 @@ with tab_chat:
                 response = result["answer"]
 
 
-                # Add the source type internally
-                # for display purposes.
+                # ------------------------------------------------
+# SHOW SOURCE OF THE APPROVED INFORMATION
+# ------------------------------------------------
 
-                if result["type"] == "hospital":
+if result["type"] == "hospital":
 
-                    response = (
-                        f"**Hospital Information**\n\n"
-                        f"{response}"
-                    )
+    response = (
+        f"**Answer:**\n\n"
+        f"{response}\n\n"
+        f"📚 **Source:** Approved Hospital Information"
+    )
+
+else:
+
+    response = (
+        f"**Answer:**\n\n"
+        f"{response}\n\n"
+        f"📚 **Source:** Approved Radiation Oncology FAQ"
+    )
+    # ------------------------------------------------
+# SHOW SOURCE OF THE APPROVED INFORMATION
+# ------------------------------------------------
+
+if result["type"] == "hospital":
+
+    response = (
+        f"**Answer:**\n\n"
+        f"{response}\n\n"
+        f"📚 **Source:** Approved Hospital Information"
+    )
+
+else:
+
+    response = (
+        f"**Answer:**\n\n"
+        f"{response}\n\n"
+        f"📚 **Source:** Approved Radiation Oncology FAQ"
+    )
 
                 else:
 
