@@ -371,10 +371,10 @@ with st.sidebar:
 
     st.markdown(
         """
-        **AI Chatbot Developed by:**  
+        **App Developed:**  
         Nikita Chougule
 
-        **Medical Content Support by:**  
+        **Medical Content Support:**  
         Mayur Deokar — Senior Radiation Therapist
         """
     )
