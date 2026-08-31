@@ -559,7 +559,7 @@ with st.sidebar:
 <div class="team-block">
     <div class="team-heading">
         <span class="team-heading-line"></span>
-        <span>THE TEAM BEHIND THIS/span>
+        <span>THE TEAM BEHIND THIS<span>
         <span class="team-heading-line"></span>
     </div>
     <div class="team-card">
