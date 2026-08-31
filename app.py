@@ -960,7 +960,7 @@ def search_knowledge(
         # This prevents the chatbot from forcing an
         # unrelated FAQ into the answer.
 
-        if best["distance"] > 0.60:
+        if best["distance"] > 0.75:
             return None
 
         # ----------------------------------------------------
