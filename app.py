@@ -885,13 +885,13 @@ def search_knowledge(
 
         model, collection = load_rag()
 
-
+        # Convert the user's question into an embedding
         query_embedding = model.encode(
             [question],
             normalize_embeddings=True,
         ).tolist()
 
-
+        # Search several relevant documents
         results = collection.query(
             query_embeddings=query_embedding,
             n_results=5,
@@ -902,102 +902,75 @@ def search_knowledge(
             ],
         )
 
-
         if not results.get("documents"):
             return None
 
-
         documents = results["documents"][0]
-
         metadatas = results["metadatas"][0]
-
         distances = results["distances"][0]
-
 
         candidates = []
 
+        for index in range(len(documents)):
 
-        for index in range(
-            len(documents)
-        ):
+            metadata = metadatas[index]
 
             candidates.append(
                 {
-                    "document":
-                        documents[index],
-
-                    "metadata":
-                        metadatas[index],
-
-                    "distance":
-                        distances[index],
+                    "document": documents[index],
+                    "metadata": metadata,
+                    "distance": distances[index],
                 }
             )
 
-
         # ----------------------------------------------------
-        # Prefer selected language
+        # Prefer the user's selected language
         # ----------------------------------------------------
 
         language_candidates = [
-
             item
-
             for item in candidates
-
-            if item["metadata"].get(
-                "language"
-            ) == language
-
+            if item["metadata"].get("language") == language
         ]
 
-
         if language_candidates:
-
             candidates = language_candidates
 
-
         if not candidates:
-
             return None
 
-
         # ----------------------------------------------------
-        # Best semantic match
+        # Sort by relevance
+        # Lower distance = better match
         # ----------------------------------------------------
 
-        best = min(
-            candidates,
-            key=lambda x: x["distance"]
+        candidates.sort(
+            key=lambda item: item["distance"]
         )
 
+        best = candidates[0]
 
         # ----------------------------------------------------
-        # Safety threshold
+        # SAFETY THRESHOLD
         # ----------------------------------------------------
-
-        # Lower distance = better match.
         #
-        # If the question is too far from our
-        # approved information, don't answer.
+        # If the best result is not sufficiently similar
+        # to the user's question, do not answer.
+        #
+        # This prevents the chatbot from forcing an
+        # unrelated FAQ into the answer.
 
         if best["distance"] > 0.60:
-
             return None
 
+        # ----------------------------------------------------
+        # RETURN BEST APPROVED RESULT
+        # ----------------------------------------------------
 
         return best["metadata"]
 
-
     except Exception:
-
         return None
-
-
-# ============================================================
-# FEEDBACK
-# ============================================================
-
 def save_feedback(
     question,
     answer,
