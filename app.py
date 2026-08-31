@@ -527,6 +527,7 @@ with st.sidebar:
         """
 <div class="doctor-info">
     <div class="doctor-name">Dr. Vikas Kothavade - Radiation Oncologist</div>
+    
     <div class="info-line">📍 Prathamesh Park, Baner, Pune</div>
     <div class="info-line">🕒 OPD: 9 AM – 5:30 PM</div>
     <div class="info-line">
