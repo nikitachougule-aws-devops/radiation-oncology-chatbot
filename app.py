@@ -710,34 +710,94 @@ def create_documents():
                     }
                 )
 
-    # --------------------------------------------------------
-    # ADD HOSPITAL INFORMATION
-    # --------------------------------------------------------
+   # --------------------------------------------------------
+# ADD HOSPITAL INFORMATION
+# --------------------------------------------------------
 
-    hospital_file = (
-        Path(__file__).resolve().parent
-        / "hospital_info.txt"
+hospital_file = (
+    Path(__file__).resolve().parent
+    / "hospital_info.txt"
+)
+
+if hospital_file.exists():
+
+    hospital_text = hospital_file.read_text(
+        encoding="utf-8"
     )
 
-    if hospital_file.exists():
+    # Store hospital information as small searchable pieces.
+    # This makes specific questions easier to find.
 
-        hospital_text = hospital_file.read_text(
-            encoding="utf-8"
-        )
+    hospital_items = [
+        (
+            "What is the name of the hospital?",
+            "Jupiter Hospital"
+        ),
+        (
+            "Which hospital is this chatbot for?",
+            "Jupiter Hospital"
+        ),
+        (
+            "Which department provides radiation treatment?",
+            "Radiation Oncology Department"
+        ),
+        (
+            "What is the radiation oncology department?",
+            "Radiation Oncology Department"
+        ),
+        (
+            "Who is the radiation oncologist?",
+            "Dr. Vikas Kothavade"
+        ),
+        (
+            "Who is the doctor in the Radiation Oncology Department?",
+            "Dr. Vikas Kothavade"
+        ),
+        (
+            "Where is Jupiter Hospital located?",
+            "Prathamesh Park, Baner, Pune"
+        ),
+        (
+            "What is the hospital location?",
+            "Prathamesh Park, Baner, Pune"
+        ),
+        (
+            "What are the OPD hours?",
+            "9 AM - 5:30 PM"
+        ),
+        (
+            "What are the radiation oncology OPD timings?",
+            "9 AM - 5:30 PM"
+        ),
+        (
+            "What is the emergency contact number?",
+            "+91-9890400264"
+        ),
+        (
+            "How can I contact the hospital in an emergency?",
+            "+91-9890400264"
+        ),
+    ]
+
+    for index, (question, answer) in enumerate(hospital_items):
 
         documents.append(
-            "Hospital Information\n" + hospital_text
+            f"Hospital Information\n"
+            f"Question: {question}\n"
+            f"Answer: {answer}"
         )
 
-        ids.append("hospital_information")
+        ids.append(
+            f"hospital_{index}"
+        )
 
         metadata.append(
             {
                 "type": "hospital",
                 "stage": "Hospital Information",
                 "language": "en",
-                "question": "Hospital information",
-                "answer": hospital_text,
+                "question": question,
+                "answer": answer,
             }
         )
 
