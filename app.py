@@ -511,11 +511,6 @@ def create_rag_documents():
     # HOSPITAL INFORMATION
     # --------------------------------------------------------
 
-    # We deliberately create SMALL documents.
-    # This makes questions such as:
-    # "Who is the radiation oncologist?"
-    # much easier for vector search to find.
-
     hospital_items = [
 
         (
@@ -631,14 +626,12 @@ def create_rag_documents():
 @st.cache_resource
 def load_rag():
 
-    # Free multilingual embedding model.
     model = SentenceTransformer(
         "sentence-transformers/"
         "paraphrase-multilingual-MiniLM-L12-v2"
     )
 
 
-    # Free local ChromaDB.
     client = chromadb.Client()
 
 
@@ -678,80 +671,72 @@ def load_rag():
 PROMPT_INJECTION_PATTERNS = [
 
     "ignore previous instructions",
-
     "ignore all instructions",
-
     "ignore your instructions",
-
     "ignore the instructions",
-
-    "show system prompt",
-
-    "show your system prompt",
-
-    "reveal system prompt",
-
-    "reveal your prompt",
-
-    "show developer message",
-
-    "reveal developer message",
-
-    "show hidden instructions",
-
-    "reveal hidden instructions",
-
-    "jailbreak",
-
-    "bypass your rules",
-
+    "forget your instructions",
     "forget your rules",
-
-    "ignore your rules",
-
+    "show system prompt",
+    "show your system prompt",
+    "reveal system prompt",
+    "reveal your prompt",
+    "show developer message",
+    "reveal developer message",
+    "show hidden instructions",
+    "reveal hidden instructions",
+    "jailbreak",
+    "bypass your rules",
+    "bypass safety",
+    "disable safety",
+    "remove safety",
     "act as an unrestricted ai",
+    "act as dan",
+    "do anything now",
 
-    "disable your safety",
+    "निर्देशों को अनदेखा",
+    "पिछले निर्देशों को अनदेखा",
+    "सिस्टम प्रॉम्प्ट दिखाओ",
+    "अपने निर्देश दिखाओ",
 
-    "remove your safety",
-
+    "सूचनांकडे दुर्लक्ष",
+    "मागील सूचना दुर्लक्षित",
+    "सिस्टम प्रॉम्प्ट दाखवा",
+    "तुमच्या सूचना दाखवा",
 ]
 
 
 MEDICAL_DECISION_PATTERNS = [
 
     "diagnose me",
-
     "what disease do i have",
-
     "what cancer do i have",
-
     "change my medicine",
-
     "change my medication",
-
     "stop my medicine",
-
     "stop my medication",
-
     "increase my medicine",
-
     "decrease my medicine",
-
     "increase my medication",
-
     "decrease my medication",
-
     "what dose should i take",
-
     "what dosage should i take",
-
     "prescribe medicine",
-
     "prescribe medication",
-
     "give me a prescription",
 
+    "मेरा निदान करो",
+    "मुझे कौन सी बीमारी है",
+    "मुझे कौन सा कैंसर है",
+    "मेरी दवा बदलो",
+    "मेरी दवा बंद कर दूं",
+    "दवा की खुराक",
+
+    "माझे निदान करा",
+    "मला कोणता आजार आहे",
+    "मला कोणता कर्करोग आहे",
+    "माझे औषध बदला",
+    "औषध बंद करू का",
+    "औषधाचा डोस",
 ]
 
 
@@ -759,51 +744,12 @@ def check_guardrails(question):
 
     text = question.lower().strip()
 
-    # ========================================================
-    # 1. PROMPT INJECTION / JAILBREAK PROTECTION
-    # ========================================================
 
-    injection_patterns = [
+    # --------------------------------------------------------
+    # PROMPT INJECTION PROTECTION
+    # --------------------------------------------------------
 
-        # English
-        "ignore previous instructions",
-        "ignore all instructions",
-        "ignore your instructions",
-        "ignore the instructions",
-        "forget your instructions",
-        "forget your rules",
-        "show system prompt",
-        "show your system prompt",
-        "reveal system prompt",
-        "reveal your prompt",
-        "show developer message",
-        "reveal developer message",
-        "show hidden instructions",
-        "reveal hidden instructions",
-        "jailbreak",
-        "bypass your rules",
-        "bypass safety",
-        "disable safety",
-        "remove safety",
-        "act as an unrestricted ai",
-        "act as dan",
-        "do anything now",
-
-        # Hindi
-        "निर्देशों को अनदेखा",
-        "पिछले निर्देशों को अनदेखा",
-        "सिस्टम प्रॉम्प्ट दिखाओ",
-        "अपने निर्देश दिखाओ",
-
-        # Marathi
-        "सूचनांकडे दुर्लक्ष",
-        "मागील सूचना दुर्लक्षित",
-        "सिस्टम प्रॉम्प्ट दाखवा",
-        "तुमच्या सूचना दाखवा",
-    ]
-
-
-    for pattern in injection_patterns:
+    for pattern in PROMPT_INJECTION_PATTERNS:
 
         if pattern in text:
 
@@ -813,49 +759,11 @@ def check_guardrails(question):
             )
 
 
-    # ========================================================
-    # 2. PERSONAL MEDICAL DECISION PROTECTION
-    # ========================================================
+    # --------------------------------------------------------
+    # PERSONAL MEDICAL DECISION PROTECTION
+    # --------------------------------------------------------
 
-    medical_patterns = [
-
-        # English
-        "diagnose me",
-        "what disease do i have",
-        "what cancer do i have",
-        "change my medicine",
-        "change my medication",
-        "stop my medicine",
-        "stop my medication",
-        "increase my medicine",
-        "decrease my medicine",
-        "increase my medication",
-        "decrease my medication",
-        "what dose should i take",
-        "what dosage should i take",
-        "prescribe medicine",
-        "prescribe medication",
-        "give me a prescription",
-
-        # Hindi
-        "मेरा निदान करो",
-        "मुझे कौन सी बीमारी है",
-        "मुझे कौन सा कैंसर है",
-        "मेरी दवा बदलो",
-        "मेरी दवा बंद कर दूं",
-        "दवा की खुराक",
-
-        # Marathi
-        "माझे निदान करा",
-        "मला कोणता आजार आहे",
-        "मला कोणता कर्करोग आहे",
-        "माझे औषध बदला",
-        "औषध बंद करू का",
-        "औषधाचा डोस",
-    ]
-
-
-    for pattern in medical_patterns:
+    for pattern in MEDICAL_DECISION_PATTERNS:
 
         if pattern in text:
 
@@ -864,10 +772,6 @@ def check_guardrails(question):
                 T["medical"]
             )
 
-
-    # ========================================================
-    # 3. QUESTION IS SAFE
-    # ========================================================
 
     return True, None
 
@@ -885,13 +789,13 @@ def search_knowledge(
 
         model, collection = load_rag()
 
-        # Convert the user's question into an embedding
+
         query_embedding = model.encode(
             [question],
             normalize_embeddings=True,
         ).tolist()
 
-        # Search several relevant documents
+
         results = collection.query(
             query_embeddings=query_embedding,
             n_results=5,
@@ -902,75 +806,99 @@ def search_knowledge(
             ],
         )
 
+
         if not results.get("documents"):
             return None
 
+
         documents = results["documents"][0]
+
         metadatas = results["metadatas"][0]
+
         distances = results["distances"][0]
+
 
         candidates = []
 
-        for index in range(len(documents)):
 
-            metadata = metadatas[index]
+        for index in range(
+            len(documents)
+        ):
 
             candidates.append(
                 {
-                    "document": documents[index],
-                    "metadata": metadata,
-                    "distance": distances[index],
+                    "document":
+                        documents[index],
+
+                    "metadata":
+                        metadatas[index],
+
+                    "distance":
+                        distances[index],
                 }
             )
 
+
         # ----------------------------------------------------
-        # Prefer the user's selected language
+        # Prefer selected language
         # ----------------------------------------------------
 
         language_candidates = [
+
             item
+
             for item in candidates
-            if item["metadata"].get("language") == language
+
+            if item["metadata"].get(
+                "language"
+            ) == language
+
         ]
 
+
         if language_candidates:
+
             candidates = language_candidates
 
+
         if not candidates:
+
             return None
+
 
         # ----------------------------------------------------
         # Sort by relevance
-        # Lower distance = better match
         # ----------------------------------------------------
 
         candidates.sort(
             key=lambda item: item["distance"]
         )
 
+
         best = candidates[0]
+
 
         # ----------------------------------------------------
         # SAFETY THRESHOLD
         # ----------------------------------------------------
-        #
-        # If the best result is not sufficiently similar
-        # to the user's question, do not answer.
-        #
-        # This prevents the chatbot from forcing an
-        # unrelated FAQ into the answer.
 
         if best["distance"] > 0.75:
+
             return None
 
-        # ----------------------------------------------------
-        # RETURN BEST APPROVED RESULT
-        # ----------------------------------------------------
 
         return best["metadata"]
 
+
     except Exception:
+
         return None
+
+
+# ============================================================
+# FEEDBACK
+# ============================================================
+
 def save_feedback(
     question,
     answer,
@@ -1152,7 +1080,6 @@ with tab_chat:
             )
 
 
-            # Feedback only for assistant messages
             if (
                 message["role"] == "assistant"
                 and index > 0
@@ -1190,7 +1117,6 @@ with tab_chat:
 
     if prompt:
 
-        # Save user message
         st.session_state.messages.append(
             {
                 "role": "user",
@@ -1235,53 +1161,27 @@ with tab_chat:
 
             if result:
 
-                response = result["answer"]
+                answer = result["answer"]
 
 
                 # ------------------------------------------------
-# SHOW SOURCE OF THE APPROVED INFORMATION
-# ------------------------------------------------
+                # SOURCE TRANSPARENCY
+                # ------------------------------------------------
 
-if result["type"] == "hospital":
+                if result["type"] == "hospital":
 
-    response = (
-        f"**Answer:**\n\n"
-        f"{response}\n\n"
-        f"📚 **Source:** Approved Hospital Information"
-    )
-
-else:
-
-    response = (
-        f"**Answer:**\n\n"
-        f"{response}\n\n"
-        f"📚 **Source:** Approved Radiation Oncology FAQ"
-    )
-    # ------------------------------------------------
-# SHOW SOURCE OF THE APPROVED INFORMATION
-# ------------------------------------------------
-
-if result["type"] == "hospital":
-
-    response = (
-        f"**Answer:**\n\n"
-        f"{response}\n\n"
-        f"📚 **Source:** Approved Hospital Information"
-    )
-
-else:
-
-    response = (
-        f"**Answer:**\n\n"
-        f"{response}\n\n"
-        f"📚 **Source:** Approved Radiation Oncology FAQ"
-    )
+                    response = (
+                        f"**Answer:**\n\n"
+                        f"{answer}\n\n"
+                        f"📚 **Source:** Approved Hospital Information"
+                    )
 
                 else:
 
                     response = (
-                        f"**{result['question']}**\n\n"
-                        f"{response}"
+                        f"**Answer:**\n\n"
+                        f"{answer}\n\n"
+                        f"📚 **Source:** Approved Radiation Oncology FAQ"
                     )
 
 
@@ -1471,10 +1371,6 @@ with tab_faq:
                     )
                 )
 
-
-    # --------------------------------------------------------
-    # FAQ SEARCH
-    # --------------------------------------------------------
 
     if search_text:
 
