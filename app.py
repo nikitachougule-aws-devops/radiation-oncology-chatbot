@@ -350,6 +350,23 @@ with st.sidebar:
 
         st.rerun()
 
+        st.divider()
+
+    if st.button("🗑️ Clear Chat", use_container_width=True):
+
+        st.session_state.messages = [
+            {
+                "role": "assistant",
+                "content":
+                    "👋 Hello! I'm your Patient Information Assistant. "
+                    "How can I help you today?",
+            }
+        ]
+
+        st.session_state.feedback_given = {}
+
+        st.rerun()
+
     st.divider()
 
     st.markdown(
