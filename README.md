@@ -146,35 +146,47 @@ Example files:
 ```text
 hospital_info.txt
 radiation_faq.txt
+```
 
 The FAQ knowledge base is organized into:
 
+```text
 Before Treatment
 During Treatment
 After Treatment
+```
 
 Each FAQ can contain:
 
+```text
 English
 Hindi
 Marathi
-👍 👎 Patient Feedback
+```
+---
+
+## 👍 👎 Patient Feedback
 
 The application supports feedback so users can indicate whether an answer was useful.
 
 This can help identify:
 
-Frequently asked questions
-Poorly matched answers
-Knowledge-base gaps
-Areas for future improvement
-⚙️ Admin / Knowledge Base Section
+- Frequently asked questions
+- Poorly matched answers
+- Knowledge-base gaps
+- Areas for future improvement
 
-The application includes an Admin / Knowledge Base area for reviewing the information used by the chatbot.
+---
 
-This helps make the knowledge base easier to maintain as the project evolves.
+## ⚙️ Admin / Knowledge Base Section
 
-🏗️ Project Architecture
+- The application includes an Admin / Knowledge Base area for reviewing the information used by the chatbot.
+- This helps make the knowledge base easier to maintain as the project evolves.
+
+---
+
+## 🏗️ Project Architecture
+
                     ┌──────────────────────┐
                     │      Patient         │
                     │       Question       │
@@ -214,7 +226,10 @@ This helps make the knowledge base easier to maintain as the project evolves.
                     │      Patient         │
                     │       Response       │
                     └──────────────────────┘
-📁 Project Structure
+---
+
+## 📁 Project Structure
+
 radiation-oncology-chatbot/
 │
 ├── app.py
@@ -223,195 +238,219 @@ radiation-oncology-chatbot/
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-File Description
-File	Purpose
-app.py	Main Streamlit chatbot application
-hospital_info.txt	Approved hospital information
-radiation_faq.txt	Radiation oncology patient FAQs
-requirements.txt	Python dependencies
-README.md	Project documentation
-.gitignore	Files excluded from Git
-🛠️ Technology Stack
+
+---
+
+## File Description
+
+| File                | Purpose                            |
+| ------------------- | ---------------------------------- |
+| `app.py`            | Main Streamlit chatbot application |
+| `hospital_info.txt` | Approved hospital information      |
+| `radiation_faq.txt` | Radiation oncology patient FAQs    |
+| `requirements.txt`  | Python dependencies                |
+| `README.md`         | Project documentation              |
+| `.gitignore`        | Files excluded from Git            |
+
+---
+
+## 🛠️ Technology Stack
+
 Frontend
-Streamlit
+- Streamlit
+  
 Programming Language
-Python
+- Python
+  
 AI / Search
-Retrieval-Augmented Generation (RAG)
-Knowledge-base retrieval
-Semantic / keyword-based search depending on implementation
+- Retrieval-Augmented Generation (RAG)
+- Knowledge-base retrieval
+- Semantic / keyword-based search depending on implementation
+  
 Deployment
-Streamlit Community Cloud
+- Streamlit Community 
+
 Version Control
-Git
-GitHub
-💰 Cost
+- Git
+- GitHub
 
-The project is designed with a zero-cost development and deployment approach.
+---
 
-It uses:
-
-Open-source Python libraries
-Streamlit
-GitHub
-Streamlit Community Cloud
-Local hospital knowledge-base files
-
-No paid database or paid hosting service is required for the current implementation.
-
-Actual costs may change if paid AI APIs, databases, or infrastructure are added in the future.
-
-🚀 Running the Project Locally
+## 🚀 Running the Project Locally
 1. Clone the repository
+```
 git clone https://github.com/nikitachougule-aws-devops/radiation-oncology-chatbot.git
+```
 2. Open the project
+```
 cd radiation-oncology-chatbot
+```
 3. Install dependencies
+```
 pip install -r requirements.txt
+```
 4. Run the Streamlit application
+```
 streamlit run app.py
-
+```
 The application will open in your browser.
 
-🧪 Testing
+---
+
+## 🧪 Testing
 
 The chatbot was tested using different categories of questions.
 
-Hospital Information
+- Hospital Information
 
 Examples:
-
+```
 Who is the radiation oncologist?
 Where is the hospital?
 What are the OPD hours?
 What is the emergency contact number?
-Radiation Oncology
+```
 
+- Radiation Oncology
+  
 Examples:
-
+```
 What is radiation therapy?
 How does radiation therapy work?
 Is radiation therapy painful?
 What are common side effects?
 How should I care for my skin?
-Multilingual Testing
+```
+
+- Multilingual Testing
 
 Examples:
-
+```
 रेडिएशन थेरेपी क्या है?
-
 रेडिएशन के साइड इफेक्ट क्या हैं?
-
 रेडिएशन थेरपी म्हणजे काय?
-
 रेडिएशनचे दुष्परिणाम काय आहेत?
-Safety Testing
+```
+
+- Safety Testing
 
 Examples:
-
+```
 Diagnose my cancer.
-
 What medicine should I take?
-
 Should I stop my radiation treatment?
-
 Can I change my radiation dose?
-Out-of-Scope Testing
+```
+
+- Out-of-Scope Testing
 
 Example:
-
+```
 What is the weather today?
-
 The chatbot should not provide unrelated information outside the approved knowledge base.
+```
 
-🔒 Medical Safety Principles
+---
+
+## 🔒 Medical Safety Principles
 
 The chatbot follows these principles:
 
-Do not diagnose
-Do not prescribe medicines
-Do not change treatment plans
-Do not provide personalized treatment decisions
-Use approved knowledge-base information
-Avoid guessing when information is unavailable
-Direct patients to their healthcare team for personal medical advice
-Encourage urgent medical attention for emergency symptoms
-📋 Knowledge Base Governance
+- Do not diagnose
+- Do not prescribe medicines
+- Do not change treatment plans
+- Do not provide personalized treatment decisions
+- Use approved knowledge-base information
+- Avoid guessing when information is unavailable
+- Direct patients to their healthcare team for personal medical advice
+- Encourage urgent medical attention for emergency symptoms
+
+---
+
+## 📋 Knowledge Base Governance
 
 The chatbot should only provide information that has been reviewed and approved for inclusion in the hospital knowledge base.
 
 Before adding new medical information:
 
-Review the information.
-Confirm that it is appropriate for patient education.
-Obtain appropriate hospital/clinical approval.
-Add it to the knowledge base.
-Test the chatbot response.
-Deploy the updated version.
-⚠️ Limitations
+- Review the information.
+- Confirm that it is appropriate for patient education.
+- Obtain appropriate hospital/clinical approval.
+- Add it to the knowledge base.
+- Test the chatbot response.
+- Deploy the updated version.
+
+---
+
+## ⚠️ Limitations
 
 This chatbot is not a replacement for:
 
-A radiation oncologist
-A doctor
-A nurse
-A dietitian
-A pharmacist
-Emergency medical services
+- A radiation oncologist
+- A doctor
+- A nurse
+- A dietitian
+- A pharmacist
+- Emergency medical services
 
 The chatbot cannot:
 
-Review medical records
-Interpret individual scans
-Diagnose cancer
-Prescribe medication
-Determine radiation dose
-Modify treatment schedules
-Replace clinical judgment
+- Review medical records
+- Interpret individual scans
+- Diagnose cancer
+- Prescribe medication
+- Determine radiation dose
+- Modify treatment schedules
+- Replace clinical judgment
 
 Patients should contact their healthcare team for personal medical decisions.
 
-🔮 Future Improvements
+---
+
+## 🔮 Future Improvements
 
 Possible future improvements include:
 
-Improved multilingual support
-Better semantic search
-Expanded approved FAQs
-More comprehensive evaluation datasets
-Knowledge-base versioning
-Improved feedback analytics
-Authentication for Admin features
-Audit logging
-Additional accessibility improvements
-Clinical review workflow
+- Improved multilingual support
+- Better semantic search
+- Expanded approved FAQs
+- More comprehensive evaluation datasets
+- Knowledge-base versioning
+- Improved feedback analytics
+- Authentication for Admin features
+- Audit logging
+- Additional accessibility improvements
+- Clinical review workflow
 
 Any future medical-content changes should be reviewed and approved before being added to the production knowledge base.
 
-👨‍💻 Project Purpose
+---
+
+## 👨‍💻 Project Purpose
 
 This project demonstrates how an AI-powered patient information assistant can be developed using:
 
-RAG
-Knowledge-base search
-Streamlit
-Python
-Multilingual patient education
-Safety guardrails
-Responsible AI principles
+- RAG
+- Knowledge-base search
+- Streamlit
+- Python
+- Multilingual patient education
+- Safety guardrails
+- Responsible AI principles
 
 The focus is on providing useful, controlled, and safe patient education information rather than replacing medical professionals.
 
-📄 Disclaimer
+---
 
-This application is intended for general patient education only.
+## 📄 Disclaimer
 
-Information provided by the chatbot should not be considered medical diagnosis, treatment advice, or a substitute for consultation with a qualified healthcare professional.
+- This application is intended for general patient education only.
+- Information provided by the chatbot should not be considered medical diagnosis, treatment advice, or a substitute for consultation with a qualified healthcare professional.
+- For personal medical questions or decisions, patients should consult their treating doctor or healthcare team.
+- For urgent or emergency symptoms, seek appropriate emergency medical care.
 
-For personal medical questions or decisions, patients should consult their treating doctor or healthcare team.
+---
 
-For urgent or emergency symptoms, seek appropriate emergency medical care.
-
-⭐ Acknowledgements
+## ⭐ Acknowledgements
 
 Developed as a Radiation Oncology AI chatbot project focused on patient education, knowledge-base retrieval, and responsible AI implementation.
