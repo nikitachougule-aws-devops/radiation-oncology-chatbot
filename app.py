@@ -306,6 +306,75 @@ T = UI_STRINGS[st.session_state.language]
 
 
 # ============================================================
+# LOAD HOSPITAL INFORMATION
+# ============================================================
+
+@st.cache_data
+def load_hospital_info():
+
+    if not HOSPITAL_FILE.exists():
+        return {}
+
+    try:
+
+        text = HOSPITAL_FILE.read_text(
+            encoding="utf-8"
+        )
+
+    except Exception:
+
+        return {}
+
+
+    info = {}
+
+
+    current_section = ""
+
+
+    for raw_line in text.splitlines():
+
+        line = raw_line.strip()
+
+
+        if not line:
+            continue
+
+
+        # Ignore headings
+        if (
+            line.isupper()
+            and ":" not in line
+        ):
+            current_section = line
+            continue
+
+
+        if ":" in line:
+
+            key, value = line.split(
+                ":",
+                1
+            )
+
+
+            key = key.strip()
+
+            value = value.strip()
+
+
+            if key and value:
+
+                info[key] = value
+
+
+    return info
+
+
+HOSPITAL_INFO = load_hospital_info()
+
+
+# ============================================================
 # SIDEBAR
 # ============================================================
 
@@ -315,25 +384,56 @@ with st.sidebar:
 
     st.caption("Radiation Oncology Department")
 
-    st.markdown(
-        "**Dr. Vikas Kothavade** — Radiation Oncologist"
+
+    doctor_name = HOSPITAL_INFO.get(
+        "Radiation Oncologist",
+        "Radiation Oncology Team"
     )
+
+
+    hospital_location = HOSPITAL_INFO.get(
+        "Hospital Location",
+        "Please contact the hospital"
+    )
+
+
+    opd_hours = HOSPITAL_INFO.get(
+        "OPD Hours",
+        "Please contact the hospital"
+    )
+
+
+    emergency_contact = HOSPITAL_INFO.get(
+        "Emergency Contact",
+        "Please contact the hospital"
+    )
+
+
+    st.markdown(
+        f"**{doctor_name}**"
+    )
+
 
     st.divider()
 
-    st.markdown(
-        "**📍 Location:** Prathamesh Park, Baner, Pune"
-    )
 
     st.markdown(
-        "**🕒 OPD Hours:** 9 AM – 5:30 PM"
+        f"**📍 Location:** {hospital_location}"
     )
 
+
     st.markdown(
-        "**☎️ Emergency:** +91-9890400264"
+        f"**🕒 OPD Hours:** {opd_hours}"
     )
+
+
+    st.markdown(
+        f"**☎️ Emergency:** {emergency_contact}"
+    )
+
 
     st.divider()
+
 
     selected_language = st.selectbox(
         "🌐 Language",
@@ -344,15 +444,21 @@ with st.sidebar:
         ),
     )
 
+
     if selected_language != st.session_state.language:
 
         st.session_state.language = selected_language
 
         st.rerun()
 
-        st.divider()
 
-    if st.button("🗑️ Clear Chat", use_container_width=True):
+    st.divider()
+
+
+    if st.button(
+        "🗑️ Clear Chat",
+        use_container_width=True
+    ):
 
         st.session_state.messages = [
             {
@@ -367,11 +473,17 @@ with st.sidebar:
 
         st.rerun()
 
+
     st.divider()
+
 
     st.markdown(
         """
-        **AI Chatbot Developed By - Nikita Chougule**
+        **AI Chatbot Developed by:**  
+        Nikita Chougule
+
+        **Medical Content Support by:**  
+        Mayur Deokar — Senior Radiation Therapist
         """
     )
 
@@ -422,15 +534,23 @@ def load_faq_data():
 
         data = {}
 
+
         for node in tree.body:
 
-            if isinstance(node, ast.Assign):
+            if isinstance(
+                node,
+                ast.Assign
+            ):
 
                 for target in node.targets:
 
-                    if isinstance(target, ast.Name):
+                    if isinstance(
+                        target,
+                        ast.Name
+                    ):
 
                         name = target.id
+
 
                         if name in [
                             "FAQS_BEFORE",
@@ -438,11 +558,15 @@ def load_faq_data():
                             "FAQS_AFTER",
                         ]:
 
-                            data[name] = ast.literal_eval(
-                                node.value
+                            data[name] = (
+                                ast.literal_eval(
+                                    node.value
+                                )
                             )
 
+
         return data
+
 
     except Exception:
 
@@ -459,7 +583,9 @@ FAQ_DATA = load_faq_data()
 def create_rag_documents():
 
     documents = []
+
     ids = []
+
     metadatas = []
 
 
@@ -468,9 +594,15 @@ def create_rag_documents():
     # --------------------------------------------------------
 
     stage_names = {
-        "FAQS_BEFORE": "Before Treatment",
-        "FAQS_DURING": "During Treatment",
-        "FAQS_AFTER": "After Treatment",
+
+        "FAQS_BEFORE":
+            "Before Treatment",
+
+        "FAQS_DURING":
+            "During Treatment",
+
+        "FAQS_AFTER":
+            "After Treatment",
     }
 
 
@@ -482,15 +614,23 @@ def create_rag_documents():
         )
 
 
-        for index, item in enumerate(questions):
+        for index, item in enumerate(
+            questions
+        ):
 
-            for language in ["en", "hi", "mr"]:
+            for language in [
+                "en",
+                "hi",
+                "mr"
+            ]:
 
                 if language not in item:
                     continue
 
 
-                question, answer = item[language]
+                question, answer = item[
+                    language
+                ]
 
 
                 document = (
@@ -501,7 +641,9 @@ def create_rag_documents():
                 )
 
 
-                documents.append(document)
+                documents.append(
+                    document
+                )
 
 
                 ids.append(
@@ -521,115 +663,106 @@ def create_rag_documents():
 
 
     # --------------------------------------------------------
-    # HOSPITAL INFORMATION
+    # HOSPITAL INFORMATION FROM hospital_info.txt
     # --------------------------------------------------------
 
-    hospital_items = [
+    hospital_questions = {
 
-        (
-            "What is the name of the hospital?",
-            "Jupiter Hospital",
-        ),
+        "Hospital Name":
+            [
+                "What is the name of the hospital?",
+                "Which hospital is this chatbot for?",
+                "What hospital is this?",
+            ],
 
-        (
-            "Which hospital is this chatbot for?",
-            "Jupiter Hospital",
-        ),
+        "Department":
+            [
+                "Which department provides radiation treatment?",
+                "Which department handles radiation oncology?",
+                "What department is this?",
+            ],
 
-        (
-            "What department provides radiation treatment?",
-            "Radiation Oncology Department",
-        ),
+        "Radiation Oncologist":
+            [
+                "Who is the radiation oncologist?",
+                "Who is the radiation oncology doctor?",
+                "Who is the doctor in the Radiation Oncology Department?",
+            ],
 
-        (
-            "Which department handles radiation oncology?",
-            "Radiation Oncology Department",
-        ),
+        "Hospital Location":
+            [
+                "Where is the hospital?",
+                "Where is Jupiter Hospital located?",
+                "What is the hospital location?",
+                "Where is the Radiation Oncology Department located?",
+            ],
 
-        (
-            "Who is the radiation oncologist?",
-            "Dr. Vikas Kothavade",
-        ),
+        "OPD Hours":
+            [
+                "What are the OPD hours?",
+                "What are the OPD timings?",
+                "What are the radiation oncology OPD timings?",
+            ],
 
-        (
-            "Who is the doctor in the Radiation Oncology Department?",
-            "Dr. Vikas Kothavade",
-        ),
-
-        (
-            "Where is Jupiter Hospital located?",
-            "Prathamesh Park, Baner, Pune",
-        ),
-
-        (
-            "What is the hospital location?",
-            "Prathamesh Park, Baner, Pune",
-        ),
-
-        (
-            "Where is the Radiation Oncology Department located?",
-            "Prathamesh Park, Baner, Pune",
-        ),
-
-        (
-            "What are the OPD hours?",
-            "9 AM - 5:30 PM",
-        ),
-
-        (
-            "What are the OPD timings?",
-            "9 AM - 5:30 PM",
-        ),
-
-        (
-            "What are the radiation oncology OPD timings?",
-            "9 AM - 5:30 PM",
-        ),
-
-        (
-            "What is the emergency contact number?",
-            "+91-9890400264",
-        ),
-
-        (
-            "How can I contact the hospital in an emergency?",
-            "+91-9890400264",
-        ),
-
-    ]
+        "Emergency Contact":
+            [
+                "What is the emergency contact number?",
+                "How can I contact the hospital in an emergency?",
+                "What is the hospital emergency number?",
+            ],
+    }
 
 
-    for index, (question, answer) in enumerate(
-        hospital_items
-    ):
-
-        document = (
-            "Category: Hospital Information\n"
-            f"Question: {question}\n"
-            f"Answer: {answer}"
-        )
+    hospital_index = 0
 
 
-        documents.append(document)
+    for key, questions in hospital_questions.items():
+
+        value = HOSPITAL_INFO.get(key)
 
 
-        ids.append(
-            f"hospital_{index}"
-        )
+        if not value:
+            continue
 
 
-        metadatas.append(
-            {
-                "type": "hospital",
-                "stage": "Hospital Information",
-                "language": "en",
-                "question": question,
-                "answer": answer,
-            }
-        )
+        for question in questions:
+
+            document = (
+                "Category: Hospital Information\n"
+                f"Question: {question}\n"
+                f"Answer: {value}"
+            )
 
 
-    return documents, ids, metadatas
+            documents.append(
+                document
+            )
+
+
+            ids.append(
+                f"hospital_{hospital_index}"
+            )
+
+
+            metadatas.append(
+                {
+                    "type": "hospital",
+                    "stage": "Hospital Information",
+                    "language": "en",
+                    "question": question,
+                    "answer": value,
+                }
+            )
+
+
+            hospital_index += 1
+
+
+    return (
+        documents,
+        ids,
+        metadatas
+    )
 
 
 # ============================================================
@@ -853,7 +986,7 @@ def search_knowledge(
 
 
         # ----------------------------------------------------
-        # Prefer selected language
+        # FIRST: Prefer the user's selected language
         # ----------------------------------------------------
 
         language_candidates = [
@@ -869,9 +1002,33 @@ def search_knowledge(
         ]
 
 
+        # ----------------------------------------------------
+        # HOSPITAL INFORMATION EXISTS IN ENGLISH
+        # ONLY, SO ALLOW ENGLISH FALLBACK
+        # ----------------------------------------------------
+
         if language_candidates:
 
             candidates = language_candidates
+
+        else:
+
+            english_candidates = [
+
+                item
+
+                for item in candidates
+
+                if item["metadata"].get(
+                    "language"
+                ) == "en"
+
+            ]
+
+
+            if english_candidates:
+
+                candidates = english_candidates
 
 
         if not candidates:
@@ -880,7 +1037,8 @@ def search_knowledge(
 
 
         # ----------------------------------------------------
-        # Sort by relevance
+        # SORT BY RELEVANCE
+        # Lower distance = better match
         # ----------------------------------------------------
 
         candidates.sort(
@@ -962,6 +1120,7 @@ def save_feedback(
                 ]
             )
 
+
     except Exception:
 
         pass
@@ -1014,9 +1173,11 @@ def feedback_buttons(
                 "up"
             )
 
+
             st.session_state.feedback_given[
                 message_index
             ] = "up"
+
 
             st.rerun()
 
@@ -1034,9 +1195,11 @@ def feedback_buttons(
                 "down"
             )
 
+
             st.session_state.feedback_given[
                 message_index
             ] = "down"
+
 
             st.rerun()
 
@@ -1112,10 +1275,14 @@ with tab_chat:
 
                     feedback_buttons(
                         index,
+
                         previous_message[
                             "content"
                         ],
-                        message["content"],
+
+                        message[
+                            "content"
+                        ],
                     )
 
 
@@ -1375,6 +1542,7 @@ with tab_faq:
                 question, answer = item[
                     st.session_state.language
                 ]
+
 
                 all_faqs.append(
                     (
