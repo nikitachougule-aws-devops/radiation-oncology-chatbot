@@ -131,7 +131,7 @@ FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
 
 
 # ============================================================
-# LANGUAGE
+# LANGUAGES
 # ============================================================
 
 LANGUAGES = {
@@ -158,12 +158,27 @@ UI_STRINGS = {
             "I don't want to guess or provide incorrect medical information. "
             "Please contact your healthcare team.",
 
+        "unrelated":
+            "I can only answer questions related to Radiation Oncology and "
+            "approved Jupiter Hospital information.\n\n"
+            "Please ask me about radiation treatment, preparation, side effects, "
+            "or hospital information.",
+
         "injection":
-            "I can only answer questions using the approved Jupiter Hospital Radiation Oncology knowledge base.",
+            "I can only answer questions using the approved Jupiter Hospital "
+            "Radiation Oncology knowledge base.",
 
         "medical":
-            "I can't diagnose you or change your medicines or treatment plan. "
-            "Please speak directly with your doctor or healthcare team.",
+            "I can't diagnose you, prescribe or change medicines, or change your "
+            "radiation treatment plan.\n\n"
+            "For personal medical decisions, please speak with your treating "
+            "doctor or healthcare team.",
+
+        "urgent":
+            "If you are experiencing a serious or emergency symptom, please "
+            "contact your healthcare team or emergency services immediately.\n\n"
+            "I can provide general patient education, but I cannot assess or "
+            "diagnose an emergency.",
 
         "faq_header":
             "Patient FAQs — Reviewed & Approved",
@@ -197,12 +212,23 @@ UI_STRINGS = {
             "मैं अनुमान लगाकर गलत चिकित्सा जानकारी नहीं देना चाहता। "
             "कृपया अपनी स्वास्थ्य टीम से संपर्क करें।",
 
+        "unrelated":
+            "मैं केवल Radiation Oncology और Jupiter Hospital की स्वीकृत "
+            "जानकारी से संबंधित प्रश्नों का उत्तर दे सकता हूँ।",
+
         "injection":
-            "मैं केवल स्वीकृत Jupiter Hospital Radiation Oncology जानकारी के आधार पर प्रश्नों का उत्तर दे सकता हूँ।",
+            "मैं केवल स्वीकृत Jupiter Hospital Radiation Oncology जानकारी "
+            "के आधार पर प्रश्नों का उत्तर दे सकता हूँ।",
 
         "medical":
-            "मैं आपका निदान नहीं कर सकता और न ही आपकी दवा या उपचार योजना बदल सकता हूँ। "
-            "कृपया अपने डॉक्टर या स्वास्थ्य टीम से बात करें।",
+            "मैं आपका निदान नहीं कर सकता, दवा लिख या बदल नहीं सकता और "
+            "आपकी रेडिएशन उपचार योजना नहीं बदल सकता।\n\n"
+            "व्यक्तिगत चिकित्सा निर्णयों के लिए अपने डॉक्टर या स्वास्थ्य टीम "
+            "से बात करें।",
+
+        "urgent":
+            "यदि आपको गंभीर या आपातकालीन लक्षण हैं, तो तुरंत अपनी स्वास्थ्य "
+            "टीम या आपातकालीन सेवाओं से संपर्क करें।",
 
         "faq_header":
             "मरीज़ों के सामान्य प्रश्न",
@@ -236,12 +262,23 @@ UI_STRINGS = {
             "मला अंदाज लावून चुकीची वैद्यकीय माहिती द्यायची नाही. "
             "कृपया तुमच्या आरोग्य टीमशी संपर्क साधा.",
 
+        "unrelated":
+            "मी फक्त Radiation Oncology आणि Jupiter Hospital च्या "
+            "मंजूर माहितीसंबंधी प्रश्नांची उत्तरे देऊ शकतो.",
+
         "injection":
-            "मी फक्त मंजूर Jupiter Hospital Radiation Oncology माहितीच्या आधारे प्रश्नांची उत्तरे देऊ शकतो.",
+            "मी फक्त मंजूर Jupiter Hospital Radiation Oncology माहितीच्या "
+            "आधारे प्रश्नांची उत्तरे देऊ शकतो.",
 
         "medical":
-            "मी तुमचे निदान करू शकत नाही किंवा तुमची औषधे किंवा उपचार योजना बदलू शकत नाही. "
-            "कृपया तुमच्या डॉक्टरांशी किंवा आरोग्य टीमशी संपर्क साधा.",
+            "मी तुमचे निदान करू शकत नाही, औषधे लिहून देऊ किंवा बदलू शकत नाही "
+            "आणि तुमची रेडिएशन उपचार योजना बदलू शकत नाही.\n\n"
+            "वैयक्तिक वैद्यकीय निर्णयांसाठी तुमच्या डॉक्टरांशी किंवा आरोग्य "
+            "टीमशी संपर्क साधा.",
+
+        "urgent":
+            "तुम्हाला गंभीर किंवा आपत्कालीन लक्षणे असल्यास, त्वरित तुमच्या "
+            "आरोग्य टीमशी किंवा आपत्कालीन सेवांशी संपर्क साधा.",
 
         "faq_header":
             "रुग्णांचे वारंवार विचारले जाणारे प्रश्न",
@@ -807,7 +844,7 @@ def normalize_text(text):
 
 
 # ============================================================
-# KEYWORD EXTRACTION
+# MEANINGFUL WORDS
 # ============================================================
 
 def get_meaningful_words(text):
@@ -870,15 +907,16 @@ def detect_question_type(question):
 
     text = normalize_text(question)
 
-    # Hospital questions
+    # --------------------------------------------------------
+    # Hospital information
+    # --------------------------------------------------------
 
     if any(
         phrase in text
         for phrase in [
             "who is the radiation oncologist",
-            "who is the doctor",
+            "who is the radiation oncology doctor",
             "radiation oncologist",
-            "hospital doctor",
         ]
     ):
 
@@ -940,7 +978,9 @@ def detect_question_type(question):
         return "hospital_name"
 
 
-    # Radiation / treatment questions
+    # --------------------------------------------------------
+    # Medical / Radiation Oncology
+    # --------------------------------------------------------
 
     if any(
         word in text
@@ -958,13 +998,25 @@ def detect_question_type(question):
             "burning",
             "redness",
             "itching",
+            "nausea",
+            "vomiting",
+            "sleep",
+            "appetite",
+            "diet",
+            "food",
+            "exercise",
+            "care",
+            "symptom",
+            "symptoms",
         ]
     ):
 
         return "medical"
 
 
-    # Clearly unrelated common topics
+    # --------------------------------------------------------
+    # Clearly unrelated questions
+    # --------------------------------------------------------
 
     if any(
         word in text
@@ -984,6 +1036,9 @@ def detect_question_type(question):
             "restaurant",
             "politics",
             "news",
+            "travel",
+            "flight",
+            "hotel",
         ]
     ):
 
@@ -994,7 +1049,182 @@ def detect_question_type(question):
 
 
 # ============================================================
-# GUARDRAILS
+# MEDICAL SAFETY DETECTION
+# ============================================================
+
+def detect_medical_safety_level(question):
+
+    text = normalize_text(question)
+
+    # ========================================================
+    # EMERGENCY / URGENT SYMPTOMS
+    # ========================================================
+
+    urgent_patterns = [
+
+        "difficulty breathing",
+        "cannot breathe",
+        "can not breathe",
+        "trouble breathing",
+        "chest pain",
+        "severe chest pain",
+        "unconscious",
+        "passed out",
+        "fainted",
+        "heavy bleeding",
+        "severe bleeding",
+        "blood vomiting",
+        "vomiting blood",
+        "severe allergic reaction",
+        "swelling of face",
+        "swelling of throat",
+        "seizure",
+        "convulsion",
+        "stroke symptoms",
+    ]
+
+    for pattern in urgent_patterns:
+
+        if pattern in text:
+
+            return "urgent"
+
+
+    # ========================================================
+    # DIAGNOSIS REQUESTS
+    # ========================================================
+
+    diagnosis_patterns = [
+
+        "diagnose me",
+        "can you diagnose me",
+        "what disease do i have",
+        "what illness do i have",
+        "what cancer do i have",
+        "do i have cancer",
+        "is this cancer",
+        "am i having cancer",
+        "tell me my diagnosis",
+        "what is my diagnosis",
+        "what is wrong with me",
+        "interpret my scan",
+        "interpret my ct",
+        "interpret my mri",
+        "interpret my pet scan",
+        "read my scan",
+        "read my mri",
+        "read my ct",
+        "read my pet scan",
+
+        "मेरा निदान करो",
+        "मुझे कौन सी बीमारी है",
+        "मुझे कौन सा कैंसर है",
+        "क्या मुझे कैंसर है",
+
+        "माझे निदान करा",
+        "मला कोणता आजार आहे",
+        "मला कोणता कर्करोग आहे",
+    ]
+
+    for pattern in diagnosis_patterns:
+
+        if pattern in text:
+
+            return "personal_medical"
+
+
+    # ========================================================
+    # MEDICINE / PRESCRIPTION
+    # ========================================================
+
+    medicine_patterns = [
+
+        "prescribe medicine",
+        "prescribe medication",
+        "give me medicine",
+        "what medicine should i take",
+        "what medication should i take",
+        "what tablet should i take",
+        "what dose should i take",
+        "what dosage should i take",
+        "how much medicine should i take",
+        "should i stop my medicine",
+        "should i stop my medication",
+        "stop my medicine",
+        "stop my medication",
+        "change my medicine",
+        "change my medication",
+        "increase my medicine",
+        "decrease my medicine",
+        "increase my medication",
+        "decrease my medication",
+        "double my dose",
+        "skip my dose",
+
+        "मेरी दवा बदलो",
+        "मेरी दवा बंद कर दूं",
+        "दवा की खुराक",
+        "मुझे कौन सी दवा लेनी चाहिए",
+
+        "माझे औषध बदला",
+        "औषध बंद करू का",
+        "औषधाचा डोस",
+    ]
+
+    for pattern in medicine_patterns:
+
+        if pattern in text:
+
+            return "personal_medical"
+
+
+    # ========================================================
+    # TREATMENT PLAN CHANGES
+    # ========================================================
+
+    treatment_change_patterns = [
+
+        "change my treatment",
+        "change my treatment plan",
+        "should i change my treatment",
+        "change my radiation",
+        "change my radiation treatment",
+        "stop radiation",
+        "stop my radiation",
+        "skip radiation",
+        "skip my radiation",
+        "delay my radiation",
+        "increase radiation",
+        "decrease radiation",
+        "change radiation dose",
+        "change my radiation dose",
+        "should i continue radiation",
+        "should i stop treatment",
+        "should i continue treatment",
+        "can i stop treatment",
+        "can i skip treatment",
+
+        "मेरा इलाज बदलो",
+        "रेडिएशन बंद कर दूं",
+        "इलाज बंद कर दूं",
+
+        "माझा उपचार बदला",
+        "रेडिएशन बंद करू का",
+        "उपचार बंद करू का",
+    ]
+
+    for pattern in treatment_change_patterns:
+
+        if pattern in text:
+
+            return "personal_medical"
+
+
+    return "safe"
+
+
+# ============================================================
+# PROMPT INJECTION DETECTION
 # ============================================================
 
 PROMPT_INJECTION_PATTERNS = [
@@ -1034,44 +1264,17 @@ PROMPT_INJECTION_PATTERNS = [
 ]
 
 
-MEDICAL_DECISION_PATTERNS = [
-
-    "diagnose me",
-    "what disease do i have",
-    "what cancer do i have",
-    "change my medicine",
-    "change my medication",
-    "stop my medicine",
-    "stop my medication",
-    "increase my medicine",
-    "decrease my medicine",
-    "increase my medication",
-    "decrease my medication",
-    "what dose should i take",
-    "what dosage should i take",
-    "prescribe medicine",
-    "prescribe medication",
-    "give me a prescription",
-
-    "मेरा निदान करो",
-    "मुझे कौन सी बीमारी है",
-    "मुझे कौन सा कैंसर है",
-    "मेरी दवा बदलो",
-    "मेरी दवा बंद कर दूं",
-    "दवा की खुराक",
-
-    "माझे निदान करा",
-    "मला कोणता आजार आहे",
-    "मला कोणता कर्करोग आहे",
-    "माझे औषध बदला",
-    "औषध बंद करू का",
-    "औषधाचा डोस",
-]
-
+# ============================================================
+# GUARDRAILS
+# ============================================================
 
 def check_guardrails(question):
 
     text = question.lower().strip()
+
+    # --------------------------------------------------------
+    # Prompt injection
+    # --------------------------------------------------------
 
     for pattern in PROMPT_INJECTION_PATTERNS:
 
@@ -1079,19 +1282,43 @@ def check_guardrails(question):
 
             return (
                 False,
+                "injection",
                 T["injection"]
             )
 
-    for pattern in MEDICAL_DECISION_PATTERNS:
 
-        if pattern in text:
+    # --------------------------------------------------------
+    # Medical safety
+    # --------------------------------------------------------
 
-            return (
-                False,
-                T["medical"]
-            )
+    safety_level = detect_medical_safety_level(
+        question
+    )
 
-    return True, None
+
+    if safety_level == "urgent":
+
+        return (
+            False,
+            "urgent",
+            T["urgent"]
+        )
+
+
+    if safety_level == "personal_medical":
+
+        return (
+            False,
+            "personal_medical",
+            T["medical"]
+        )
+
+
+    return (
+        True,
+        "safe",
+        None
+    )
 
 
 # ============================================================
@@ -1110,9 +1337,7 @@ def search_knowledge(
         )
 
         # ----------------------------------------------------
-        # IMPORTANT:
-        # Reject clearly unrelated questions BEFORE RAG.
-        # This prevents "weather" from matching emergency info.
+        # Reject unrelated questions before RAG.
         # ----------------------------------------------------
 
         if question_type == "unrelated":
@@ -1127,10 +1352,6 @@ def search_knowledge(
             question
         )
 
-
-        # ----------------------------------------------------
-        # Semantic search
-        # ----------------------------------------------------
 
         query_embedding = model.encode(
             [question_clean],
@@ -1169,10 +1390,6 @@ def search_knowledge(
         candidates = []
 
 
-        # ====================================================
-        # SCORE RESULTS
-        # ====================================================
-
         for index in range(
             len(documents)
         ):
@@ -1205,11 +1422,6 @@ def search_knowledge(
             )
 
 
-            kb_answer_clean = normalize_text(
-                kb_answer
-            )
-
-
             kb_words = get_meaningful_words(
                 kb_question
                 + " "
@@ -1218,7 +1430,7 @@ def search_knowledge(
 
 
             # ------------------------------------------------
-            # Semantic similarity
+            # Semantic score
             # ------------------------------------------------
 
             semantic_score = max(
@@ -1228,7 +1440,7 @@ def search_knowledge(
 
 
             # ------------------------------------------------
-            # Keyword overlap
+            # Keyword score
             # ------------------------------------------------
 
             common_words = (
@@ -1241,10 +1453,6 @@ def search_knowledge(
                 common_words
             )
 
-
-            # ------------------------------------------------
-            # Question keyword overlap
-            # ------------------------------------------------
 
             question_common_words = (
                 question_words
@@ -1260,7 +1468,7 @@ def search_knowledge(
 
 
             # ------------------------------------------------
-            # Question-type matching
+            # Question-type bonus
             # ------------------------------------------------
 
             type_bonus = 0
@@ -1268,12 +1476,15 @@ def search_knowledge(
 
             if question_type == "doctor":
 
-                if kb_type == "hospital" and (
-                    "oncologist"
-                    in kb_question_clean
-                    or
-                    "doctor"
-                    in kb_question_clean
+                if (
+                    kb_type == "hospital"
+                    and (
+                        "oncologist"
+                        in kb_question_clean
+                        or
+                        "doctor"
+                        in kb_question_clean
+                    )
                 ):
 
                     type_bonus = 10
@@ -1281,12 +1492,15 @@ def search_knowledge(
 
             elif question_type == "location":
 
-                if kb_type == "hospital" and (
-                    "where"
-                    in kb_question_clean
-                    or
-                    "location"
-                    in kb_question_clean
+                if (
+                    kb_type == "hospital"
+                    and (
+                        "where"
+                        in kb_question_clean
+                        or
+                        "location"
+                        in kb_question_clean
+                    )
                 ):
 
                     type_bonus = 10
@@ -1294,15 +1508,18 @@ def search_knowledge(
 
             elif question_type == "opd":
 
-                if kb_type == "hospital" and (
-                    "opd"
-                    in kb_question_clean
-                    or
-                    "timing"
-                    in kb_question_clean
-                    or
-                    "hours"
-                    in kb_question_clean
+                if (
+                    kb_type == "hospital"
+                    and (
+                        "opd"
+                        in kb_question_clean
+                        or
+                        "timing"
+                        in kb_question_clean
+                        or
+                        "hours"
+                        in kb_question_clean
+                    )
                 ):
 
                     type_bonus = 10
@@ -1310,7 +1527,9 @@ def search_knowledge(
 
             elif question_type == "emergency":
 
-                if kb_type == "hospital" and (
+                if (
+                    kb_type == "hospital"
+                    and
                     "emergency"
                     in kb_question_clean
                 ):
@@ -1320,7 +1539,9 @@ def search_knowledge(
 
             elif question_type == "hospital_name":
 
-                if kb_type == "hospital" and (
+                if (
+                    kb_type == "hospital"
+                    and
                     "hospital"
                     in kb_question_clean
                 ):
@@ -1371,27 +1592,18 @@ def search_knowledge(
             candidates.append(
                 {
                     "metadata": metadata,
-
                     "score": final_score,
-
                     "semantic_score":
                         semantic_score,
-
                     "keyword_score":
                         keyword_score,
-
                     "question_keyword_score":
                         question_keyword_score,
-
                     "type_bonus":
                         type_bonus,
                 }
             )
 
-
-        # ====================================================
-        # SORT
-        # ====================================================
 
         candidates.sort(
             key=lambda item: item["score"],
@@ -1411,10 +1623,6 @@ def search_knowledge(
             "metadata"
         ]
 
-
-        # ====================================================
-        # STRICT SAFETY / RELEVANCE CHECK
-        # ====================================================
 
         best_semantic = best[
             "semantic_score"
@@ -1436,9 +1644,9 @@ def search_knowledge(
         ]
 
 
-        # ----------------------------------------------------
-        # Hospital information requires strong type matching.
-        # ----------------------------------------------------
+        # ====================================================
+        # STRICT HOSPITAL INFORMATION CHECK
+        # ====================================================
 
         if (
             best_metadata.get("type")
@@ -1459,9 +1667,6 @@ def search_knowledge(
 
             else:
 
-                # A general/unrelated question should not
-                # accidentally receive hospital information.
-
                 if (
                     best_question_keywords == 0
                     and best_type_bonus == 0
@@ -1470,9 +1675,9 @@ def search_knowledge(
                     return None
 
 
-        # ----------------------------------------------------
-        # FAQ requires meaningful similarity.
-        # ----------------------------------------------------
+        # ====================================================
+        # FAQ CHECK
+        # ====================================================
 
         if (
             best_metadata.get("type")
@@ -1487,9 +1692,9 @@ def search_knowledge(
                 return None
 
 
-        # ----------------------------------------------------
-        # Very weak overall result = reject.
-        # ----------------------------------------------------
+        # ====================================================
+        # VERY WEAK RESULT CHECK
+        # ====================================================
 
         if (
             best_semantic < 0.25
@@ -1746,63 +1951,79 @@ with tab_chat:
 
 
         # ====================================================
-        # GUARDRAILS
+        # STEP 14 SAFETY CHECK
         # ====================================================
 
-        allowed, guardrail_message = (
+        allowed, safety_type, safety_message = (
             check_guardrails(prompt)
         )
 
 
         if not allowed:
 
-            response = guardrail_message
+            response = safety_message
 
 
         else:
 
             # =================================================
-            # RAG SEARCH
+            # DETECT UNRELATED QUESTIONS
             # =================================================
 
-            result = search_knowledge(
-                prompt,
-                st.session_state.language
+            question_type = detect_question_type(
+                prompt
             )
 
 
-            if result:
+            if question_type == "unrelated":
 
-                answer = result["answer"]
-
-
-                if result["type"] == "hospital":
-
-                    response = (
-                        f"**Hospital Information**\n\n"
-                        f"{answer}\n\n"
-                        f"*This answer comes from the approved "
-                        f"hospital knowledge base. For personal "
-                        f"medical decisions, please follow your "
-                        f"treating doctor's advice.*"
-                    )
-
-
-                else:
-
-                    response = (
-                        f"**Answer**\n\n"
-                        f"{answer}\n\n"
-                        f"*This answer comes from the approved "
-                        f"hospital knowledge base. For personal "
-                        f"medical decisions, please follow your "
-                        f"treating doctor's advice.*"
-                    )
+                response = T["unrelated"]
 
 
             else:
 
-                response = T["unknown"]
+                # =============================================
+                # SEARCH APPROVED KNOWLEDGE BASE
+                # =============================================
+
+                result = search_knowledge(
+                    prompt,
+                    st.session_state.language
+                )
+
+
+                if result:
+
+                    answer = result["answer"]
+
+
+                    if result["type"] == "hospital":
+
+                        response = (
+                            f"**Hospital Information**\n\n"
+                            f"{answer}\n\n"
+                            f"*This answer comes from the approved "
+                            f"hospital knowledge base. For personal "
+                            f"medical decisions, please follow your "
+                            f"treating doctor's advice.*"
+                        )
+
+
+                    else:
+
+                        response = (
+                            f"**Answer**\n\n"
+                            f"{answer}\n\n"
+                            f"*This answer comes from the approved "
+                            f"hospital knowledge base. For personal "
+                            f"medical decisions, please follow your "
+                            f"treating doctor's advice.*"
+                        )
+
+
+                else:
+
+                    response = T["unknown"]
 
 
         # ====================================================
