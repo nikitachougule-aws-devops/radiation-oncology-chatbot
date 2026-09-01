@@ -391,7 +391,7 @@ FAQ_DATA = load_faq_data()
 
 
 # ============================================================
-# KNOWLEDGE BASE COUNTS
+# KNOWLEDGE BASE STATUS
 # ============================================================
 
 def get_total_faqs():
@@ -406,15 +406,9 @@ def get_total_faqs():
 
 TOTAL_FAQS = get_total_faqs()
 
+HOSPITAL_KB_LOADED = len(HOSPITAL_INFO) > 0
 
-HOSPITAL_KB_LOADED = (
-    len(HOSPITAL_INFO) > 0
-)
-
-
-FAQ_KB_LOADED = (
-    TOTAL_FAQS > 0
-)
+FAQ_KB_LOADED = TOTAL_FAQS > 0
 
 
 # ============================================================
@@ -932,10 +926,6 @@ def check_guardrails(question):
     text = question.lower().strip()
 
 
-    # --------------------------------------------------------
-    # PROMPT INJECTION
-    # --------------------------------------------------------
-
     for pattern in PROMPT_INJECTION_PATTERNS:
 
         if pattern in text:
@@ -945,10 +935,6 @@ def check_guardrails(question):
                 T["injection"]
             )
 
-
-    # --------------------------------------------------------
-    # MEDICAL DECISION
-    # --------------------------------------------------------
 
     for pattern in MEDICAL_DECISION_PATTERNS:
 
@@ -964,7 +950,7 @@ def check_guardrails(question):
 
 
 # ============================================================
-# SEARCH KNOWLEDGE BASE
+# IMPROVED RAG SEARCH
 # ============================================================
 
 def search_knowledge(
@@ -976,16 +962,24 @@ def search_knowledge(
 
         model, collection = load_rag()
 
+        question_clean = (
+            question.lower().strip()
+        )
+
+
+        # ====================================================
+        # 1. SEMANTIC SEARCH
+        # ====================================================
 
         query_embedding = model.encode(
-            [question],
+            [question_clean],
             normalize_embeddings=True,
         ).tolist()
 
 
         results = collection.query(
             query_embeddings=query_embedding,
-            n_results=5,
+            n_results=8,
             include=[
                 "documents",
                 "metadatas",
@@ -995,6 +989,7 @@ def search_knowledge(
 
 
         if not results.get("documents"):
+
             return None
 
 
@@ -1008,63 +1003,183 @@ def search_knowledge(
         candidates = []
 
 
+        # ====================================================
+        # 2. SCORE EACH RESULT
+        # ====================================================
+
         for index in range(
             len(documents)
         ):
 
+            metadata = metadatas[index]
+
+            document = documents[index]
+
+            distance = distances[index]
+
+
+            question_text = metadata.get(
+                "question",
+                ""
+            ).lower()
+
+
+            answer_text = metadata.get(
+                "answer",
+                ""
+            ).lower()
+
+
+            # ------------------------------------------------
+            # KEYWORD MATCH
+            # ------------------------------------------------
+
+            question_words = set(
+                question_clean.split()
+            )
+
+
+            kb_words = set(
+                (
+                    question_text
+                    + " "
+                    + answer_text
+                ).split()
+            )
+
+
+            common_words = (
+                question_words
+                & kb_words
+            )
+
+
+            keyword_score = len(
+                common_words
+            )
+
+
+            # ------------------------------------------------
+            # IMPORTANT MEDICAL TERMS
+            # ------------------------------------------------
+
+            important_terms = [
+
+                "radiation",
+                "therapy",
+                "treatment",
+                "skin",
+                "hair",
+                "pain",
+                "fatigue",
+                "side effect",
+                "side effects",
+                "burn",
+                "burning",
+                "redness",
+                "itching",
+                "food",
+                "diet",
+                "water",
+                "medicine",
+                "medication",
+                "sleep",
+                "exercise",
+                "travel",
+                "work",
+                "breast",
+                "lung",
+                "head",
+                "neck",
+                "cancer",
+                "doctor",
+                "oncologist",
+                "hospital",
+                "appointment",
+                "OPD",
+            ]
+
+
+            important_score = 0
+
+
+            for term in important_terms:
+
+                if term in question_clean:
+
+                    if term in question_text:
+
+                        important_score += 3
+
+                    elif term in answer_text:
+
+                        important_score += 1
+
+
+            # ------------------------------------------------
+            # LANGUAGE BONUS
+            # ------------------------------------------------
+
+            language_bonus = 0
+
+
+            if metadata.get(
+                "language"
+            ) == language:
+
+                language_bonus = 2
+
+
+            # ------------------------------------------------
+            # SEMANTIC SCORE
+            # ------------------------------------------------
+
+            semantic_score = max(
+                0,
+                1 - distance
+            )
+
+
+            # ------------------------------------------------
+            # FINAL SCORE
+            # ------------------------------------------------
+
+            final_score = (
+
+                semantic_score * 10
+
+                + keyword_score * 0.5
+
+                + important_score
+
+                + language_bonus
+
+            )
+
+
             candidates.append(
                 {
-                    "document":
-                        documents[index],
-
-                    "metadata":
-                        metadatas[index],
-
-                    "distance":
-                        distances[index],
+                    "metadata": metadata,
+                    "distance": distance,
+                    "score": final_score,
+                    "semantic_score":
+                        semantic_score,
+                    "keyword_score":
+                        keyword_score,
+                    "important_score":
+                        important_score,
                 }
             )
 
 
-        # ----------------------------------------------------
-        # PREFER SELECTED LANGUAGE
-        # ----------------------------------------------------
+        # ====================================================
+        # 3. SORT BEST RESULT
+        # ====================================================
 
-        language_candidates = [
-
-            item
-
-            for item in candidates
-
-            if item["metadata"].get(
-                "language"
-            ) == language
-
-        ]
-
-
-        if language_candidates:
-
-            candidates = language_candidates
-
-        else:
-
-            english_candidates = [
-
-                item
-
-                for item in candidates
-
-                if item["metadata"].get(
-                    "language"
-                ) == "en"
-
-            ]
-
-
-            if english_candidates:
-
-                candidates = english_candidates
+        candidates.sort(
+            key=lambda item: item["score"],
+            reverse=True
+        )
 
 
         if not candidates:
@@ -1072,28 +1187,71 @@ def search_knowledge(
             return None
 
 
-        # ----------------------------------------------------
-        # BEST MATCH
-        # ----------------------------------------------------
-
-        candidates.sort(
-            key=lambda item: item["distance"]
-        )
-
-
         best = candidates[0]
 
 
+        # ====================================================
+        # 4. SAFETY CHECK
+        # ====================================================
+
+        best_metadata = best["metadata"]
+
+
+        best_question = best_metadata.get(
+            "question",
+            ""
+        ).lower()
+
+
+        best_answer = best_metadata.get(
+            "answer",
+            ""
+        ).lower()
+
+
+        question_words = set(
+            question_clean.split()
+        )
+
+
+        kb_words = set(
+            (
+                best_question
+                + " "
+                + best_answer
+            ).split()
+        )
+
+
+        common_words = (
+            question_words
+            & kb_words
+        )
+
+
+        semantic_score = best[
+            "semantic_score"
+        ]
+
+
         # ----------------------------------------------------
-        # RELEVANCE THRESHOLD
+        # Reject very poor matches
         # ----------------------------------------------------
 
-        if best["distance"] > 0.75:
+        if (
+
+            semantic_score < 0.25
+
+            and len(common_words) == 0
+
+            and best["important_score"] == 0
+
+        ):
 
             return None
 
 
-        return best["metadata"]
+        return best_metadata
 
 
     except Exception:
@@ -1168,6 +1326,7 @@ def feedback_buttons(
 ):
 
     if not question:
+
         return
 
 
@@ -1266,10 +1425,6 @@ with tab_chat:
     st.divider()
 
 
-    # --------------------------------------------------------
-    # CHAT HISTORY
-    # --------------------------------------------------------
-
     for index, message in enumerate(
         st.session_state.messages
     ):
@@ -1321,10 +1476,6 @@ with tab_chat:
                     )
 
 
-    # --------------------------------------------------------
-    # USER INPUT
-    # --------------------------------------------------------
-
     prompt = st.chat_input(
         T["placeholder"]
     )
@@ -1348,9 +1499,9 @@ with tab_chat:
             st.markdown(prompt)
 
 
-        # ----------------------------------------------------
+        # ====================================================
         # GUARDRAIL CHECK
-        # ----------------------------------------------------
+        # ====================================================
 
         allowed, guardrail_message = (
             check_guardrails(prompt)
@@ -1364,9 +1515,9 @@ with tab_chat:
 
         else:
 
-            # ------------------------------------------------
-            # RAG SEARCH
-            # ------------------------------------------------
+            # =================================================
+            # IMPROVED RAG SEARCH
+            # =================================================
 
             result = search_knowledge(
                 prompt,
@@ -1378,10 +1529,6 @@ with tab_chat:
 
                 answer = result["answer"]
 
-
-                # ------------------------------------------------
-                # SOURCE LABEL
-                # ------------------------------------------------
 
                 if result["type"] == "hospital":
 
@@ -1411,9 +1558,9 @@ with tab_chat:
                 response = T["unknown"]
 
 
-        # ----------------------------------------------------
-        # SAVE ASSISTANT RESPONSE
-        # ----------------------------------------------------
+        # ====================================================
+        # SAVE RESPONSE
+        # ====================================================
 
         st.session_state.messages.append(
             {
