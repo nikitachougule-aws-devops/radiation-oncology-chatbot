@@ -82,18 +82,20 @@ st.markdown(
         background: #f5f9fd;
         border-left: 4px solid #2f80bd;
         border-radius: 8px;
-        padding: 0.8rem 1rem;
-        margin-top: 1rem;
-        font-size: 0.88rem;
+        padding: 12px 16px;
+        margin-top: 12px;
+        margin-bottom: 8px;
     }
 
     .source-title {
         font-weight: 700;
         color: #0b3d66;
+        margin-bottom: 6px;
     }
 
     .source-text {
         color: #526579;
+        margin-bottom: 4px;
     }
 
     .glass-card {
@@ -225,7 +227,6 @@ UI_STRINGS = {
 
         "category":
             "Category",
-
     },
 
 
@@ -289,7 +290,6 @@ UI_STRINGS = {
 
         "category":
             "श्रेणी",
-
     },
 
 
@@ -353,7 +353,6 @@ UI_STRINGS = {
 
         "category":
             "श्रेणी",
-
     },
 }
 
@@ -379,7 +378,6 @@ if "messages" not in st.session_state:
 
 
 if "feedback_given" not in st.session_state:
-
     st.session_state.feedback_given = {}
 
 
@@ -396,9 +394,7 @@ T = UI_STRINGS[
 def load_hospital_info():
 
     if not HOSPITAL_FILE.exists():
-
         return {}
-
 
     try:
 
@@ -408,16 +404,12 @@ def load_hospital_info():
 
         info = {}
 
-
         for raw_line in text.splitlines():
 
             line = raw_line.strip()
 
-
             if not line:
-
                 continue
-
 
             if ":" in line:
 
@@ -427,20 +419,14 @@ def load_hospital_info():
                 )
 
                 key = key.strip()
-
                 value = value.strip()
 
-
                 if key and value:
-
                     info[key] = value
-
 
         return info
 
-
     except Exception:
-
         return {}
 
 
@@ -455,21 +441,17 @@ HOSPITAL_INFO = load_hospital_info()
 def load_faq_data():
 
     if not FAQ_FILE.exists():
-
         return {}
-
 
     text = FAQ_FILE.read_text(
         encoding="utf-8"
     )
-
 
     try:
 
         tree = ast.parse(text)
 
         data = {}
-
 
         for node in tree.body:
 
@@ -487,7 +469,6 @@ def load_faq_data():
 
                         name = target.id
 
-
                         if name in [
                             "FAQS_BEFORE",
                             "FAQS_DURING",
@@ -500,12 +481,9 @@ def load_faq_data():
                                 )
                             )
 
-
         return data
 
-
     except Exception:
-
         return {}
 
 
@@ -520,24 +498,16 @@ def get_total_faqs():
 
     total = 0
 
-
     for items in FAQ_DATA.values():
-
         total += len(items)
-
 
     return total
 
 
 TOTAL_FAQS = get_total_faqs()
 
-HOSPITAL_KB_LOADED = (
-    len(HOSPITAL_INFO) > 0
-)
-
-FAQ_KB_LOADED = (
-    TOTAL_FAQS > 0
-)
+HOSPITAL_KB_LOADED = len(HOSPITAL_INFO) > 0
+FAQ_KB_LOADED = TOTAL_FAQS > 0
 
 
 # ============================================================
@@ -611,26 +581,20 @@ with st.sidebar:
 
 
     if HOSPITAL_KB_LOADED:
-
         st.success(
             "✅ Hospital information loaded"
         )
-
     else:
-
         st.error(
             "❌ Hospital information not loaded"
         )
 
 
     if FAQ_KB_LOADED:
-
         st.success(
             f"✅ Approved FAQs loaded: {TOTAL_FAQS}"
         )
-
     else:
-
         st.error(
             "❌ FAQ knowledge base not loaded"
         )
@@ -752,9 +716,7 @@ st.markdown(
 def create_rag_documents():
 
     documents = []
-
     ids = []
-
     metadatas = []
 
 
@@ -794,7 +756,6 @@ def create_rag_documents():
             ]:
 
                 if language not in item:
-
                     continue
 
 
@@ -894,9 +855,7 @@ def create_rag_documents():
 
         value = HOSPITAL_INFO.get(key)
 
-
         if not value:
-
             continue
 
 
@@ -1084,10 +1043,6 @@ def detect_question_type(question):
     )
 
 
-    # --------------------------------------------------------
-    # Hospital information
-    # --------------------------------------------------------
-
     if any(
         phrase in text
         for phrase in [
@@ -1182,10 +1137,6 @@ def detect_question_type(question):
         return "hospital_name"
 
 
-    # --------------------------------------------------------
-    # Medical questions
-    # --------------------------------------------------------
-
     if any(
         word in text
         for word in [
@@ -1241,10 +1192,6 @@ def detect_question_type(question):
 
         return "medical"
 
-
-    # --------------------------------------------------------
-    # Unrelated
-    # --------------------------------------------------------
 
     if any(
         word in text
@@ -1306,48 +1253,26 @@ def detect_medical_safety_level(question):
     )
 
 
-    # ========================================================
-    # EMERGENCY
-    # ========================================================
-
     urgent_patterns = [
 
         "difficulty breathing",
-
         "cannot breathe",
-
         "can not breathe",
-
         "trouble breathing",
-
         "chest pain",
-
         "severe chest pain",
-
         "unconscious",
-
         "passed out",
-
         "fainted",
-
         "heavy bleeding",
-
         "severe bleeding",
-
         "vomiting blood",
-
         "blood vomiting",
-
         "severe allergic reaction",
-
         "swelling of face",
-
         "swelling of throat",
-
         "seizure",
-
         "convulsion",
-
         "stroke symptoms",
     ]
 
@@ -1355,106 +1280,57 @@ def detect_medical_safety_level(question):
     for pattern in urgent_patterns:
 
         if pattern in text:
-
             return "urgent"
 
-
-    # ========================================================
-    # DIAGNOSIS
-    # ========================================================
 
     diagnosis_patterns = [
 
         "diagnose me",
-
         "can you diagnose",
-
         "can you diagnose my",
-
         "could you diagnose",
-
         "could you diagnose my",
-
         "please diagnose",
-
         "please diagnose my",
-
         "diagnosis",
-
         "my diagnosis",
-
         "tell me my diagnosis",
-
         "what is my diagnosis",
-
         "what is my cancer",
-
         "what cancer do i have",
-
         "do i have cancer",
-
         "could i have cancer",
-
         "can i have cancer",
-
         "is this cancer",
-
         "am i having cancer",
-
         "do my symptoms mean cancer",
-
         "do my symptoms mean i have cancer",
-
         "can you tell if i have cancer",
-
         "can you tell me if i have cancer",
-
         "can you tell from my symptoms",
-
         "what disease do i have",
-
         "what illness do i have",
-
         "what is wrong with me",
-
         "interpret my scan",
-
         "interpret my ct",
-
         "interpret my mri",
-
         "interpret my pet scan",
-
         "read my scan",
-
         "read my mri",
-
         "read my ct",
-
         "read my pet scan",
 
-        # Hindi
         "मेरा निदान करो",
-
         "मुझे कौन सी बीमारी है",
-
         "मुझे कौन सा कैंसर है",
-
         "क्या मुझे कैंसर है",
-
         "मेरा कैंसर क्या है",
-
         "मेरा निदान क्या है",
 
-        # Marathi
         "माझे निदान करा",
-
         "मला कोणता आजार आहे",
-
         "मला कोणता कर्करोग आहे",
-
         "मला कॅन्सर आहे का",
-
         "माझा निदान काय आहे",
     ]
 
@@ -1462,72 +1338,40 @@ def detect_medical_safety_level(question):
     for pattern in diagnosis_patterns:
 
         if pattern in text:
-
             return "personal_medical"
 
-
-    # ========================================================
-    # MEDICINE
-    # ========================================================
 
     medicine_patterns = [
 
         "prescribe medicine",
-
         "prescribe medication",
-
         "give me medicine",
-
         "what medicine should i take",
-
         "what medication should i take",
-
         "what tablet should i take",
-
         "what dose should i take",
-
         "what dosage should i take",
-
         "how much medicine should i take",
-
         "should i stop my medicine",
-
         "should i stop my medication",
-
         "stop my medicine",
-
         "stop my medication",
-
         "change my medicine",
-
         "change my medication",
-
         "increase my medicine",
-
         "decrease my medicine",
-
         "increase my medication",
-
         "decrease my medication",
-
         "double my dose",
-
         "skip my dose",
 
-        # Hindi
         "मेरी दवा बदलो",
-
         "मेरी दवा बंद कर दूं",
-
         "दवा की खुराक",
-
         "मुझे कौन सी दवा लेनी चाहिए",
 
-        # Marathi
         "माझे औषध बदला",
-
         "औषध बंद करू का",
-
         "औषधाचा डोस",
     ]
 
@@ -1535,66 +1379,37 @@ def detect_medical_safety_level(question):
     for pattern in medicine_patterns:
 
         if pattern in text:
-
             return "personal_medical"
 
-
-    # ========================================================
-    # TREATMENT PLAN CHANGE
-    # ========================================================
 
     treatment_change_patterns = [
 
         "change my treatment",
-
         "change my treatment plan",
-
         "should i change my treatment",
-
         "change my radiation",
-
         "change my radiation treatment",
-
         "stop radiation",
-
         "stop my radiation",
-
         "skip radiation",
-
         "skip my radiation",
-
         "delay my radiation",
-
         "increase radiation",
-
         "decrease radiation",
-
         "change radiation dose",
-
         "change my radiation dose",
-
         "should i continue radiation",
-
         "should i stop treatment",
-
         "should i continue treatment",
-
         "can i stop treatment",
-
         "can i skip treatment",
 
-        # Hindi
         "मेरा इलाज बदलो",
-
         "रेडिएशन बंद कर दूं",
-
         "इलाज बंद कर दूं",
 
-        # Marathi
         "माझा उपचार बदला",
-
         "रेडिएशन बंद करू का",
-
         "उपचार बंद करू का",
     ]
 
@@ -1602,7 +1417,6 @@ def detect_medical_safety_level(question):
     for pattern in treatment_change_patterns:
 
         if pattern in text:
-
             return "personal_medical"
 
 
@@ -1616,63 +1430,36 @@ def detect_medical_safety_level(question):
 PROMPT_INJECTION_PATTERNS = [
 
     "ignore previous instructions",
-
     "ignore all instructions",
-
     "ignore your instructions",
-
     "ignore the instructions",
-
     "forget your instructions",
-
     "forget your rules",
-
     "show system prompt",
-
     "show your system prompt",
-
     "reveal system prompt",
-
     "reveal your prompt",
-
     "show developer message",
-
     "reveal developer message",
-
     "show hidden instructions",
-
     "reveal hidden instructions",
-
     "jailbreak",
-
     "bypass your rules",
-
     "bypass safety",
-
     "disable safety",
-
     "remove safety",
-
     "act as an unrestricted ai",
-
     "act as dan",
-
     "do anything now",
 
     "निर्देशों को अनदेखा",
-
     "पिछले निर्देशों को अनदेखा",
-
     "सिस्टम प्रॉम्प्ट दिखाओ",
-
     "अपने निर्देश दिखाओ",
 
     "सूचनांकडे दुर्लक्ष",
-
     "मागील सूचना दुर्लक्षित",
-
     "सिस्टम प्रॉम्प्ट दाखवा",
-
     "तुमच्या सूचना दाखवा",
 ]
 
@@ -1686,10 +1473,6 @@ def check_guardrails(question):
     text = question.lower().strip()
 
 
-    # --------------------------------------------------------
-    # Prompt injection
-    # --------------------------------------------------------
-
     for pattern in PROMPT_INJECTION_PATTERNS:
 
         if pattern in text:
@@ -1700,10 +1483,6 @@ def check_guardrails(question):
                 T["injection"]
             )
 
-
-    # --------------------------------------------------------
-    # Medical safety
-    # --------------------------------------------------------
 
     safety_level = (
         detect_medical_safety_level(
@@ -1755,12 +1534,7 @@ def search_knowledge(
         )
 
 
-        # ----------------------------------------------------
-        # Reject unrelated before RAG
-        # ----------------------------------------------------
-
         if question_type == "unrelated":
-
             return None
 
 
@@ -1787,7 +1561,6 @@ def search_knowledge(
         if not results.get(
             "documents"
         ):
-
             return None
 
 
@@ -1864,19 +1637,11 @@ def search_knowledge(
             )
 
 
-            # ------------------------------------------------
-            # Semantic score
-            # ------------------------------------------------
-
             semantic_score = max(
                 0,
                 1 - distance
             )
 
-
-            # ------------------------------------------------
-            # Keyword score
-            # ------------------------------------------------
 
             common_words = (
                 question_words
@@ -1901,10 +1666,6 @@ def search_knowledge(
                 question_common_words
             )
 
-
-            # ------------------------------------------------
-            # Question type bonus
-            # ------------------------------------------------
 
             type_bonus = 0
 
@@ -1987,13 +1748,8 @@ def search_knowledge(
             elif question_type == "medical":
 
                 if kb_type == "faq":
-
                     type_bonus = 5
 
-
-            # ------------------------------------------------
-            # Language bonus
-            # ------------------------------------------------
 
             language_bonus = 0
 
@@ -2007,10 +1763,6 @@ def search_knowledge(
 
                 language_bonus = 2
 
-
-            # ------------------------------------------------
-            # Final score
-            # ------------------------------------------------
 
             final_score = (
 
@@ -2058,7 +1810,6 @@ def search_knowledge(
 
 
         if not candidates:
-
             return None
 
 
@@ -2090,9 +1841,9 @@ def search_knowledge(
         ]
 
 
-        # ====================================================
-        # STRICT HOSPITAL INFORMATION CHECK
-        # ====================================================
+        # ----------------------------------------------------
+        # Hospital information protection
+        # ----------------------------------------------------
 
         if (
             best_metadata.get(
@@ -2110,7 +1861,6 @@ def search_knowledge(
             ]:
 
                 if best_type_bonus < 10:
-
                     return None
 
             else:
@@ -2119,13 +1869,12 @@ def search_knowledge(
                     best_question_keywords == 0
                     and best_type_bonus == 0
                 ):
-
                     return None
 
 
-        # ====================================================
-        # FAQ CHECK
-        # ====================================================
+        # ----------------------------------------------------
+        # FAQ protection
+        # ----------------------------------------------------
 
         if (
             best_metadata.get(
@@ -2142,9 +1891,9 @@ def search_knowledge(
                 return None
 
 
-        # ====================================================
-        # VERY WEAK RESULT CHECK
-        # ====================================================
+        # ----------------------------------------------------
+        # Weak result protection
+        # ----------------------------------------------------
 
         if (
             best_semantic < 0.25
@@ -2156,11 +1905,6 @@ def search_knowledge(
             return None
 
 
-        # ====================================================
-        # STEP 15:
-        # RETURN SOURCE METADATA
-        # ====================================================
-
         return best_metadata
 
 
@@ -2170,20 +1914,13 @@ def search_knowledge(
 
 
 # ============================================================
-# SOURCE DISPLAY
+# SOURCE DISPLAY — FIXED
 # ============================================================
 
 def display_source(source):
 
     if not source:
-
         return
-
-
-    source_type = source.get(
-        "type",
-        "faq"
-    )
 
 
     category = source.get(
@@ -2198,17 +1935,9 @@ def display_source(source):
     )
 
 
-    if source_type == "hospital":
-
-        source_label = (
-            "Approved Hospital Knowledge Base"
-        )
-
-    else:
-
-        source_label = (
-            "Approved Hospital Knowledge Base"
-        )
+    source_label = (
+        "Approved Hospital Knowledge Base"
+    )
 
 
     st.markdown(
@@ -2216,7 +1945,7 @@ def display_source(source):
         <div class="source-box">
 
             <div class="source-title">
-                {T["source"]}
+                📚 Source
             </div>
 
             <div class="source-text">
@@ -2224,13 +1953,11 @@ def display_source(source):
             </div>
 
             <div class="source-text">
-                <b>{T["category"]}:</b>
-                {category}
+                <b>Category:</b> {category}
             </div>
 
             <div class="source-text">
-                <b>{T["matched_question"]}:</b>
-                {matched_question}
+                <b>Matched FAQ:</b> {matched_question}
             </div>
 
         </div>
@@ -2299,7 +2026,6 @@ def save_feedback(
 
 
     except Exception:
-
         pass
 
 
@@ -2310,7 +2036,6 @@ def feedback_buttons(
 ):
 
     if not question:
-
         return
 
 
@@ -2432,10 +2157,6 @@ with tab_chat:
             )
 
 
-            # ------------------------------------------------
-            # Display source if available
-            # ------------------------------------------------
-
             if (
                 message["role"]
                 == "assistant"
@@ -2448,10 +2169,6 @@ with tab_chat:
                     message["source"]
                 )
 
-
-            # ------------------------------------------------
-            # Feedback
-            # ------------------------------------------------
 
             if (
                 message["role"]
@@ -2493,10 +2210,6 @@ with tab_chat:
 
     if prompt:
 
-        # ====================================================
-        # SAVE USER MESSAGE
-        # ====================================================
-
         st.session_state.messages.append(
             {
                 "role": "user",
@@ -2516,9 +2229,7 @@ with tab_chat:
 
 
         # ====================================================
-        # IMPORTANT:
-        # SAFETY CHECK FIRST
-        # RAG SECOND
+        # SAFETY FIRST
         # ====================================================
 
         allowed, safety_type, safety_message = (
@@ -2531,20 +2242,12 @@ with tab_chat:
         source = None
 
 
-        # ====================================================
-        # BLOCKED QUESTION
-        # ====================================================
-
         if not allowed:
 
             response = safety_message
 
 
         else:
-
-            # =================================================
-            # DETECT QUESTION TYPE
-            # =================================================
 
             question_type = (
                 detect_question_type(
@@ -2553,20 +2256,12 @@ with tab_chat:
             )
 
 
-            # =================================================
-            # UNRELATED
-            # =================================================
-
             if question_type == "unrelated":
 
                 response = T["unrelated"]
 
 
             else:
-
-                # =============================================
-                # SEARCH APPROVED KNOWLEDGE BASE
-                # =============================================
 
                 result = search_knowledge(
                     prompt,
@@ -2584,10 +2279,6 @@ with tab_chat:
                     )
 
 
-                    # =========================================
-                    # HOSPITAL INFORMATION
-                    # =========================================
-
                     if (
                         result.get(
                             "type"
@@ -2604,10 +2295,6 @@ with tab_chat:
                             f"treating doctor's advice.*"
                         )
 
-
-                    # =========================================
-                    # FAQ
-                    # =========================================
 
                     else:
 
@@ -2627,15 +2314,13 @@ with tab_chat:
 
 
         # ====================================================
-        # SAVE ASSISTANT MESSAGE + SOURCE
+        # SAVE RESPONSE
         # ====================================================
 
         st.session_state.messages.append(
             {
                 "role": "assistant",
-
                 "content": response,
-
                 "source": source,
             }
         )
@@ -2894,15 +2579,10 @@ with tab_video:
     video_extensions = [
 
         "*.mp4",
-
         "*.mov",
-
         "*.avi",
-
         "*.mkv",
-
         "*.webm",
-
         "*.m4v",
     ]
 
