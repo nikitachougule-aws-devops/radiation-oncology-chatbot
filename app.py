@@ -174,17 +174,11 @@ UI_STRINGS = {
         "no_faq":
             "No matching questions found.",
 
-        "feedback":
-            "Thanks for your feedback!",
-
         "treatment":
             "Treatment Information",
 
         "video":
             "Video Guide",
-
-        "faq":
-            "FAQs",
     },
 
 
@@ -219,17 +213,11 @@ UI_STRINGS = {
         "no_faq":
             "कोई मिलती-जुलती जानकारी नहीं मिली।",
 
-        "feedback":
-            "आपकी प्रतिक्रिया के लिए धन्यवाद!",
-
         "treatment":
             "उपचार जानकारी",
 
         "video":
             "वीडियो गाइड",
-
-        "faq":
-            "सामान्य प्रश्न",
     },
 
 
@@ -264,17 +252,11 @@ UI_STRINGS = {
         "no_faq":
             "जुळणारी माहिती सापडली नाही.",
 
-        "feedback":
-            "तुमच्या अभिप्रायाबद्दल धन्यवाद!",
-
         "treatment":
             "उपचार माहिती",
 
         "video":
             "व्हिडिओ मार्गदर्शक",
-
-        "faq":
-            "वारंवार विचारले जाणारे प्रश्न",
     },
 }
 
@@ -316,6 +298,7 @@ def load_hospital_info():
         return {}
 
     try:
+
         text = HOSPITAL_FILE.read_text(
             encoding="utf-8"
         )
@@ -342,74 +325,96 @@ def load_hospital_info():
         return info
 
     except Exception:
+
         return {}
 
-    if not HOSPITAL_FILE.exists():
+
+HOSPITAL_INFO = load_hospital_info()
+
+
+# ============================================================
+# LOAD FAQ DATA
+# ============================================================
+
+@st.cache_data
+def load_faq_data():
+
+    if not FAQ_FILE.exists():
         return {}
+
+    text = FAQ_FILE.read_text(
+        encoding="utf-8"
+    )
 
     try:
 
-        text = HOSPITAL_FILE.read_text(
-            encoding="utf-8"
-        )
+        tree = ast.parse(text)
+
+        data = {}
+
+        for node in tree.body:
+
+            if isinstance(
+                node,
+                ast.Assign
+            ):
+
+                for target in node.targets:
+
+                    if isinstance(
+                        target,
+                        ast.Name
+                    ):
+
+                        name = target.id
+
+                        if name in [
+                            "FAQS_BEFORE",
+                            "FAQS_DURING",
+                            "FAQS_AFTER",
+                        ]:
+
+                            data[name] = (
+                                ast.literal_eval(
+                                    node.value
+                                )
+                            )
+
+        return data
 
     except Exception:
 
         return {}
 
 
-    info = {}
+FAQ_DATA = load_faq_data()
 
 
-    current_section = ""
+# ============================================================
+# KNOWLEDGE BASE COUNTS
+# ============================================================
+
+def get_total_faqs():
+
+    total = 0
+
+    for items in FAQ_DATA.values():
+        total += len(items)
+
+    return total
 
 
-    for raw_line in text.splitlines():
-
-        line = raw_line.strip()
+TOTAL_FAQS = get_total_faqs()
 
 
-        if not line:
-            continue
+HOSPITAL_KB_LOADED = (
+    len(HOSPITAL_INFO) > 0
+)
 
 
-        # Ignore headings
-        if (
-            line.isupper()
-            and ":" not in line
-        ):
-            current_section = line
-            continue
-
-
-        if ":" in line:
-
-            key, value = line.split(
-                ":",
-                1
-            )
-
-
-            key = key.strip()
-
-            value = value.strip()
-
-
-            if key and value:
-
-                info[key] = value
-
-
-    return info
-
-
-HOSPITAL_INFO = load_hospital_info()
-
-if not HOSPITAL_INFO:
-    st.error(
-        "Hospital knowledge base could not be loaded. "
-        "Please check hospital_info.txt."
-    )
+FAQ_KB_LOADED = (
+    TOTAL_FAQS > 0
+)
 
 
 # ============================================================
@@ -420,7 +425,9 @@ with st.sidebar:
 
     st.markdown("### 🎗️ Jupiter Hospital")
 
-    st.caption("Radiation Oncology Department")
+    st.caption(
+        "Radiation Oncology Department"
+    )
 
 
     doctor_name = HOSPITAL_INFO.get(
@@ -473,6 +480,56 @@ with st.sidebar:
     st.divider()
 
 
+    # ========================================================
+    # KNOWLEDGE BASE STATUS
+    # ========================================================
+
+    st.markdown("### 📚 Knowledge Base")
+
+
+    if HOSPITAL_KB_LOADED:
+
+        st.success(
+            "✅ Hospital information loaded"
+        )
+
+    else:
+
+        st.error(
+            "❌ Hospital information not loaded"
+        )
+
+
+    if FAQ_KB_LOADED:
+
+        st.success(
+            f"✅ Approved FAQs loaded: {TOTAL_FAQS}"
+        )
+
+    else:
+
+        st.error(
+            "❌ FAQ knowledge base not loaded"
+        )
+
+
+    st.caption(
+        "🔒 Medical safety guardrails: Enabled"
+    )
+
+
+    st.caption(
+        "🛡️ Prompt-injection protection: Enabled"
+    )
+
+
+    st.divider()
+
+
+    # ========================================================
+    # LANGUAGE
+    # ========================================================
+
     selected_language = st.selectbox(
         "🌐 Language",
         options=["en", "hi", "mr"],
@@ -489,51 +546,13 @@ with st.sidebar:
 
         st.rerun()
 
-    st.markdown("### 📚 Knowledge Base")
-
-    total_faqs = sum(
-        len(items)
-        for items in FAQ_DATA.values()
-    )
-
-    st.success("✅ Approved knowledge base loaded")
-
-    st.caption(
-        f"📋 Approved FAQs: {total_faqs}"
-    )
-
-    st.caption(
-        "🏥 Hospital information: Loaded"
-    )
-
-    st.caption(
-        "🔒 Medical safety guardrails: Enabled"
-    )
-
-    st.divider()    st.markdown("### 📚 Knowledge Base")
-
-    total_faqs = sum(
-        len(items)
-        for items in FAQ_DATA.values()
-    )
-
-    st.success("✅ Approved knowledge base loaded")
-
-    st.caption(
-        f"📋 Approved FAQs: {total_faqs}"
-    )
-
-    st.caption(
-        "🏥 Hospital information: Loaded"
-    )
-
-    st.caption(
-        "🔒 Medical safety guardrails: Enabled"
-    )
-
 
     st.divider()
 
+
+    # ========================================================
+    # CLEAR CHAT
+    # ========================================================
 
     if st.button(
         "🗑️ Clear Chat",
@@ -556,6 +575,10 @@ with st.sidebar:
 
     st.divider()
 
+
+    # ========================================================
+    # DEVELOPER INFORMATION
+    # ========================================================
 
     st.markdown(
         """
@@ -592,68 +615,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
-# ============================================================
-# LOAD FAQ DATA
-# ============================================================
-
-@st.cache_data
-def load_faq_data():
-
-    if not FAQ_FILE.exists():
-        return {}
-
-    text = FAQ_FILE.read_text(
-        encoding="utf-8"
-    )
-
-    try:
-
-        tree = ast.parse(text)
-
-        data = {}
-
-
-        for node in tree.body:
-
-            if isinstance(
-                node,
-                ast.Assign
-            ):
-
-                for target in node.targets:
-
-                    if isinstance(
-                        target,
-                        ast.Name
-                    ):
-
-                        name = target.id
-
-
-                        if name in [
-                            "FAQS_BEFORE",
-                            "FAQS_DURING",
-                            "FAQS_AFTER",
-                        ]:
-
-                            data[name] = (
-                                ast.literal_eval(
-                                    node.value
-                                )
-                            )
-
-
-        return data
-
-
-    except Exception:
-
-        return {}
-
-
-FAQ_DATA = load_faq_data()
 
 
 # ============================================================
@@ -743,7 +704,7 @@ def create_rag_documents():
 
 
     # --------------------------------------------------------
-    # HOSPITAL INFORMATION FROM hospital_info.txt
+    # HOSPITAL INFORMATION
     # --------------------------------------------------------
 
     hospital_questions = {
@@ -972,7 +933,7 @@ def check_guardrails(question):
 
 
     # --------------------------------------------------------
-    # PROMPT INJECTION PROTECTION
+    # PROMPT INJECTION
     # --------------------------------------------------------
 
     for pattern in PROMPT_INJECTION_PATTERNS:
@@ -986,7 +947,7 @@ def check_guardrails(question):
 
 
     # --------------------------------------------------------
-    # PERSONAL MEDICAL DECISION PROTECTION
+    # MEDICAL DECISION
     # --------------------------------------------------------
 
     for pattern in MEDICAL_DECISION_PATTERNS:
@@ -1003,7 +964,7 @@ def check_guardrails(question):
 
 
 # ============================================================
-# SEARCH RAG
+# SEARCH KNOWLEDGE BASE
 # ============================================================
 
 def search_knowledge(
@@ -1066,7 +1027,7 @@ def search_knowledge(
 
 
         # ----------------------------------------------------
-        # FIRST: Prefer the user's selected language
+        # PREFER SELECTED LANGUAGE
         # ----------------------------------------------------
 
         language_candidates = [
@@ -1081,11 +1042,6 @@ def search_knowledge(
 
         ]
 
-
-        # ----------------------------------------------------
-        # HOSPITAL INFORMATION EXISTS IN ENGLISH
-        # ONLY, SO ALLOW ENGLISH FALLBACK
-        # ----------------------------------------------------
 
         if language_candidates:
 
@@ -1117,8 +1073,7 @@ def search_knowledge(
 
 
         # ----------------------------------------------------
-        # SORT BY RELEVANCE
-        # Lower distance = better match
+        # BEST MATCH
         # ----------------------------------------------------
 
         candidates.sort(
@@ -1130,7 +1085,7 @@ def search_knowledge(
 
 
         # ----------------------------------------------------
-        # SAFETY THRESHOLD
+        # RELEVANCE THRESHOLD
         # ----------------------------------------------------
 
         if best["distance"] > 0.75:
@@ -1312,7 +1267,7 @@ with tab_chat:
 
 
     # --------------------------------------------------------
-    # SHOW CHAT HISTORY
+    # CHAT HISTORY
     # --------------------------------------------------------
 
     for index, message in enumerate(
@@ -1367,7 +1322,7 @@ with tab_chat:
 
 
     # --------------------------------------------------------
-    # USER QUESTION
+    # USER INPUT
     # --------------------------------------------------------
 
     prompt = st.chat_input(
@@ -1394,7 +1349,7 @@ with tab_chat:
 
 
         # ----------------------------------------------------
-        # GUARDRAIL
+        # GUARDRAIL CHECK
         # ----------------------------------------------------
 
         allowed, guardrail_message = (
@@ -1425,33 +1380,30 @@ with tab_chat:
 
 
                 # ------------------------------------------------
-                # SOURCE TRANSPARENCY
+                # SOURCE LABEL
                 # ------------------------------------------------
 
                 if result["type"] == "hospital":
 
                     response = (
-                        f"**Answer:**\n\n"
+                        f"**Hospital Information**\n\n"
                         f"{answer}\n\n"
-                        f"📚 **Source:** Approved Hospital Information"
+                        f"*This answer comes from the approved "
+                        f"hospital knowledge base. For personal "
+                        f"medical decisions, please follow your "
+                        f"treating doctor's advice.*"
                     )
 
                 else:
 
                     response = (
-                        f"**Answer:**\n\n"
+                        f"**Answer**\n\n"
                         f"{answer}\n\n"
-                        f"📚 **Source:** Approved Radiation Oncology FAQ"
+                        f"*This answer comes from the approved "
+                        f"hospital knowledge base. For personal "
+                        f"medical decisions, please follow your "
+                        f"treating doctor's advice.*"
                     )
-
-
-                response += (
-                    "\n\n"
-                    "_This answer comes from the "
-                    "approved hospital knowledge base. "
-                    "For personal medical decisions, "
-                    "please follow your treating doctor's advice._"
-                )
 
 
             else:
@@ -1460,7 +1412,7 @@ with tab_chat:
 
 
         # ----------------------------------------------------
-        # SAVE ASSISTANT MESSAGE
+        # SAVE ASSISTANT RESPONSE
         # ----------------------------------------------------
 
         st.session_state.messages.append(
