@@ -622,10 +622,6 @@ def create_rag_documents():
 
     metadatas = []
 
-    # --------------------------------------------------------
-    # FAQ DOCUMENTS
-    # --------------------------------------------------------
-
     stage_names = {
 
         "FAQS_BEFORE":
@@ -637,6 +633,10 @@ def create_rag_documents():
         "FAQS_AFTER":
             "After Treatment",
     }
+
+    # --------------------------------------------------------
+    # FAQ DOCUMENTS
+    # --------------------------------------------------------
 
     for stage_key, questions in FAQ_DATA.items():
 
@@ -1049,7 +1049,7 @@ def detect_question_type(question):
 
 
 # ============================================================
-# MEDICAL SAFETY DETECTION
+# STEP 14 — MEDICAL SAFETY DETECTION
 # ============================================================
 
 def detect_medical_safety_level(question):
@@ -1073,8 +1073,8 @@ def detect_medical_safety_level(question):
         "fainted",
         "heavy bleeding",
         "severe bleeding",
-        "blood vomiting",
         "vomiting blood",
+        "blood vomiting",
         "severe allergic reaction",
         "swelling of face",
         "swelling of throat",
@@ -1097,15 +1097,30 @@ def detect_medical_safety_level(question):
     diagnosis_patterns = [
 
         "diagnose me",
-        "can you diagnose me",
-        "what disease do i have",
-        "what illness do i have",
-        "what cancer do i have",
-        "do i have cancer",
-        "is this cancer",
-        "am i having cancer",
+        "can you diagnose",
+        "can you diagnose my",
+        "could you diagnose",
+        "could you diagnose my",
+        "please diagnose",
+        "please diagnose my",
+        "diagnosis",
+        "my diagnosis",
         "tell me my diagnosis",
         "what is my diagnosis",
+        "what is my cancer",
+        "what cancer do i have",
+        "do i have cancer",
+        "could i have cancer",
+        "can i have cancer",
+        "is this cancer",
+        "am i having cancer",
+        "do my symptoms mean cancer",
+        "do my symptoms mean i have cancer",
+        "can you tell if i have cancer",
+        "can you tell me if i have cancer",
+        "can you tell from my symptoms",
+        "what disease do i have",
+        "what illness do i have",
         "what is wrong with me",
         "interpret my scan",
         "interpret my ct",
@@ -1116,14 +1131,20 @@ def detect_medical_safety_level(question):
         "read my ct",
         "read my pet scan",
 
+        # Hindi
         "मेरा निदान करो",
         "मुझे कौन सी बीमारी है",
         "मुझे कौन सा कैंसर है",
         "क्या मुझे कैंसर है",
+        "मेरा कैंसर क्या है",
+        "मेरा निदान क्या है",
 
+        # Marathi
         "माझे निदान करा",
         "मला कोणता आजार आहे",
         "मला कोणता कर्करोग आहे",
+        "मला कॅन्सर आहे का",
+        "माझा निदान काय आहे",
     ]
 
     for pattern in diagnosis_patterns:
@@ -1337,7 +1358,7 @@ def search_knowledge(
         )
 
         # ----------------------------------------------------
-        # Reject unrelated questions before RAG.
+        # Reject unrelated questions BEFORE RAG.
         # ----------------------------------------------------
 
         if question_type == "unrelated":
@@ -1951,7 +1972,8 @@ with tab_chat:
 
 
         # ====================================================
-        # STEP 14 SAFETY CHECK
+        # IMPORTANT:
+        # SAFETY CHECK HAPPENS BEFORE RAG SEARCH
         # ====================================================
 
         allowed, safety_type, safety_message = (
@@ -1983,7 +2005,7 @@ with tab_chat:
             else:
 
                 # =============================================
-                # SEARCH APPROVED KNOWLEDGE BASE
+                # ONLY NOW SEARCH APPROVED KNOWLEDGE BASE
                 # =============================================
 
                 result = search_knowledge(
