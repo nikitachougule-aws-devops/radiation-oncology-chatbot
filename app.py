@@ -489,6 +489,48 @@ with st.sidebar:
 
         st.rerun()
 
+    st.markdown("### 📚 Knowledge Base")
+
+    total_faqs = sum(
+        len(items)
+        for items in FAQ_DATA.values()
+    )
+
+    st.success("✅ Approved knowledge base loaded")
+
+    st.caption(
+        f"📋 Approved FAQs: {total_faqs}"
+    )
+
+    st.caption(
+        "🏥 Hospital information: Loaded"
+    )
+
+    st.caption(
+        "🔒 Medical safety guardrails: Enabled"
+    )
+
+    st.divider()    st.markdown("### 📚 Knowledge Base")
+
+    total_faqs = sum(
+        len(items)
+        for items in FAQ_DATA.values()
+    )
+
+    st.success("✅ Approved knowledge base loaded")
+
+    st.caption(
+        f"📋 Approved FAQs: {total_faqs}"
+    )
+
+    st.caption(
+        "🏥 Hospital information: Loaded"
+    )
+
+    st.caption(
+        "🔒 Medical safety guardrails: Enabled"
+    )
+
 
     st.divider()
 
