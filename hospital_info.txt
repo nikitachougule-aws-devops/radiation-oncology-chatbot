@@ -1,28 +1,14 @@
-JUPITER HOSPITAL — RADIATION ONCOLOGY
-
-Hospital Name:
-Jupiter Hospital
-
-Department:
-Radiation Oncology Department
-
-Radiation Oncologist:
-Dr. Vikas Kothavade
-
-Hospital Location:
-Prathamesh Park, Baner, Pune
-
-OPD Hours:
-9 AM - 5:30 PM
-
-Emergency Contact:
-+91-9890400264
-
+JUPITER HOSPITAL
+Hospital Name: Jupiter Hospital
+Department: Radiation Oncology Department
+Radiation Oncologist: Dr. Vikas Kothavade
+Hospital Location: Prathamesh Park, Baner, Pune
+OPD Hours: 9 AM - 5:30 PM
+Emergency Contact: +91-9890400264
 
 PATIENT INFORMATION
 
-This chatbot provides general patient education information
-from the approved hospital knowledge base.
+This chatbot provides general patient education information from the approved hospital knowledge base.
 
 The chatbot does not diagnose patients.
 
@@ -30,5 +16,4 @@ The chatbot does not prescribe medicines.
 
 The chatbot does not change treatment plans.
 
-For personal medical decisions, patients should follow
-the advice of their treating doctor or healthcare team.
+For personal medical decisions, patients should follow the advice of their treating doctor or healthcare team.
