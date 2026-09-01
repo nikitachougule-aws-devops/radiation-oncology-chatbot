@@ -316,6 +316,38 @@ def load_hospital_info():
         return {}
 
     try:
+        text = HOSPITAL_FILE.read_text(
+            encoding="utf-8"
+        )
+
+        info = {}
+
+        for raw_line in text.splitlines():
+
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if ":" in line:
+
+                key, value = line.split(":", 1)
+
+                key = key.strip()
+                value = value.strip()
+
+                if key and value:
+                    info[key] = value
+
+        return info
+
+    except Exception:
+        return {}
+
+    if not HOSPITAL_FILE.exists():
+        return {}
+
+    try:
 
         text = HOSPITAL_FILE.read_text(
             encoding="utf-8"
@@ -372,6 +404,12 @@ def load_hospital_info():
 
 
 HOSPITAL_INFO = load_hospital_info()
+
+if not HOSPITAL_INFO:
+    st.error(
+        "Hospital knowledge base could not be loaded. "
+        "Please check hospital_info.txt."
+    )
 
 
 # ============================================================
