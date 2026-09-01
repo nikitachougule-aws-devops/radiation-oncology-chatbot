@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime
 import ast
 import csv
+import re
 
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -47,7 +48,6 @@ st.markdown(
             #1a6fb5 60%,
             #2f9bd6 100%
         );
-
         padding: 1.3rem 2rem 2rem 2rem;
         border-radius: 20px;
         margin-bottom: 1.5rem;
@@ -423,63 +423,47 @@ with st.sidebar:
         "Radiation Oncology Department"
     )
 
-
     doctor_name = HOSPITAL_INFO.get(
         "Radiation Oncologist",
         "Radiation Oncology Team"
     )
-
 
     hospital_location = HOSPITAL_INFO.get(
         "Hospital Location",
         "Please contact the hospital"
     )
 
-
     opd_hours = HOSPITAL_INFO.get(
         "OPD Hours",
         "Please contact the hospital"
     )
-
 
     emergency_contact = HOSPITAL_INFO.get(
         "Emergency Contact",
         "Please contact the hospital"
     )
 
-
     st.markdown(
         f"**{doctor_name}**"
     )
 
-
     st.divider()
-
 
     st.markdown(
         f"**📍 Location:** {hospital_location}"
     )
 
-
     st.markdown(
         f"**🕒 OPD Hours:** {opd_hours}"
     )
-
 
     st.markdown(
         f"**☎️ Emergency:** {emergency_contact}"
     )
 
-
     st.divider()
 
-
-    # ========================================================
-    # KNOWLEDGE BASE STATUS
-    # ========================================================
-
     st.markdown("### 📚 Knowledge Base")
-
 
     if HOSPITAL_KB_LOADED:
 
@@ -493,7 +477,6 @@ with st.sidebar:
             "❌ Hospital information not loaded"
         )
 
-
     if FAQ_KB_LOADED:
 
         st.success(
@@ -506,23 +489,15 @@ with st.sidebar:
             "❌ FAQ knowledge base not loaded"
         )
 
-
     st.caption(
         "🔒 Medical safety guardrails: Enabled"
     )
-
 
     st.caption(
         "🛡️ Prompt-injection protection: Enabled"
     )
 
-
     st.divider()
-
-
-    # ========================================================
-    # LANGUAGE
-    # ========================================================
 
     selected_language = st.selectbox(
         "🌐 Language",
@@ -533,20 +508,13 @@ with st.sidebar:
         ),
     )
 
-
     if selected_language != st.session_state.language:
 
         st.session_state.language = selected_language
 
         st.rerun()
 
-
     st.divider()
-
-
-    # ========================================================
-    # CLEAR CHAT
-    # ========================================================
 
     if st.button(
         "🗑️ Clear Chat",
@@ -566,13 +534,7 @@ with st.sidebar:
 
         st.rerun()
 
-
     st.divider()
-
-
-    # ========================================================
-    # DEVELOPER INFORMATION
-    # ========================================================
 
     st.markdown(
         """
@@ -623,7 +585,6 @@ def create_rag_documents():
 
     metadatas = []
 
-
     # --------------------------------------------------------
     # FAQ DOCUMENTS
     # --------------------------------------------------------
@@ -640,14 +601,12 @@ def create_rag_documents():
             "After Treatment",
     }
 
-
     for stage_key, questions in FAQ_DATA.items():
 
         stage_name = stage_names.get(
             stage_key,
             "Radiation Oncology"
         )
-
 
         for index, item in enumerate(
             questions
@@ -662,11 +621,9 @@ def create_rag_documents():
                 if language not in item:
                     continue
 
-
                 question, answer = item[
                     language
                 ]
-
 
                 document = (
                     f"Category: Radiation Oncology\n"
@@ -675,16 +632,13 @@ def create_rag_documents():
                     f"Answer: {answer}"
                 )
 
-
                 documents.append(
                     document
                 )
 
-
                 ids.append(
                     f"{stage_key}_{index}_{language}"
                 )
-
 
                 metadatas.append(
                     {
@@ -695,7 +649,6 @@ def create_rag_documents():
                         "answer": answer,
                     }
                 )
-
 
     # --------------------------------------------------------
     # HOSPITAL INFORMATION
@@ -747,18 +700,14 @@ def create_rag_documents():
             ],
     }
 
-
     hospital_index = 0
-
 
     for key, questions in hospital_questions.items():
 
         value = HOSPITAL_INFO.get(key)
 
-
         if not value:
             continue
-
 
         for question in questions:
 
@@ -768,16 +717,13 @@ def create_rag_documents():
                 f"Answer: {value}"
             )
 
-
             documents.append(
                 document
             )
 
-
             ids.append(
                 f"hospital_{hospital_index}"
             )
-
 
             metadatas.append(
                 {
@@ -789,9 +735,7 @@ def create_rag_documents():
                 }
             )
 
-
             hospital_index += 1
-
 
     return (
         documents,
@@ -812,19 +756,15 @@ def load_rag():
         "paraphrase-multilingual-MiniLM-L12-v2"
     )
 
-
     client = chromadb.Client()
-
 
     collection = client.get_or_create_collection(
         name="jupiter_hospital_knowledge"
     )
 
-
     documents, ids, metadatas = (
         create_rag_documents()
     )
-
 
     if documents:
 
@@ -833,7 +773,6 @@ def load_rag():
             normalize_embeddings=True,
         ).tolist()
 
-
         collection.upsert(
             ids=ids,
             documents=documents,
@@ -841,8 +780,217 @@ def load_rag():
             metadatas=metadatas,
         )
 
-
     return model, collection
+
+
+# ============================================================
+# TEXT NORMALIZATION
+# ============================================================
+
+def normalize_text(text):
+
+    text = text.lower()
+
+    text = re.sub(
+        r"[^a-z0-9\s]",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
+
+
+# ============================================================
+# KEYWORD EXTRACTION
+# ============================================================
+
+def get_meaningful_words(text):
+
+    stop_words = {
+
+        "what",
+        "is",
+        "the",
+        "a",
+        "an",
+        "are",
+        "was",
+        "were",
+        "where",
+        "who",
+        "when",
+        "how",
+        "can",
+        "i",
+        "me",
+        "my",
+        "to",
+        "for",
+        "of",
+        "in",
+        "on",
+        "do",
+        "does",
+        "will",
+        "during",
+        "today",
+        "please",
+        "tell",
+        "about",
+        "and",
+        "or",
+        "this",
+        "that",
+        "there",
+        "your",
+        "you",
+    }
+
+    words = normalize_text(text).split()
+
+    return {
+        word
+        for word in words
+        if len(word) > 2
+        and word not in stop_words
+    }
+
+
+# ============================================================
+# QUESTION TYPE DETECTION
+# ============================================================
+
+def detect_question_type(question):
+
+    text = normalize_text(question)
+
+    # Hospital questions
+
+    if any(
+        phrase in text
+        for phrase in [
+            "who is the radiation oncologist",
+            "who is the doctor",
+            "radiation oncologist",
+            "hospital doctor",
+        ]
+    ):
+
+        return "doctor"
+
+
+    if any(
+        phrase in text
+        for phrase in [
+            "where is the hospital",
+            "hospital location",
+            "where is jupiter hospital",
+            "hospital address",
+            "where is the radiation oncology department",
+        ]
+    ):
+
+        return "location"
+
+
+    if any(
+        phrase in text
+        for phrase in [
+            "opd",
+            "opd hours",
+            "opd timing",
+            "opd timings",
+            "hospital timing",
+            "hospital hours",
+        ]
+    ):
+
+        return "opd"
+
+
+    if any(
+        phrase in text
+        for phrase in [
+            "emergency number",
+            "emergency contact",
+            "contact number",
+            "emergency phone",
+            "hospital emergency",
+        ]
+    ):
+
+        return "emergency"
+
+
+    if any(
+        phrase in text
+        for phrase in [
+            "what hospital",
+            "which hospital",
+            "hospital name",
+        ]
+    ):
+
+        return "hospital_name"
+
+
+    # Radiation / treatment questions
+
+    if any(
+        word in text
+        for word in [
+            "radiation",
+            "radiotherapy",
+            "radiation therapy",
+            "treatment",
+            "side effect",
+            "side effects",
+            "skin",
+            "hair",
+            "fatigue",
+            "pain",
+            "burning",
+            "redness",
+            "itching",
+        ]
+    ):
+
+        return "medical"
+
+
+    # Clearly unrelated common topics
+
+    if any(
+        word in text
+        for word in [
+            "weather",
+            "temperature",
+            "rain",
+            "cricket",
+            "football",
+            "movie",
+            "movies",
+            "music",
+            "stock",
+            "stocks",
+            "bitcoin",
+            "recipe",
+            "restaurant",
+            "politics",
+            "news",
+        ]
+    ):
+
+        return "unrelated"
+
+
+    return "unknown"
 
 
 # ============================================================
@@ -925,7 +1073,6 @@ def check_guardrails(question):
 
     text = question.lower().strip()
 
-
     for pattern in PROMPT_INJECTION_PATTERNS:
 
         if pattern in text:
@@ -935,7 +1082,6 @@ def check_guardrails(question):
                 T["injection"]
             )
 
-
     for pattern in MEDICAL_DECISION_PATTERNS:
 
         if pattern in text:
@@ -944,7 +1090,6 @@ def check_guardrails(question):
                 False,
                 T["medical"]
             )
-
 
     return True, None
 
@@ -960,16 +1105,32 @@ def search_knowledge(
 
     try:
 
+        question_type = detect_question_type(
+            question
+        )
+
+        # ----------------------------------------------------
+        # IMPORTANT:
+        # Reject clearly unrelated questions BEFORE RAG.
+        # This prevents "weather" from matching emergency info.
+        # ----------------------------------------------------
+
+        if question_type == "unrelated":
+
+            return None
+
+
         model, collection = load_rag()
 
-        question_clean = (
-            question.lower().strip()
+
+        question_clean = normalize_text(
+            question
         )
 
 
-        # ====================================================
-        # 1. SEMANTIC SEARCH
-        # ====================================================
+        # ----------------------------------------------------
+        # Semantic search
+        # ----------------------------------------------------
 
         query_embedding = model.encode(
             [question_clean],
@@ -979,7 +1140,7 @@ def search_knowledge(
 
         results = collection.query(
             query_embeddings=query_embedding,
-            n_results=8,
+            n_results=10,
             include=[
                 "documents",
                 "metadatas",
@@ -1000,11 +1161,16 @@ def search_knowledge(
         distances = results["distances"][0]
 
 
+        question_words = get_meaningful_words(
+            question
+        )
+
+
         candidates = []
 
 
         # ====================================================
-        # 2. SCORE EACH RESULT
+        # SCORE RESULTS
         # ====================================================
 
         for index in range(
@@ -1013,40 +1179,57 @@ def search_knowledge(
 
             metadata = metadatas[index]
 
-            document = documents[index]
-
             distance = distances[index]
 
 
-            question_text = metadata.get(
+            kb_question = metadata.get(
                 "question",
                 ""
-            ).lower()
+            )
 
 
-            answer_text = metadata.get(
+            kb_answer = metadata.get(
                 "answer",
                 ""
-            ).lower()
-
-
-            # ------------------------------------------------
-            # KEYWORD MATCH
-            # ------------------------------------------------
-
-            question_words = set(
-                question_clean.split()
             )
 
 
-            kb_words = set(
-                (
-                    question_text
-                    + " "
-                    + answer_text
-                ).split()
+            kb_type = metadata.get(
+                "type",
+                "faq"
             )
 
+
+            kb_question_clean = normalize_text(
+                kb_question
+            )
+
+
+            kb_answer_clean = normalize_text(
+                kb_answer
+            )
+
+
+            kb_words = get_meaningful_words(
+                kb_question
+                + " "
+                + kb_answer
+            )
+
+
+            # ------------------------------------------------
+            # Semantic similarity
+            # ------------------------------------------------
+
+            semantic_score = max(
+                0,
+                1 - distance
+            )
+
+
+            # ------------------------------------------------
+            # Keyword overlap
+            # ------------------------------------------------
 
             common_words = (
                 question_words
@@ -1060,64 +1243,100 @@ def search_knowledge(
 
 
             # ------------------------------------------------
-            # IMPORTANT MEDICAL TERMS
+            # Question keyword overlap
             # ------------------------------------------------
 
-            important_terms = [
-
-                "radiation",
-                "therapy",
-                "treatment",
-                "skin",
-                "hair",
-                "pain",
-                "fatigue",
-                "side effect",
-                "side effects",
-                "burn",
-                "burning",
-                "redness",
-                "itching",
-                "food",
-                "diet",
-                "water",
-                "medicine",
-                "medication",
-                "sleep",
-                "exercise",
-                "travel",
-                "work",
-                "breast",
-                "lung",
-                "head",
-                "neck",
-                "cancer",
-                "doctor",
-                "oncologist",
-                "hospital",
-                "appointment",
-                "OPD",
-            ]
+            question_common_words = (
+                question_words
+                & get_meaningful_words(
+                    kb_question
+                )
+            )
 
 
-            important_score = 0
-
-
-            for term in important_terms:
-
-                if term in question_clean:
-
-                    if term in question_text:
-
-                        important_score += 3
-
-                    elif term in answer_text:
-
-                        important_score += 1
+            question_keyword_score = len(
+                question_common_words
+            )
 
 
             # ------------------------------------------------
-            # LANGUAGE BONUS
+            # Question-type matching
+            # ------------------------------------------------
+
+            type_bonus = 0
+
+
+            if question_type == "doctor":
+
+                if kb_type == "hospital" and (
+                    "oncologist"
+                    in kb_question_clean
+                    or
+                    "doctor"
+                    in kb_question_clean
+                ):
+
+                    type_bonus = 10
+
+
+            elif question_type == "location":
+
+                if kb_type == "hospital" and (
+                    "where"
+                    in kb_question_clean
+                    or
+                    "location"
+                    in kb_question_clean
+                ):
+
+                    type_bonus = 10
+
+
+            elif question_type == "opd":
+
+                if kb_type == "hospital" and (
+                    "opd"
+                    in kb_question_clean
+                    or
+                    "timing"
+                    in kb_question_clean
+                    or
+                    "hours"
+                    in kb_question_clean
+                ):
+
+                    type_bonus = 10
+
+
+            elif question_type == "emergency":
+
+                if kb_type == "hospital" and (
+                    "emergency"
+                    in kb_question_clean
+                ):
+
+                    type_bonus = 10
+
+
+            elif question_type == "hospital_name":
+
+                if kb_type == "hospital" and (
+                    "hospital"
+                    in kb_question_clean
+                ):
+
+                    type_bonus = 10
+
+
+            elif question_type == "medical":
+
+                if kb_type == "faq":
+
+                    type_bonus = 5
+
+
+            # ------------------------------------------------
+            # Language bonus
             # ------------------------------------------------
 
             language_bonus = 0
@@ -1131,26 +1350,18 @@ def search_knowledge(
 
 
             # ------------------------------------------------
-            # SEMANTIC SCORE
-            # ------------------------------------------------
-
-            semantic_score = max(
-                0,
-                1 - distance
-            )
-
-
-            # ------------------------------------------------
-            # FINAL SCORE
+            # Final score
             # ------------------------------------------------
 
             final_score = (
 
                 semantic_score * 10
 
-                + keyword_score * 0.5
+                + keyword_score * 1.5
 
-                + important_score
+                + question_keyword_score * 3
+
+                + type_bonus
 
                 + language_bonus
 
@@ -1160,20 +1371,26 @@ def search_knowledge(
             candidates.append(
                 {
                     "metadata": metadata,
-                    "distance": distance,
+
                     "score": final_score,
+
                     "semantic_score":
                         semantic_score,
+
                     "keyword_score":
                         keyword_score,
-                    "important_score":
-                        important_score,
+
+                    "question_keyword_score":
+                        question_keyword_score,
+
+                    "type_bonus":
+                        type_bonus,
                 }
             )
 
 
         # ====================================================
-        # 3. SORT BEST RESULT
+        # SORT
         # ====================================================
 
         candidates.sort(
@@ -1190,62 +1407,95 @@ def search_knowledge(
         best = candidates[0]
 
 
+        best_metadata = best[
+            "metadata"
+        ]
+
+
         # ====================================================
-        # 4. SAFETY CHECK
+        # STRICT SAFETY / RELEVANCE CHECK
         # ====================================================
 
-        best_metadata = best["metadata"]
-
-
-        best_question = best_metadata.get(
-            "question",
-            ""
-        ).lower()
-
-
-        best_answer = best_metadata.get(
-            "answer",
-            ""
-        ).lower()
-
-
-        question_words = set(
-            question_clean.split()
-        )
-
-
-        kb_words = set(
-            (
-                best_question
-                + " "
-                + best_answer
-            ).split()
-        )
-
-
-        common_words = (
-            question_words
-            & kb_words
-        )
-
-
-        semantic_score = best[
+        best_semantic = best[
             "semantic_score"
         ]
 
 
+        best_keywords = best[
+            "keyword_score"
+        ]
+
+
+        best_question_keywords = best[
+            "question_keyword_score"
+        ]
+
+
+        best_type_bonus = best[
+            "type_bonus"
+        ]
+
+
         # ----------------------------------------------------
-        # Reject very poor matches
+        # Hospital information requires strong type matching.
         # ----------------------------------------------------
 
         if (
+            best_metadata.get("type")
+            == "hospital"
+        ):
 
-            semantic_score < 0.25
+            if question_type in [
+                "doctor",
+                "location",
+                "opd",
+                "emergency",
+                "hospital_name",
+            ]:
 
-            and len(common_words) == 0
+                if best_type_bonus < 10:
 
-            and best["important_score"] == 0
+                    return None
 
+            else:
+
+                # A general/unrelated question should not
+                # accidentally receive hospital information.
+
+                if (
+                    best_question_keywords == 0
+                    and best_type_bonus == 0
+                ):
+
+                    return None
+
+
+        # ----------------------------------------------------
+        # FAQ requires meaningful similarity.
+        # ----------------------------------------------------
+
+        if (
+            best_metadata.get("type")
+            == "faq"
+        ):
+
+            if (
+                best_semantic < 0.32
+                and best_question_keywords == 0
+            ):
+
+                return None
+
+
+        # ----------------------------------------------------
+        # Very weak overall result = reject.
+        # ----------------------------------------------------
+
+        if (
+            best_semantic < 0.25
+            and best_keywords == 0
+            and best_question_keywords == 0
+            and best_type_bonus == 0
         ):
 
             return None
@@ -1367,11 +1617,9 @@ def feedback_buttons(
                 "up"
             )
 
-
             st.session_state.feedback_given[
                 message_index
             ] = "up"
-
 
             st.rerun()
 
@@ -1389,11 +1637,9 @@ def feedback_buttons(
                 "down"
             )
 
-
             st.session_state.feedback_given[
                 message_index
             ] = "down"
-
 
             st.rerun()
 
@@ -1500,7 +1746,7 @@ with tab_chat:
 
 
         # ====================================================
-        # GUARDRAIL CHECK
+        # GUARDRAILS
         # ====================================================
 
         allowed, guardrail_message = (
@@ -1516,7 +1762,7 @@ with tab_chat:
         else:
 
             # =================================================
-            # IMPROVED RAG SEARCH
+            # RAG SEARCH
             # =================================================
 
             result = search_knowledge(
@@ -1540,6 +1786,7 @@ with tab_chat:
                         f"medical decisions, please follow your "
                         f"treating doctor's advice.*"
                     )
+
 
                 else:
 
