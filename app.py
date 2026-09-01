@@ -373,9 +373,6 @@ with st.sidebar:
         """
         **App Developed:**  
         Nikita Chougule
-
-        **Medical Content Support:**  
-        Mayur Deokar — Senior Radiation Therapist
         """
     )
 
