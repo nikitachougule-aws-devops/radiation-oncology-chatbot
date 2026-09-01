@@ -371,8 +371,7 @@ with st.sidebar:
 
     st.markdown(
         """
-        **App Developed:**  
-        Nikita Chougule
+        **AI Chatbot Developed By - Nikita Chougule**
         """
     )
 
