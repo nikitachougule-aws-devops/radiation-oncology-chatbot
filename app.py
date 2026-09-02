@@ -95,7 +95,18 @@ def render_hero(subtitle="Your patient information assistant for Radiation Oncol
     )
 
 
-render_hero()
+# Language needs to exist before we pick the hero subtitle's language,
+# but this lookup can never fail, so it's safe to do before the try block.
+if "language" not in st.session_state:
+    st.session_state.language = "en"
+
+_HERO_SUBTITLES = {
+    "en": "Your patient information assistant for Radiation Oncology.",
+    "hi": "रेडिएशन ऑन्कोलॉजी के लिए आपका रोगी सूचना सहायक।",
+    "mr": "रेडिएशन ऑन्कोलॉजीसाठी तुमचा रुग्ण माहिती सहाय्यक.",
+}
+
+render_hero(_HERO_SUBTITLES.get(st.session_state.language, _HERO_SUBTITLES["en"]))
 
 
 # ============================================================
@@ -226,10 +237,6 @@ try:
 
     T = UI_STRINGS[st.session_state.language]
 
-    # Re-render the hero subtitle in the selected language (the first
-    # render above used the English default before session_state existed).
-    render_hero(T["hero_sub"])
-
     # ============================================================
     # LOAD HOSPITAL INFORMATION
     # ============================================================
@@ -311,22 +318,6 @@ try:
         st.markdown(f"**☎️ Emergency:** {emergency_contact}")
         st.divider()
 
-        st.markdown("### 📚 Knowledge Base")
-        if HOSPITAL_KB_LOADED:
-            st.success("✅ Hospital information loaded")
-        else:
-            st.error("❌ Hospital information not loaded")
-
-        if FAQ_KB_LOADED:
-            st.success(f"✅ Approved FAQs loaded: {TOTAL_FAQS}")
-        else:
-            st.error("❌ FAQ knowledge base not loaded")
-
-        st.caption("🔒 Medical safety guardrails: Enabled")
-        st.caption("🛡️ Prompt-injection protection: Enabled")
-        st.caption("📚 Source transparency: Enabled")
-        st.divider()
-
         selected_language = st.selectbox(
             "🌐 Language",
             options=["en", "hi", "mr"],
@@ -357,6 +348,23 @@ try:
             Mayur Deokar — Senior Radiation Therapist
             """
         )
+
+        st.divider()
+
+        st.markdown("### 📚 Knowledge Base")
+        if HOSPITAL_KB_LOADED:
+            st.success("✅ Hospital information loaded")
+        else:
+            st.error("❌ Hospital information not loaded")
+
+        if FAQ_KB_LOADED:
+            st.success(f"✅ Approved FAQs loaded: {TOTAL_FAQS}")
+        else:
+            st.error("❌ FAQ knowledge base not loaded")
+
+        st.caption("🔒 Medical safety guardrails: Enabled")
+        st.caption("🛡️ Prompt-injection protection: Enabled")
+        st.caption("📚 Source transparency: Enabled")
 
     # ============================================================
     # CREATE RAG DOCUMENTS
