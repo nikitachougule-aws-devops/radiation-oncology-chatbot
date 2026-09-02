@@ -763,25 +763,6 @@ with st.sidebar:
     )
 
 
-    _banner_candidates = []
-
-    if VIDEO_DIR.exists():
-
-        for _ext in ["*.png", "*.jpg", "*.jpeg", "*.webp"]:
-            _banner_candidates.extend(
-                sorted(VIDEO_DIR.glob(_ext))
-            )
-
-    if _banner_candidates:
-        st.caption(
-            f"🖼️ Banner image found: {_banner_candidates[0].name}"
-        )
-    else:
-        st.caption(
-            "🖼️ Banner image: none found in /assets"
-        )
-
-
 # ============================================================
 # HERO
 # ============================================================
