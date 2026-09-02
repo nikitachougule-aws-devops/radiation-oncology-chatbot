@@ -555,47 +555,6 @@ with st.sidebar:
     st.divider()
 
 
-    st.markdown(
-        "### 📚 Knowledge Base"
-    )
-
-
-    if HOSPITAL_KB_LOADED:
-        st.success(
-            "✅ Hospital information loaded"
-        )
-    else:
-        st.error(
-            "❌ Hospital information not loaded"
-        )
-
-
-    if FAQ_KB_LOADED:
-        st.success(
-            f"✅ Approved FAQs loaded: {TOTAL_FAQS}"
-        )
-    else:
-        st.error(
-            "❌ FAQ knowledge base not loaded"
-        )
-
-
-    st.caption(
-        "🔒 Medical safety guardrails: Enabled"
-    )
-
-    st.caption(
-        "🛡️ Prompt-injection protection: Enabled"
-    )
-
-    st.caption(
-        "📚 Source transparency: Enabled"
-    )
-
-
-    st.divider()
-
-
     selected_language = st.selectbox(
         "🌐 Language",
         options=[
@@ -660,6 +619,47 @@ with st.sidebar:
         **Medical Content Support by:**  
         Mayur Deokar — Senior Radiation Therapist
         """
+    )
+
+
+    st.divider()
+
+
+    st.markdown(
+        "### 📚 Knowledge Base"
+    )
+
+
+    if HOSPITAL_KB_LOADED:
+        st.success(
+            "✅ Hospital information loaded"
+        )
+    else:
+        st.error(
+            "❌ Hospital information not loaded"
+        )
+
+
+    if FAQ_KB_LOADED:
+        st.success(
+            f"✅ Approved FAQs loaded: {TOTAL_FAQS}"
+        )
+    else:
+        st.error(
+            "❌ FAQ knowledge base not loaded"
+        )
+
+
+    st.caption(
+        "🔒 Medical safety guardrails: Enabled"
+    )
+
+    st.caption(
+        "🛡️ Prompt-injection protection: Enabled"
+    )
+
+    st.caption(
+        "📚 Source transparency: Enabled"
     )
 
 
