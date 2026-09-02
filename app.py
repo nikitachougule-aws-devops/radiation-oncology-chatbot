@@ -2522,7 +2522,12 @@ with tab_faq:
 with tab_video:
 
     st.markdown(
-        f"### 🎥 {T['video']}"
+        "### 🎥 How the Radiation Machine Works"
+    )
+
+    st.caption(
+        "A short video from your care team walking you through what "
+        "the machine does during treatment."
     )
 
 
