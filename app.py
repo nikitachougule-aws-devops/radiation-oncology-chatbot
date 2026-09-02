@@ -116,7 +116,7 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.16);
         border-radius: 14px;
         padding: 0.85rem 0.9rem;
-        margin-top: 0.4rem;
+        margin-top: 0.7rem;
     }
 
     .credit-item {
