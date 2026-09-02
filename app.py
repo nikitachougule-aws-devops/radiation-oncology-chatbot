@@ -530,11 +530,8 @@ with st.sidebar:
 
 
     st.markdown(
-        f"**{doctor_name}**"
+        f"**{doctor_name} - Radiation Oncology**"
     )
-
-
-    st.divider()
 
 
     st.markdown(
@@ -584,9 +581,6 @@ with st.sidebar:
         )
 
         st.rerun()
-
-
-    st.divider()
 
 
     if st.button(
