@@ -4,6 +4,7 @@ from datetime import datetime
 import ast
 import csv
 import re
+import base64
 
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -192,6 +193,7 @@ BASE_DIR = Path(__file__).resolve().parent
 FAQ_FILE = BASE_DIR / "radiation_faq.txt"
 HOSPITAL_FILE = BASE_DIR / "hospital_info.txt"
 VIDEO_DIR = BASE_DIR / "assets"
+HERO_IMAGE_FILE = BASE_DIR / "assets" / "hero_banner.png"
 
 FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
 
@@ -744,8 +746,35 @@ with st.sidebar:
 # the hero styling (gradient background, badge, etc.) breaks and
 # only plain unstyled text shows up.
 
+def get_hero_background_style():
+
+    if not HERO_IMAGE_FILE.exists():
+        return ""
+
+    try:
+
+        encoded_image = base64.b64encode(
+            HERO_IMAGE_FILE.read_bytes()
+        ).decode()
+
+        return (
+            "background-image: "
+            "linear-gradient(120deg, rgba(11,61,102,0.88) 0%, "
+            "rgba(26,111,181,0.80) 60%, rgba(47,155,214,0.72) 100%), "
+            f"url('data:image/png;base64,{encoded_image}'); "
+            "background-size: cover; "
+            "background-position: center;"
+        )
+
+    except Exception:
+        return ""
+
+
+HERO_BACKGROUND_STYLE = get_hero_background_style()
+
+
 st.markdown(
-    f"""<div class="hero">
+    f"""<div class="hero" style="{HERO_BACKGROUND_STYLE}">
     <div class="badge">● AI Assistant Online</div>
     <h1>🎗️ Jupiter Hospital | Radiation Oncology AI</h1>
     <p>{T["hero_sub"]}</p>
