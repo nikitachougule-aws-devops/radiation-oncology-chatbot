@@ -193,7 +193,6 @@ BASE_DIR = Path(__file__).resolve().parent
 FAQ_FILE = BASE_DIR / "radiation_faq.txt"
 HOSPITAL_FILE = BASE_DIR / "hospital_info.txt"
 VIDEO_DIR = BASE_DIR / "assets"
-HERO_IMAGE_FILE = BASE_DIR / "assets" / "hero_banner.png"
 
 FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
 
@@ -737,6 +736,25 @@ with st.sidebar:
     )
 
 
+    _banner_candidates = []
+
+    if VIDEO_DIR.exists():
+
+        for _ext in ["*.png", "*.jpg", "*.jpeg", "*.webp"]:
+            _banner_candidates.extend(
+                sorted(VIDEO_DIR.glob(_ext))
+            )
+
+    if _banner_candidates:
+        st.caption(
+            f"🖼️ Banner image found: {_banner_candidates[0].name}"
+        )
+    else:
+        st.caption(
+            "🖼️ Banner image: none found in /assets"
+        )
+
+
 # ============================================================
 # HERO
 # ============================================================
@@ -746,22 +764,62 @@ with st.sidebar:
 # the hero styling (gradient background, badge, etc.) breaks and
 # only plain unstyled text shows up.
 
+def find_hero_image_file():
+
+    if not VIDEO_DIR.exists():
+        return None
+
+    preferred_names = [
+        "hero_banner.png",
+        "hero_banner.jpg",
+        "hero_banner.jpeg",
+        "hero.png",
+        "hero.jpg",
+        "banner.png",
+        "banner.jpg",
+    ]
+
+    for name in preferred_names:
+
+        candidate = VIDEO_DIR / name
+
+        if candidate.exists():
+            return candidate
+
+    # Fallback: use the first image file found in /assets
+    for extension in ["*.png", "*.jpg", "*.jpeg", "*.webp"]:
+
+        matches = sorted(VIDEO_DIR.glob(extension))
+
+        if matches:
+            return matches[0]
+
+    return None
+
+
 def get_hero_background_style():
 
-    if not HERO_IMAGE_FILE.exists():
+    image_file = find_hero_image_file()
+
+    if image_file is None:
         return ""
 
     try:
 
+        extension = image_file.suffix.lower().lstrip(".")
+
+        mime_type = "jpeg" if extension in ["jpg", "jpeg"] else extension
+
         encoded_image = base64.b64encode(
-            HERO_IMAGE_FILE.read_bytes()
+            image_file.read_bytes()
         ).decode()
 
         return (
             "background-image: "
-            "linear-gradient(120deg, rgba(11,61,102,0.88) 0%, "
-            "rgba(26,111,181,0.80) 60%, rgba(47,155,214,0.72) 100%), "
-            f"url('data:image/png;base64,{encoded_image}'); "
+            "linear-gradient(90deg, rgba(9,45,79,0.96) 0%, "
+            "rgba(11,61,102,0.90) 30%, rgba(15,70,115,0.55) 50%, "
+            "rgba(20,85,130,0.15) 70%, rgba(20,85,130,0.05) 100%), "
+            f"url('data:image/{mime_type};base64,{encoded_image}'); "
             "background-size: cover; "
             "background-position: center;"
         )
