@@ -111,6 +111,65 @@ st.markdown(
         color: #eaf1f8 !important;
     }
 
+    .credit-card {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.16);
+        border-radius: 14px;
+        padding: 0.85rem 0.9rem;
+        margin-top: 0.3rem;
+    }
+
+    .credit-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.35rem 0;
+    }
+
+    .credit-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.14);
+        margin: 0.35rem 0;
+    }
+
+    .credit-avatar {
+        min-width: 38px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2f9bd6 0%, #0b3d66 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #ffffff !important;
+        border: 2px solid rgba(255,255,255,0.35);
+        flex-shrink: 0;
+    }
+
+    .credit-role {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #9fc3e0 !important;
+        margin-bottom: 0.1rem;
+    }
+
+    .credit-name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #ffffff !important;
+        line-height: 1.2;
+    }
+
+    .credit-sub {
+        font-size: 0.72rem;
+        color: #c9dcee !important;
+        font-style: italic;
+        margin-top: 0.05rem;
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -609,13 +668,25 @@ with st.sidebar:
 
 
     st.markdown(
-        """
-        **AI Chatbot Developed by:**  
-        Nikita Chougule
-
-        **Medical Content Support by:**  
-        Mayur Deokar — Senior Radiation Therapist
-        """
+        """<div class="credit-card">
+    <div class="credit-item">
+        <div class="credit-avatar">NC</div>
+        <div>
+            <div class="credit-role">AI Chatbot Developed by</div>
+            <div class="credit-name">Nikita Chougule</div>
+        </div>
+    </div>
+    <div class="credit-divider"></div>
+    <div class="credit-item">
+        <div class="credit-avatar">MD</div>
+        <div>
+            <div class="credit-role">Medical Content Support by</div>
+            <div class="credit-name">Mayur Deokar</div>
+            <div class="credit-sub">Senior Radiation Therapist</div>
+        </div>
+    </div>
+</div>""",
+        unsafe_allow_html=True,
     )
 
 
