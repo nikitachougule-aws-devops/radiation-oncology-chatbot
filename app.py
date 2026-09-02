@@ -534,6 +534,9 @@ with st.sidebar:
     )
 
 
+    st.write("")
+
+
     st.markdown(
         f"**📍 Location:** {hospital_location}"
     )
