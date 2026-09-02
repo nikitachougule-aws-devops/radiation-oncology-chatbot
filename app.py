@@ -137,7 +137,6 @@ st.markdown(
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #2f9bd6 0%, #0b3d66 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -146,6 +145,14 @@ st.markdown(
         color: #ffffff !important;
         border: 2px solid rgba(255,255,255,0.35);
         flex-shrink: 0;
+    }
+
+    .credit-avatar.dev {
+        background: linear-gradient(135deg, #6a5cf5 0%, #2f9bd6 100%);
+    }
+
+    .credit-avatar.med {
+        background: linear-gradient(135deg, #17b897 0%, #0b3d66 100%);
     }
 
     .credit-role {
@@ -667,7 +674,7 @@ with st.sidebar:
     st.markdown(
         """<div class="credit-card">
     <div class="credit-item">
-        <div class="credit-avatar">NC</div>
+        <div class="credit-avatar dev">NC</div>
         <div>
             <div class="credit-role">AI Chatbot Developed by</div>
             <div class="credit-name">Nikita Chougule</div>
@@ -675,7 +682,7 @@ with st.sidebar:
     </div>
     <div class="credit-divider"></div>
     <div class="credit-item">
-        <div class="credit-avatar">MD</div>
+        <div class="credit-avatar med">MD</div>
         <div>
             <div class="credit-role">Medical Content Support by</div>
             <div class="credit-name">Mayur Deokar</div>
