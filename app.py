@@ -666,25 +666,18 @@ with st.sidebar:
 # ============================================================
 # HERO
 # ============================================================
+# NOTE: Streamlit's markdown renderer treats a <div> as an HTML
+# block that ends at the first blank line inside it (CommonMark
+# rule). Keep this block free of blank lines between tags, or
+# the hero styling (gradient background, badge, etc.) breaks and
+# only plain unstyled text shows up.
 
 st.markdown(
-    f"""
-    <div class="hero">
-
-        <div class="badge">
-            ● AI Assistant Online
-        </div>
-
-        <h1>
-            🎗️ Jupiter Hospital | Radiation Oncology AI
-        </h1>
-
-        <p>
-            {T["hero_sub"]}
-        </p>
-
-    </div>
-    """,
+    f"""<div class="hero">
+    <div class="badge">● AI Assistant Online</div>
+    <h1>🎗️ Jupiter Hospital | Radiation Oncology AI</h1>
+    <p>{T["hero_sub"]}</p>
+</div>""",
     unsafe_allow_html=True,
 )
 
@@ -2283,18 +2276,10 @@ with tab_info:
     with col1:
 
         st.markdown(
-            """
-            <div class="glass-card">
-
-            <h4>📋 Before Treatment</h4>
-
-            <p>
-            Follow the instructions provided by your
-            radiation oncology treatment team.
-            </p>
-
-            </div>
-            """,
+            """<div class="glass-card">
+    <h4>📋 Before Treatment</h4>
+    <p>Follow the instructions provided by your radiation oncology treatment team.</p>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -2303,18 +2288,10 @@ with tab_info:
 
 
         st.markdown(
-            """
-            <div class="glass-card">
-
-            <h4>🩺 During Treatment</h4>
-
-            <p>
-            You will be positioned carefully and asked
-            to remain still during treatment.
-            </p>
-
-            </div>
-            """,
+            """<div class="glass-card">
+    <h4>🩺 During Treatment</h4>
+    <p>You will be positioned carefully and asked to remain still during treatment.</p>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -2322,18 +2299,10 @@ with tab_info:
     with col2:
 
         st.markdown(
-            """
-            <div class="glass-card">
-
-            <h4>✅ After Treatment</h4>
-
-            <p>
-            Follow the instructions given by your
-            healthcare team after each session.
-            </p>
-
-            </div>
-            """,
+            """<div class="glass-card">
+    <h4>✅ After Treatment</h4>
+    <p>Follow the instructions given by your healthcare team after each session.</p>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -2342,18 +2311,10 @@ with tab_info:
 
 
         st.markdown(
-            """
-            <div class="glass-card">
-
-            <h4>☎️ Contact Your Healthcare Team</h4>
-
-            <p>
-            Contact your healthcare team if you have
-            concerns or symptoms that require attention.
-            </p>
-
-            </div>
-            """,
+            """<div class="glass-card">
+    <h4>☎️ Contact Your Healthcare Team</h4>
+    <p>Contact your healthcare team if you have concerns or symptoms that require attention.</p>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -2543,16 +2504,9 @@ with tab_video:
 # ============================================================
 
 st.markdown(
-    """
-    <div class="footer-note">
-
-    This chatbot provides patient education information
-    from an approved knowledge base.
-
-    It does not replace advice from your treating doctor
-    or healthcare team.
-
-    </div>
-    """,
+    """<div class="footer-note">
+This chatbot provides patient education information from an approved knowledge base.<br>
+It does not replace advice from your treating doctor or healthcare team.
+</div>""",
     unsafe_allow_html=True,
 )
