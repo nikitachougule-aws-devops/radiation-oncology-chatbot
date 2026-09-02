@@ -2210,9 +2210,6 @@ with tab_chat:
     )
 
 
-    st.divider()
-
-
     for index, message in enumerate(
         st.session_state.messages
     ):
