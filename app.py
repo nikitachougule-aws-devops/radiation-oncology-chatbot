@@ -49,10 +49,37 @@ st.markdown(
             #1a6fb5 60%,
             #2f9bd6 100%
         );
-        padding: 1.3rem 2rem 2rem 2rem;
+        padding: 1.3rem 2rem 1.3rem 2rem;
         border-radius: 20px;
         margin-bottom: 1.5rem;
         box-shadow: 0 10px 30px rgba(15, 76, 129, 0.20);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        overflow: hidden;
+    }
+
+    .hero-text {
+        flex: 1 1 auto;
+        min-width: 260px;
+    }
+
+    .hero-photo {
+        flex: 0 0 auto;
+        width: 220px;
+        height: 150px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.35);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    .hero-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
 
     .hero h1 {
@@ -797,12 +824,12 @@ def find_hero_image_file():
     return None
 
 
-def get_hero_background_style():
+def get_hero_image_data_uri():
 
     image_file = find_hero_image_file()
 
     if image_file is None:
-        return ""
+        return None
 
     try:
 
@@ -814,28 +841,29 @@ def get_hero_background_style():
             image_file.read_bytes()
         ).decode()
 
-        return (
-            "background-image: "
-            "linear-gradient(90deg, rgba(9,45,79,0.96) 0%, "
-            "rgba(11,61,102,0.90) 30%, rgba(15,70,115,0.55) 50%, "
-            "rgba(20,85,130,0.15) 70%, rgba(20,85,130,0.05) 100%), "
-            f"url('data:image/{mime_type};base64,{encoded_image}'); "
-            "background-size: cover; "
-            "background-position: center;"
-        )
+        return f"data:image/{mime_type};base64,{encoded_image}"
 
     except Exception:
-        return ""
+        return None
 
 
-HERO_BACKGROUND_STYLE = get_hero_background_style()
+HERO_IMAGE_DATA_URI = get_hero_image_data_uri()
+
+HERO_PHOTO_HTML = (
+    f'<div class="hero-photo"><img src="{HERO_IMAGE_DATA_URI}" alt="Jupiter Hospital"></div>'
+    if HERO_IMAGE_DATA_URI
+    else ""
+)
 
 
 st.markdown(
-    f"""<div class="hero" style="{HERO_BACKGROUND_STYLE}">
-    <div class="badge">● AI Assistant Online</div>
-    <h1>🎗️ Jupiter Hospital | Radiation Oncology AI</h1>
-    <p>{T["hero_sub"]}</p>
+    f"""<div class="hero">
+    <div class="hero-text">
+        <div class="badge">● AI Assistant Online</div>
+        <h1>🎗️ Jupiter Hospital | Radiation Oncology AI</h1>
+        <p>{T["hero_sub"]}</p>
+    </div>
+    {HERO_PHOTO_HTML}
 </div>""",
     unsafe_allow_html=True,
 )
