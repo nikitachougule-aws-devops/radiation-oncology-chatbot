@@ -552,7 +552,7 @@ with st.sidebar:
     )
 
 
-    st.divider()
+    st.write("")
 
 
     selected_language = st.selectbox(
