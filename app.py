@@ -5,7 +5,6 @@ import ast
 import csv
 import re
 import base64
-import html
 
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -24,6 +23,266 @@ st.set_page_config(
 
 
 # ============================================================
+# CSS
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+
+    html, body, [class*="css"] {
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .main {
+        background: linear-gradient(
+            180deg,
+            #f4f8fc 0%,
+            #eaf1f8 100%
+        );
+    }
+
+    /* ========================================================
+       HERO
+       ======================================================== */
+
+    .hero {
+        background: linear-gradient(
+            120deg,
+            #0b3d66 0%,
+            #1a6fb5 60%,
+            #2f9bd6 100%
+        );
+        padding: 1.3rem 2rem;
+        border-radius: 20px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 30px rgba(15, 76, 129, 0.20);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        overflow: hidden;
+    }
+
+    .hero-text {
+        flex: 1 1 auto;
+        min-width: 260px;
+    }
+
+    .hero-photo {
+        flex: 0 0 auto;
+        width: 220px;
+        height: 150px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.35);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    .hero-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hero h1 {
+        color: white;
+        font-size: 2.1rem;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .hero p {
+        color: #d7e9f8;
+        font-size: 1.05rem;
+        margin-top: 0.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: white;
+        padding: 0.25rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+
+    /* ========================================================
+       CHAT UI
+       ======================================================== */
+
+    div[data-testid="stChatMessage"] {
+        border-radius: 16px;
+        margin-bottom: 0.65rem;
+    }
+
+    div[data-testid="stChatMessage"]:has(
+        div[data-testid="stChatMessageAvatarAssistant"]
+    ) {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid #dbe7f0;
+        padding: 0.7rem;
+    }
+
+    div[data-testid="stChatMessage"]:has(
+        div[data-testid="stChatMessageAvatarUser"]
+    ) {
+        background: rgba(225,240,252,0.75);
+        border: 1px solid #d4e5f2;
+        padding: 0.7rem;
+    }
+
+    .chat-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.78rem;
+        color: #50708c;
+        margin-bottom: 0.8rem;
+    }
+
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22b573;
+        display: inline-block;
+    }
+
+
+    /* ========================================================
+       CARDS
+       ======================================================== */
+
+    .glass-card {
+        background: rgba(255,255,255,0.80);
+        border: 1px solid #d9e5ef;
+        border-radius: 16px;
+        padding: 1.2rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .glass-card h4 {
+        color: #0b3d66;
+        margin-bottom: 0.4rem;
+    }
+
+    .glass-card p {
+        color: #445;
+        font-size: 0.92rem;
+    }
+
+
+    /* ========================================================
+       FOOTER
+       ======================================================== */
+
+    .footer-note {
+        text-align: center;
+        color: #7a8ba0;
+        font-size: 0.8rem;
+        margin-top: 2rem;
+        padding-bottom: 1rem;
+    }
+
+
+    /* ========================================================
+       SIDEBAR
+       ======================================================== */
+
+    section[data-testid="stSidebar"] {
+        background: #0b3d66;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: #eaf1f8 !important;
+    }
+
+    .credit-card {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.16);
+        border-radius: 14px;
+        padding: 0.85rem 0.9rem;
+        margin-top: 0.7rem;
+    }
+
+    .credit-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.35rem 0;
+    }
+
+    .credit-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.14);
+        margin: 0.35rem 0;
+    }
+
+    .credit-avatar {
+        min-width: 38px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #ffffff !important;
+        border: 2px solid rgba(255,255,255,0.35);
+        flex-shrink: 0;
+    }
+
+    .credit-avatar.dev {
+        background: linear-gradient(
+            135deg,
+            #6a5cf5 0%,
+            #2f9bd6 100%
+        );
+    }
+
+    .credit-avatar.med {
+        background: linear-gradient(
+            135deg,
+            #17b897 0%,
+            #0b3d66 100%
+        );
+    }
+
+    .credit-role {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #9fc3e0 !important;
+        margin-bottom: 0.1rem;
+    }
+
+    .credit-name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #ffffff !important;
+        line-height: 1.2;
+    }
+
+    .credit-sub {
+        font-size: 0.72rem;
+        color: #c9dcee !important;
+        font-style: italic;
+        margin-top: 0.05rem;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
 # PATHS
 # ============================================================
 
@@ -32,6 +291,7 @@ BASE_DIR = Path(__file__).resolve().parent
 FAQ_FILE = BASE_DIR / "radiation_faq.txt"
 HOSPITAL_FILE = BASE_DIR / "hospital_info.txt"
 VIDEO_DIR = BASE_DIR / "assets"
+
 FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
 
 
@@ -48,6 +308,10 @@ LANGUAGES = {
 
 UI_STRINGS = {
 
+    # ========================================================
+    # ENGLISH
+    # ========================================================
+
     "en": {
 
         "hero_sub":
@@ -57,44 +321,45 @@ UI_STRINGS = {
             "Ask about radiation treatment, preparation, side effects, or hospital information.",
 
         "placeholder":
-            "Type your message...",
+            "Type your message here...",
 
         "welcome":
             "👋 Hello{user}! {time_greeting}!\n\n"
-            "I'm your **Patient Information Assistant** for Radiation Oncology.\n\n"
+            "I'm your Patient Information Assistant. "
             "How may I help you today?",
 
         "greeting_reply":
             "👋 Hello{user}! {time_greeting}!\n\n"
-            "I'm your **Patient Information Assistant**. "
             "How may I help you today?",
 
         "unknown":
-            "I couldn't find an approved answer to that question in the hospital knowledge base.\n\n"
-            "I don't want to guess or provide incorrect medical information. "
-            "Please contact your healthcare team.",
+            "I couldn't find an approved answer to that question "
+            "in the hospital knowledge base.\n\n"
+            "I don't want to guess or provide incorrect medical "
+            "information. Please contact your healthcare team.",
 
         "unrelated":
-            "I can only answer questions related to **Radiation Oncology** "
-            "and approved **Jupiter Hospital** information.\n\n"
+            "I can only answer questions related to Radiation Oncology "
+            "and approved Jupiter Hospital information.\n\n"
             "Please ask me about radiation treatment, preparation, "
             "side effects, or hospital information.",
 
         "injection":
-            "I can only answer questions using the approved Jupiter Hospital "
-            "Radiation Oncology knowledge base.",
+            "I can only answer questions using the approved Jupiter "
+            "Hospital Radiation Oncology knowledge base.",
 
         "medical":
-            "I can't diagnose you, prescribe or change medicines, or change your "
-            "radiation treatment plan.\n\n"
-            "For personal medical decisions, please speak with your treating "
-            "doctor or healthcare team.",
+            "I can't diagnose you, prescribe or change medicines, "
+            "or change your radiation treatment plan.\n\n"
+            "For personal medical decisions, please speak with your "
+            "treating doctor or healthcare team.",
 
         "urgent":
-            "⚠️ If you are experiencing a serious or emergency symptom, please "
-            "contact your healthcare team or emergency services immediately.\n\n"
-            "I can provide general patient education, but I cannot assess or "
-            "diagnose an emergency.",
+            "If you are experiencing a serious or emergency symptom, "
+            "please contact your healthcare team or emergency services "
+            "immediately.\n\n"
+            "I can provide general patient education, but I cannot "
+            "assess or diagnose an emergency.",
 
         "faq_header":
             "Patient FAQs — Reviewed & Approved",
@@ -122,44 +387,12 @@ UI_STRINGS = {
 
         "category":
             "Category",
-
-        "online":
-            "AI Assistant Online",
-
-        "clear":
-            "🗑️ Clear Chat",
-
-        "your_name":
-            "👤 Your name (optional)",
-
-        "language":
-            "🌐 Language",
-
-        "knowledge_base":
-            "📚 Knowledge Base",
-
-        "hospital_loaded":
-            "Hospital information loaded",
-
-        "faq_loaded":
-            "Approved FAQs loaded",
-
-        "developer":
-            "AI Chatbot Developed by",
-
-        "medical_support":
-            "Medical Content Support by",
-
-        "disclaimer":
-            "This chatbot provides patient education information from an approved "
-            "knowledge base. It does not replace advice from your treating doctor "
-            "or healthcare team.",
-
-        "quick_questions":
-            "💡 Quick Questions",
-
     },
 
+
+    # ========================================================
+    # HINDI
+    # ========================================================
 
     "hi": {
 
@@ -170,39 +403,39 @@ UI_STRINGS = {
             "रेडिएशन उपचार, तैयारी, दुष्प्रभाव या अस्पताल की जानकारी के बारे में पूछें।",
 
         "placeholder":
-            "अपना संदेश लिखें...",
+            "अपना संदेश यहाँ लिखें...",
 
         "welcome":
             "👋 नमस्ते{user}! {time_greeting}!\n\n"
-            "मैं Radiation Oncology के लिए आपका **Patient Information Assistant** हूँ।\n\n"
+            "मैं आपका Patient Information Assistant हूँ। "
             "मैं आपकी कैसे मदद कर सकता हूँ?",
 
         "greeting_reply":
             "👋 नमस्ते{user}! {time_greeting}!\n\n"
-            "मैं आपका **Patient Information Assistant** हूँ। "
             "मैं आपकी कैसे मदद कर सकता हूँ?",
 
         "unknown":
-            "मुझे अस्पताल की स्वीकृत जानकारी में इस प्रश्न का उत्तर नहीं मिला।\n\n"
+            "मुझे अस्पताल की स्वीकृत जानकारी में इस प्रश्न का "
+            "उत्तर नहीं मिला।\n\n"
             "मैं अनुमान लगाकर गलत चिकित्सा जानकारी नहीं देना चाहता। "
             "कृपया अपनी स्वास्थ्य टीम से संपर्क करें।",
 
         "unrelated":
-            "मैं केवल **Radiation Oncology** और **Jupiter Hospital** की "
+            "मैं केवल Radiation Oncology और Jupiter Hospital की "
             "स्वीकृत जानकारी से संबंधित प्रश्नों का उत्तर दे सकता हूँ।",
 
         "injection":
-            "मैं केवल स्वीकृत Jupiter Hospital Radiation Oncology जानकारी "
-            "के आधार पर प्रश्नों का उत्तर दे सकता हूँ।",
+            "मैं केवल स्वीकृत Jupiter Hospital Radiation Oncology "
+            "जानकारी के आधार पर प्रश्नों का उत्तर दे सकता हूँ।",
 
         "medical":
-            "मैं आपका निदान नहीं कर सकता, दवा लिख या बदल नहीं सकता और "
-            "आपकी रेडिएशन उपचार योजना नहीं बदल सकता।\n\n"
-            "व्यक्तिगत चिकित्सा निर्णयों के लिए अपने डॉक्टर या स्वास्थ्य टीम "
-            "से बात करें।",
+            "मैं आपका निदान नहीं कर सकता, दवा लिख या बदल नहीं सकता "
+            "और आपकी रेडिएशन उपचार योजना नहीं बदल सकता।\n\n"
+            "व्यक्तिगत चिकित्सा निर्णयों के लिए अपने डॉक्टर या "
+            "स्वास्थ्य टीम से बात करें।",
 
         "urgent":
-            "⚠️ यदि आपको गंभीर या आपातकालीन लक्षण हैं, तो तुरंत अपनी "
+            "यदि आपको गंभीर या आपातकालीन लक्षण हैं, तो तुरंत अपनी "
             "स्वास्थ्य टीम या आपातकालीन सेवाओं से संपर्क करें।",
 
         "faq_header":
@@ -231,44 +464,12 @@ UI_STRINGS = {
 
         "category":
             "श्रेणी",
-
-        "online":
-            "AI Assistant Online",
-
-        "clear":
-            "🗑️ चैट साफ करें",
-
-        "your_name":
-            "👤 आपका नाम (वैकल्पिक)",
-
-        "language":
-            "🌐 भाषा",
-
-        "knowledge_base":
-            "📚 ज्ञान आधार",
-
-        "hospital_loaded":
-            "अस्पताल की जानकारी लोड हो गई",
-
-        "faq_loaded":
-            "स्वीकृत FAQs लोड हो गए",
-
-        "developer":
-            "AI Chatbot Developed by",
-
-        "medical_support":
-            "Medical Content Support by",
-
-        "disclaimer":
-            "यह चैटबॉट स्वीकृत ज्ञान आधार से रोगी शिक्षा संबंधी जानकारी "
-            "प्रदान करता है। यह आपके डॉक्टर या स्वास्थ्य टीम की सलाह का "
-            "स्थान नहीं लेता।",
-
-        "quick_questions":
-            "💡 त्वरित प्रश्न",
-
     },
 
+
+    # ========================================================
+    # MARATHI
+    # ========================================================
 
     "mr": {
 
@@ -283,36 +484,36 @@ UI_STRINGS = {
 
         "welcome":
             "👋 नमस्कार{user}! {time_greeting}!\n\n"
-            "मी Radiation Oncology साठी तुमचा **Patient Information Assistant** आहे.\n\n"
+            "मी तुमचा Patient Information Assistant आहे. "
             "मी तुमची कशी मदत करू शकतो?",
 
         "greeting_reply":
             "👋 नमस्कार{user}! {time_greeting}!\n\n"
-            "मी तुमचा **Patient Information Assistant** आहे. "
             "मी तुमची कशी मदत करू शकतो?",
 
         "unknown":
-            "रुग्णालयाच्या मंजूर माहितीमध्ये मला या प्रश्नाचे उत्तर सापडले नाही.\n\n"
+            "रुग्णालयाच्या मंजूर माहितीमध्ये मला या प्रश्नाचे "
+            "उत्तर सापडले नाही.\n\n"
             "मला अंदाज लावून चुकीची वैद्यकीय माहिती द्यायची नाही. "
             "कृपया तुमच्या आरोग्य टीमशी संपर्क साधा.",
 
         "unrelated":
-            "मी फक्त **Radiation Oncology** आणि **Jupiter Hospital** च्या "
+            "मी फक्त Radiation Oncology आणि Jupiter Hospital च्या "
             "मंजूर माहितीसंबंधी प्रश्नांची उत्तरे देऊ शकतो.",
 
         "injection":
-            "मी फक्त मंजूर Jupiter Hospital Radiation Oncology माहितीच्या "
-            "आधारे प्रश्नांची उत्तरे देऊ शकतो.",
+            "मी फक्त मंजूर Jupiter Hospital Radiation Oncology "
+            "माहितीच्या आधारे प्रश्नांची उत्तरे देऊ शकतो.",
 
         "medical":
-            "मी तुमचे निदान करू शकत नाही, औषधे लिहून देऊ किंवा बदलू शकत नाही "
-            "आणि तुमची रेडिएशन उपचार योजना बदलू शकत नाही.\n\n"
-            "वैयक्तिक वैद्यकीय निर्णयांसाठी तुमच्या डॉक्टरांशी किंवा आरोग्य "
-            "टीमशी संपर्क साधा.",
+            "मी तुमचे निदान करू शकत नाही, औषधे लिहून देऊ किंवा बदलू "
+            "शकत नाही आणि तुमची रेडिएशन उपचार योजना बदलू शकत नाही.\n\n"
+            "वैयक्तिक वैद्यकीय निर्णयांसाठी तुमच्या डॉक्टरांशी किंवा "
+            "आरोग्य टीमशी संपर्क साधा.",
 
         "urgent":
-            "⚠️ तुम्हाला गंभीर किंवा आपत्कालीन लक्षणे असल्यास, त्वरित तुमच्या "
-            "आरोग्य टीमशी किंवा आपत्कालीन सेवांशी संपर्क साधा.",
+            "तुम्हाला गंभीर किंवा आपत्कालीन लक्षणे असल्यास, त्वरित "
+            "तुमच्या आरोग्य टीमशी किंवा आपत्कालीन सेवांशी संपर्क साधा.",
 
         "faq_header":
             "रुग्णांचे वारंवार विचारले जाणारे प्रश्न",
@@ -340,364 +541,20 @@ UI_STRINGS = {
 
         "category":
             "श्रेणी",
-
-        "online":
-            "AI Assistant Online",
-
-        "clear":
-            "🗑️ चॅट साफ करा",
-
-        "your_name":
-            "👤 तुमचे नाव (पर्यायी)",
-
-        "language":
-            "🌐 भाषा",
-
-        "knowledge_base":
-            "📚 ज्ञान आधार",
-
-        "hospital_loaded":
-            "रुग्णालयाची माहिती लोड झाली",
-
-        "faq_loaded":
-            "मंजूर FAQs लोड झाले",
-
-        "developer":
-            "AI Chatbot Developed by",
-
-        "medical_support":
-            "Medical Content Support by",
-
-        "disclaimer":
-            "हा चॅटबॉट मंजूर ज्ञान आधारावरून रुग्ण शिक्षणाची माहिती देतो. "
-            "तो तुमच्या डॉक्टरांच्या किंवा आरोग्य टीमच्या सल्ल्याचा पर्याय नाही.",
-
-        "quick_questions":
-            "💡 झटपट प्रश्न",
-
     },
 }
 
 
 # ============================================================
-# PAGE CSS
-# ============================================================
-
-st.markdown(
-    """
-<style>
-
-html, body, [class*="css"] {
-    font-family: "Segoe UI", sans-serif;
-}
-
-.stApp {
-    background: #f4f7fb;
-}
-
-.main {
-    background: #f4f7fb;
-}
-
-/* ----------------------------------------------------------
-   HERO
----------------------------------------------------------- */
-
-.hero {
-    background: linear-gradient(
-        135deg,
-        #073763 0%,
-        #0b5a91 45%,
-        #1789c7 100%
-    );
-    border-radius: 22px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    box-shadow: 0 12px 32px rgba(7,55,99,0.18);
-    color: white;
-}
-
-.hero-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 25px;
-}
-
-.hero-left {
-    flex: 1;
-}
-
-.hero-badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.14);
-    border: 1px solid rgba(255,255,255,0.25);
-    font-size: 12px;
-    margin-bottom: 10px;
-}
-
-.hero-title {
-    font-size: 31px;
-    font-weight: 800;
-    line-height: 1.15;
-    margin-bottom: 8px;
-}
-
-.hero-subtitle {
-    font-size: 15px;
-    color: #dceffc;
-    line-height: 1.5;
-}
-
-.hero-icon {
-    width: 88px;
-    height: 88px;
-    border-radius: 22px;
-    background: rgba(255,255,255,0.13);
-    border: 1px solid rgba(255,255,255,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 46px;
-}
-
-/* ----------------------------------------------------------
-   CHAT HEADER
----------------------------------------------------------- */
-
-.chat-header {
-    background: white;
-    border: 1px solid #dfe7ef;
-    border-radius: 18px;
-    padding: 14px 18px;
-    margin-bottom: 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-}
-
-.chat-header-row {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-}
-
-.chat-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #0b5a91, #20a4d8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-}
-
-.chat-name {
-    font-size: 16px;
-    font-weight: 750;
-    color: #17324d;
-}
-
-.chat-status {
-    color: #20a36a;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.chat-status-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    background: #20a36a;
-    border-radius: 50%;
-    margin-right: 5px;
-}
-
-/* ----------------------------------------------------------
-   CHAT AREA
----------------------------------------------------------- */
-
-[data-testid="stChatMessage"] {
-    border-radius: 18px;
-    margin-bottom: 8px;
-}
-
-[data-testid="stChatMessageContent"] {
-    line-height: 1.6;
-}
-
-div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-    background: white;
-    border: 1px solid #e1e9f1;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.035);
-}
-
-div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-    border-radius: 18px;
-}
-
-/* ----------------------------------------------------------
-   INFO CARDS
----------------------------------------------------------- */
-
-.info-card {
-    background: white;
-    border: 1px solid #dfe7ef;
-    border-radius: 16px;
-    padding: 18px;
-    min-height: 130px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
-}
-
-.info-card-title {
-    font-size: 16px;
-    font-weight: 750;
-    color: #0b3d66;
-    margin-bottom: 7px;
-}
-
-.info-card-text {
-    font-size: 13px;
-    color: #536578;
-    line-height: 1.5;
-}
-
-/* ----------------------------------------------------------
-   SIDEBAR
----------------------------------------------------------- */
-
-section[data-testid="stSidebar"] {
-    background: #073763;
-}
-
-section[data-testid="stSidebar"] * {
-    color: #eef7ff !important;
-}
-
-.sidebar-brand {
-    font-size: 20px;
-    font-weight: 800;
-    color: white !important;
-}
-
-.sidebar-subtitle {
-    color: #bcd8ed !important;
-    font-size: 12px;
-}
-
-.sidebar-section {
-    margin-top: 20px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    font-weight: 750;
-    color: #bcd8ed !important;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.credit-card {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 14px;
-    padding: 12px;
-    margin-top: 14px;
-}
-
-.credit-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.credit-avatar {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 800;
-    color: white !important;
-    border: 1px solid rgba(255,255,255,0.3);
-}
-
-.credit-dev {
-    background: #6857d9;
-}
-
-.credit-med {
-    background: #159f83;
-}
-
-.credit-role {
-    font-size: 9px;
-    text-transform: uppercase;
-    color: #9fc3e0 !important;
-    letter-spacing: 0.05em;
-}
-
-.credit-name {
-    font-size: 13px;
-    font-weight: 750;
-    color: white !important;
-}
-
-.credit-sub {
-    font-size: 10px;
-    color: #c9dcee !important;
-    font-style: italic;
-}
-
-/* ----------------------------------------------------------
-   FOOTER
----------------------------------------------------------- */
-
-.footer-note {
-    text-align: center;
-    color: #8494a5;
-    font-size: 11px;
-    padding: 25px 0 10px 0;
-}
-
-/* ----------------------------------------------------------
-   MOBILE
----------------------------------------------------------- */
-
-@media (max-width: 700px) {
-
-    .hero-title {
-        font-size: 23px;
-    }
-
-    .hero-icon {
-        width: 65px;
-        height: 65px;
-        font-size: 34px;
-    }
-
-    .hero {
-        padding: 20px;
-    }
-
-}
-
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
-# TIME / GREETING HELPERS
+# TIME GREETING
 # ============================================================
 
 def get_time_greeting():
+
     hour = datetime.now().hour
 
     if 5 <= hour < 12:
+
         return {
             "en": "Good morning",
             "hi": "सुप्रभात",
@@ -705,6 +562,7 @@ def get_time_greeting():
         }
 
     if 12 <= hour < 17:
+
         return {
             "en": "Good afternoon",
             "hi": "नमस्कार",
@@ -712,6 +570,7 @@ def get_time_greeting():
         }
 
     if 17 <= hour < 22:
+
         return {
             "en": "Good evening",
             "hi": "शुभ संध्या",
@@ -725,7 +584,12 @@ def get_time_greeting():
     }
 
 
+# ============================================================
+# USER NAME
+# ============================================================
+
 def get_user_display_name():
+
     name = st.session_state.get(
         "user_name",
         ""
@@ -737,11 +601,17 @@ def get_user_display_name():
     return f", {name}"
 
 
+# ============================================================
+# WELCOME MESSAGE
+# ============================================================
+
 def build_welcome_message():
 
     language = st.session_state.language
 
-    time_greeting = get_time_greeting()[language]
+    time_greeting = (
+        get_time_greeting()[language]
+    )
 
     user = get_user_display_name()
 
@@ -752,10 +622,13 @@ def build_welcome_message():
 
 
 # ============================================================
-# TEXT HELPERS
+# NORMALIZE TEXT
 # ============================================================
 
 def normalize_text(text):
+
+    if not text:
+        return ""
 
     text = str(text).lower()
 
@@ -768,12 +641,17 @@ def normalize_text(text):
     return text.strip()
 
 
+# ============================================================
+# GREETING DETECTION
+# ============================================================
+
 def is_simple_greeting(text):
 
     normalized = normalize_text(text)
 
+    # Remove common punctuation.
     normalized = re.sub(
-        r"[.!?,\-]+",
+        r"[.!?,;:'\"`\-]+",
         " ",
         normalized
     )
@@ -786,22 +664,30 @@ def is_simple_greeting(text):
 
     greeting_phrases = {
 
+        # English
         "hi",
-        "hello",
-        "hey",
         "hii",
         "hiii",
-
+        "hello",
+        "hey",
+        "heyy",
+        "heyyy",
         "good morning",
         "good afternoon",
         "good evening",
+        "good night",
 
+        # Hindi
         "namaste",
         "नमस्ते",
         "सुप्रभात",
         "नमस्कार",
+
+        # Marathi
         "शुभ सकाळ",
+        "शुभ दुपार",
         "शुभ संध्याकाळ",
+        "नमस्कार",
 
     }
 
@@ -813,10 +699,12 @@ def is_simple_greeting(text):
 # ============================================================
 
 if "language" not in st.session_state:
+
     st.session_state.language = "en"
 
 
 if "user_name" not in st.session_state:
+
     st.session_state.user_name = ""
 
 
@@ -831,6 +719,7 @@ if "messages" not in st.session_state:
 
 
 if "feedback_given" not in st.session_state:
+
     st.session_state.feedback_given = {}
 
 
@@ -839,21 +728,43 @@ T = UI_STRINGS[
 ]
 
 
-if not st.session_state.messages[0].get("content"):
+# ============================================================
+# INITIAL WELCOME
+# ============================================================
 
-    st.session_state.messages[0][
+if (
+    not st.session_state.messages
+    or
+    not st.session_state.messages[0].get(
         "content"
-    ] = build_welcome_message()
+    )
+):
+
+    if not st.session_state.messages:
+
+        st.session_state.messages = [
+            {
+                "role": "assistant",
+                "content": build_welcome_message(),
+            }
+        ]
+
+    else:
+
+        st.session_state.messages[0][
+            "content"
+        ] = build_welcome_message()
 
 
 # ============================================================
-# HOSPITAL INFORMATION
+# LOAD HOSPITAL INFORMATION
 # ============================================================
 
 @st.cache_data
 def load_hospital_info():
 
     if not HOSPITAL_FILE.exists():
+
         return {}
 
     try:
@@ -882,6 +793,7 @@ def load_hospital_info():
                 value = value.strip()
 
                 if key and value:
+
                     info[key] = value
 
         return info
@@ -895,13 +807,14 @@ HOSPITAL_INFO = load_hospital_info()
 
 
 # ============================================================
-# FAQ DATA
+# LOAD FAQ DATA
 # ============================================================
 
 @st.cache_data
 def load_faq_data():
 
     if not FAQ_FILE.exists():
+
         return {}
 
     try:
@@ -952,12 +865,19 @@ def load_faq_data():
 FAQ_DATA = load_faq_data()
 
 
+# ============================================================
+# KNOWLEDGE BASE STATUS
+# ============================================================
+
 def get_total_faqs():
 
-    return sum(
-        len(items)
-        for items in FAQ_DATA.values()
-    )
+    total = 0
+
+    for items in FAQ_DATA.values():
+
+        total += len(items)
+
+    return total
 
 
 TOTAL_FAQS = get_total_faqs()
@@ -978,20 +898,11 @@ FAQ_KB_LOADED = (
 with st.sidebar:
 
     st.markdown(
-        '<div class="sidebar-brand">🎗️ Jupiter Hospital</div>',
-        unsafe_allow_html=True,
+        "### 🎗️ Jupiter Hospital"
     )
 
-    st.markdown(
-        '<div class="sidebar-subtitle">'
-        'Radiation Oncology Department'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        '<div class="sidebar-section">Hospital Information</div>',
-        unsafe_allow_html=True,
+    st.caption(
+        "Radiation Oncology Department"
     )
 
     doctor_name = HOSPITAL_INFO.get(
@@ -1015,28 +926,27 @@ with st.sidebar:
     )
 
     st.markdown(
-        f"**👨‍⚕️ {doctor_name}**"
+        f"**{doctor_name} - Radiation Oncology**"
+    )
+
+    st.write("")
+
+    st.markdown(
+        f"**📍 Location:** {hospital_location}"
     )
 
     st.markdown(
-        f"📍 {hospital_location}"
+        f"**🕒 OPD Hours:** {opd_hours}"
     )
 
     st.markdown(
-        f"🕒 {opd_hours}"
+        f"**☎️ Emergency:** {emergency_contact}"
     )
 
-    st.markdown(
-        f"☎️ {emergency_contact}"
-    )
-
-    st.markdown(
-        '<div class="sidebar-section">Chat Settings</div>',
-        unsafe_allow_html=True,
-    )
+    st.write("")
 
     user_name = st.text_input(
-        T["your_name"],
+        "👤 Your name (optional)",
         value=st.session_state.user_name,
         placeholder="Enter your name",
     )
@@ -1049,26 +959,29 @@ with st.sidebar:
 
         if st.session_state.messages:
 
-            st.session_state.messages[
-                0
-            ]["content"] = build_welcome_message()
+            st.session_state.messages[0][
+                "content"
+            ] = build_welcome_message()
+
 
     selected_language = st.selectbox(
-        T["language"],
+        "🌐 Language",
         options=[
             "en",
             "hi",
-            "mr",
+            "mr"
         ],
-        format_func=lambda x: LANGUAGES[x],
+        format_func=lambda x:
+            LANGUAGES[x],
         index=[
             "en",
             "hi",
-            "mr",
+            "mr"
         ].index(
             st.session_state.language
         ),
     )
+
 
     if (
         selected_language
@@ -1081,67 +994,89 @@ with st.sidebar:
 
         if st.session_state.messages:
 
-            st.session_state.messages[
-                0
-            ]["content"] = build_welcome_message()
+            st.session_state.messages[0][
+                "content"
+            ] = build_welcome_message()
 
         st.rerun()
 
+
     if st.button(
-        T["clear"],
-        use_container_width=True,
+        "🗑️ Clear Chat",
+        use_container_width=True
     ):
 
         st.session_state.messages = [
+
             {
                 "role": "assistant",
-                "content": build_welcome_message(),
+                "content":
+                    build_welcome_message(),
             }
+
         ]
 
         st.session_state.feedback_given = {}
 
         st.rerun()
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # CREDITS
-    # --------------------------------------------------------
+    # ========================================================
 
     st.markdown(
-        f"""
-<div class="credit-card">
-    <div class="credit-item">
-        <div class="credit-avatar credit-dev">NC</div>
-        <div>
-            <div class="credit-role">{T["developer"]}</div>
-            <div class="credit-name">Nikita Chougule</div>
-        </div>
-    </div>
+        """
+        <div class="credit-card">
+            <div class="credit-item">
+                <div class="credit-avatar dev">NC</div>
+                <div>
+                    <div class="credit-role">
+                        AI Chatbot Developed by
+                    </div>
+                    <div class="credit-name">
+                        Nikita Chougule
+                    </div>
+                </div>
+            </div>
 
-    <div style="height:1px;background:rgba(255,255,255,0.14);margin:10px 0;"></div>
+            <div class="credit-divider"></div>
 
-    <div class="credit-item">
-        <div class="credit-avatar credit-med">MD</div>
-        <div>
-            <div class="credit-role">{T["medical_support"]}</div>
-            <div class="credit-name">Mayur Deokar</div>
-            <div class="credit-sub">Senior Radiation Therapist</div>
+            <div class="credit-item">
+                <div class="credit-avatar med">MD</div>
+                <div>
+                    <div class="credit-role">
+                        Medical Content Support by
+                    </div>
+                    <div class="credit-name">
+                        Mayur Deokar
+                    </div>
+                    <div class="credit-sub">
+                        Senior Radiation Therapist
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-""",
+        """,
         unsafe_allow_html=True,
     )
 
+
+    st.divider()
+
+
+    # ========================================================
+    # KNOWLEDGE BASE
+    # ========================================================
+
     st.markdown(
-        '<div class="sidebar-section">System Status</div>',
-        unsafe_allow_html=True,
+        "### 📚 Knowledge Base"
     )
 
     if HOSPITAL_KB_LOADED:
 
         st.success(
-            f"✅ {T['hospital_loaded']}"
+            "✅ Hospital information loaded"
         )
 
     else:
@@ -1150,10 +1085,11 @@ with st.sidebar:
             "❌ Hospital information not loaded"
         )
 
+
     if FAQ_KB_LOADED:
 
         st.success(
-            f"✅ {T['faq_loaded']}: {TOTAL_FAQS}"
+            f"✅ Approved FAQs loaded: {TOTAL_FAQS}"
         )
 
     else:
@@ -1162,47 +1098,155 @@ with st.sidebar:
             "❌ FAQ knowledge base not loaded"
         )
 
+
     st.caption(
-        "🔒 Medical safety guardrails enabled"
+        "🔒 Medical safety guardrails: Enabled"
     )
 
     st.caption(
-        "🛡️ Prompt-injection protection enabled"
+        "🛡️ Prompt-injection protection: Enabled"
     )
 
     st.caption(
-        "📚 Source transparency enabled"
+        "📚 Source transparency: Enabled"
     )
 
 
 # ============================================================
-# HERO HEADER
+# HERO IMAGE
+# ============================================================
+
+def find_hero_image_file():
+
+    if not VIDEO_DIR.exists():
+
+        return None
+
+    preferred_names = [
+
+        "hero_banner.png",
+        "hero_banner.jpg",
+        "hero_banner.jpeg",
+
+        "hero.png",
+        "hero.jpg",
+
+        "banner.png",
+        "banner.jpg",
+
+    ]
+
+    for name in preferred_names:
+
+        candidate = VIDEO_DIR / name
+
+        if candidate.exists():
+
+            return candidate
+
+
+    for extension in [
+        "*.png",
+        "*.jpg",
+        "*.jpeg",
+        "*.webp"
+    ]:
+
+        matches = sorted(
+            VIDEO_DIR.glob(extension)
+        )
+
+        if matches:
+
+            return matches[0]
+
+
+    return None
+
+
+def get_hero_image_data_uri():
+
+    image_file = (
+        find_hero_image_file()
+    )
+
+    if image_file is None:
+
+        return None
+
+    try:
+
+        extension = (
+            image_file.suffix
+            .lower()
+            .lstrip(".")
+        )
+
+        mime_type = (
+            "jpeg"
+            if extension in ["jpg", "jpeg"]
+            else extension
+        )
+
+        encoded_image = (
+            base64.b64encode(
+                image_file.read_bytes()
+            ).decode()
+        )
+
+        return (
+            f"data:image/{mime_type};"
+            f"base64,{encoded_image}"
+        )
+
+    except Exception:
+
+        return None
+
+
+HERO_IMAGE_DATA_URI = (
+    get_hero_image_data_uri()
+)
+
+
+if HERO_IMAGE_DATA_URI:
+
+    HERO_PHOTO_HTML = (
+        '<div class="hero-photo">'
+        f'<img src="{HERO_IMAGE_DATA_URI}" '
+        'alt="Jupiter Hospital">'
+        '</div>'
+    )
+
+else:
+
+    HERO_PHOTO_HTML = ""
+
+
+# ============================================================
+# HERO
 # ============================================================
 
 st.markdown(
     f"""
-<div class="hero">
-    <div class="hero-content">
-        <div class="hero-left">
-            <div class="hero-badge">
-                ● {T["online"]}
+    <div class="hero">
+        <div class="hero-text">
+            <div class="badge">
+                ● AI Assistant Online
             </div>
 
-            <div class="hero-title">
+            <h1>
                 🎗️ Jupiter Hospital | Radiation Oncology AI
-            </div>
+            </h1>
 
-            <div class="hero-subtitle">
+            <p>
                 {T["hero_sub"]}
-            </div>
+            </p>
         </div>
 
-        <div class="hero-icon">
-            🎗️
-        </div>
+        {HERO_PHOTO_HTML}
     </div>
-</div>
-""",
+    """,
     unsafe_allow_html=True,
 )
 
@@ -1217,6 +1261,7 @@ def create_rag_documents():
     ids = []
     metadatas = []
 
+
     stage_names = {
 
         "FAQS_BEFORE":
@@ -1229,9 +1274,10 @@ def create_rag_documents():
             "After Treatment",
     }
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # FAQ DOCUMENTS
-    # --------------------------------------------------------
+    # ========================================================
 
     for stage_key, questions in FAQ_DATA.items():
 
@@ -1240,6 +1286,7 @@ def create_rag_documents():
             "Radiation Oncology"
         )
 
+
         for index, item in enumerate(
             questions
         ):
@@ -1247,15 +1294,18 @@ def create_rag_documents():
             for language in [
                 "en",
                 "hi",
-                "mr",
+                "mr"
             ]:
 
                 if language not in item:
+
                     continue
+
 
                 question, answer = item[
                     language
                 ]
+
 
                 document = (
                     f"Category: Radiation Oncology\n"
@@ -1264,13 +1314,16 @@ def create_rag_documents():
                     f"Answer: {answer}"
                 )
 
+
                 documents.append(
                     document
                 )
 
+
                 ids.append(
                     f"{stage_key}_{index}_{language}"
                 )
+
 
                 metadatas.append(
                     {
@@ -1282,58 +1335,71 @@ def create_rag_documents():
                     }
                 )
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # HOSPITAL INFORMATION
-    # --------------------------------------------------------
+    # ========================================================
 
     hospital_questions = {
 
-        "Hospital Name": [
-            "What is the name of the hospital?",
-            "Which hospital is this chatbot for?",
-            "What hospital is this?",
-        ],
+        "Hospital Name":
+            [
+                "What is the name of the hospital?",
+                "Which hospital is this chatbot for?",
+                "What hospital is this?",
+            ],
 
-        "Department": [
-            "Which department provides radiation treatment?",
-            "Which department handles radiation oncology?",
-            "What department is this?",
-        ],
+        "Department":
+            [
+                "Which department provides radiation treatment?",
+                "Which department handles radiation oncology?",
+                "What department is this?",
+            ],
 
-        "Radiation Oncologist": [
-            "Who is the radiation oncologist?",
-            "Who is the radiation oncology doctor?",
-            "Who is the doctor in the Radiation Oncology Department?",
-        ],
+        "Radiation Oncologist":
+            [
+                "Who is the radiation oncologist?",
+                "Who is the radiation oncology doctor?",
+                "Who is the doctor in the Radiation Oncology Department?",
+            ],
 
-        "Hospital Location": [
-            "Where is the hospital?",
-            "Where is Jupiter Hospital located?",
-            "What is the hospital location?",
-            "Where is the Radiation Oncology Department located?",
-        ],
+        "Hospital Location":
+            [
+                "Where is the hospital?",
+                "Where is Jupiter Hospital located?",
+                "What is the hospital location?",
+                "Where is the Radiation Oncology Department located?",
+            ],
 
-        "OPD Hours": [
-            "What are the OPD hours?",
-            "What are the OPD timings?",
-            "What are the radiation oncology OPD timings?",
-        ],
+        "OPD Hours":
+            [
+                "What are the OPD hours?",
+                "What are the OPD timings?",
+                "What are the radiation oncology OPD timings?",
+            ],
 
-        "Emergency Contact": [
-            "What is the emergency contact number?",
-            "How can I contact the hospital in an emergency?",
-            "What is the hospital emergency number?",
-        ],
+        "Emergency Contact":
+            [
+                "What is the emergency contact number?",
+                "How can I contact the hospital in an emergency?",
+                "What is the hospital emergency number?",
+            ],
     }
+
 
     hospital_index = 0
 
+
     for key, questions in hospital_questions.items():
 
-        value = HOSPITAL_INFO.get(key)
+        value = HOSPITAL_INFO.get(
+            key
+        )
 
         if not value:
+
             continue
+
 
         for question in questions:
 
@@ -1343,30 +1409,43 @@ def create_rag_documents():
                 f"Answer: {value}"
             )
 
+
             documents.append(
                 document
             )
+
 
             ids.append(
                 f"hospital_{hospital_index}"
             )
 
+
             metadatas.append(
                 {
                     "type": "hospital",
-                    "stage": "Hospital Information",
-                    "language": "en",
-                    "question": question,
-                    "answer": value,
+
+                    "stage":
+                        "Hospital Information",
+
+                    "language":
+                        "en",
+
+                    "question":
+                        question,
+
+                    "answer":
+                        value,
                 }
             )
 
+
             hospital_index += 1
+
 
     return (
         documents,
         ids,
-        metadatas,
+        metadatas
     )
 
 
@@ -1382,23 +1461,27 @@ def load_rag():
         "paraphrase-multilingual-MiniLM-L12-v2"
     )
 
+
     client = chromadb.Client()
+
 
     collection = client.get_or_create_collection(
         name="jupiter_hospital_knowledge"
     )
 
+
     documents, ids, metadatas = (
         create_rag_documents()
     )
+
 
     if documents:
 
         embeddings = model.encode(
             documents,
             normalize_embeddings=True,
-            show_progress_bar=False,
         ).tolist()
+
 
         collection.upsert(
             ids=ids,
@@ -1407,7 +1490,11 @@ def load_rag():
             metadatas=metadatas,
         )
 
-    return model, collection
+
+    return (
+        model,
+        collection
+    )
 
 
 # ============================================================
@@ -1456,7 +1543,11 @@ def get_meaningful_words(text):
         "you",
     }
 
-    words = normalize_text(text).split()
+
+    words = normalize_text(
+        text
+    ).split()
+
 
     return {
         word
@@ -1476,6 +1567,7 @@ def detect_question_type(question):
         question
     )
 
+
     if any(
         phrase in text
         for phrase in [
@@ -1483,12 +1575,12 @@ def detect_question_type(question):
             "who is the radiation oncologist",
             "who is the radiation oncology doctor",
             "radiation oncologist",
-            "radiation oncology doctor",
 
         ]
     ):
 
         return "doctor"
+
 
     if any(
         phrase in text
@@ -1504,6 +1596,7 @@ def detect_question_type(question):
     ):
 
         return "location"
+
 
     if any(
         phrase in text
@@ -1521,6 +1614,7 @@ def detect_question_type(question):
 
         return "opd"
 
+
     if any(
         phrase in text
         for phrase in [
@@ -1536,6 +1630,7 @@ def detect_question_type(question):
 
         return "emergency"
 
+
     if any(
         phrase in text
         for phrase in [
@@ -1548,6 +1643,7 @@ def detect_question_type(question):
     ):
 
         return "hospital_name"
+
 
     if any(
         word in text
@@ -1581,6 +1677,7 @@ def detect_question_type(question):
 
         return "medical"
 
+
     if any(
         word in text
         for word in [
@@ -1609,6 +1706,7 @@ def detect_question_type(question):
 
         return "unrelated"
 
+
     return "unknown"
 
 
@@ -1621,6 +1719,11 @@ def detect_medical_safety_level(question):
     text = normalize_text(
         question
     )
+
+
+    # ========================================================
+    # URGENT
+    # ========================================================
 
     urgent_patterns = [
 
@@ -1646,10 +1749,17 @@ def detect_medical_safety_level(question):
 
     ]
 
+
     for pattern in urgent_patterns:
 
         if pattern in text:
+
             return "urgent"
+
+
+    # ========================================================
+    # PERSONAL DIAGNOSIS
+    # ========================================================
 
     diagnosis_patterns = [
 
@@ -1698,10 +1808,17 @@ def detect_medical_safety_level(question):
 
     ]
 
+
     for pattern in diagnosis_patterns:
 
         if pattern in text:
+
             return "personal_medical"
+
+
+    # ========================================================
+    # MEDICINE
+    # ========================================================
 
     medicine_patterns = [
 
@@ -1738,10 +1855,17 @@ def detect_medical_safety_level(question):
 
     ]
 
+
     for pattern in medicine_patterns:
 
         if pattern in text:
+
             return "personal_medical"
+
+
+    # ========================================================
+    # TREATMENT CHANGES
+    # ========================================================
 
     treatment_change_patterns = [
 
@@ -1775,10 +1899,13 @@ def detect_medical_safety_level(question):
 
     ]
 
+
     for pattern in treatment_change_patterns:
 
         if pattern in text:
+
             return "personal_medical"
+
 
     return "safe"
 
@@ -1835,6 +1962,11 @@ def check_guardrails(question):
         question
     )
 
+
+    # ========================================================
+    # PROMPT INJECTION FIRST
+    # ========================================================
+
     for pattern in PROMPT_INJECTION_PATTERNS:
 
         if pattern in text:
@@ -1842,8 +1974,13 @@ def check_guardrails(question):
             return (
                 False,
                 "injection",
-                T["injection"],
+                T["injection"]
             )
+
+
+    # ========================================================
+    # MEDICAL SAFETY
+    # ========================================================
 
     safety_level = (
         detect_medical_safety_level(
@@ -1851,26 +1988,29 @@ def check_guardrails(question):
         )
     )
 
+
     if safety_level == "urgent":
 
         return (
             False,
             "urgent",
-            T["urgent"],
+            T["urgent"]
         )
+
 
     if safety_level == "personal_medical":
 
         return (
             False,
             "personal_medical",
-            T["medical"],
+            T["medical"]
         )
+
 
     return (
         True,
         "safe",
-        None,
+        None
     )
 
 
@@ -1880,7 +2020,7 @@ def check_guardrails(question):
 
 def search_knowledge(
     question,
-    language,
+    language
 ):
 
     try:
@@ -1891,16 +2031,28 @@ def search_knowledge(
             )
         )
 
+
+        # ----------------------------------------------------
+        # Never search RAG for unrelated questions.
+        # ----------------------------------------------------
+
         if question_type == "unrelated":
+
             return None
 
-        model, collection = load_rag()
 
-        query_embedding = model.encode(
-            [question],
-            normalize_embeddings=True,
-            show_progress_bar=False,
-        ).tolist()
+        model, collection = (
+            load_rag()
+        )
+
+
+        query_embedding = (
+            model.encode(
+                [question],
+                normalize_embeddings=True,
+            ).tolist()
+        )
+
 
         results = collection.query(
             query_embeddings=query_embedding,
@@ -1912,20 +2064,28 @@ def search_knowledge(
             ],
         )
 
-        if not results.get("documents"):
+
+        if not results.get(
+            "documents"
+        ):
+
             return None
+
 
         documents = results[
             "documents"
         ][0]
 
+
         metadatas = results[
             "metadatas"
         ][0]
 
+
         distances = results[
             "distances"
         ][0]
+
 
         question_words = (
             get_meaningful_words(
@@ -1933,36 +2093,48 @@ def search_knowledge(
             )
         )
 
+
         candidates = []
+
 
         for index in range(
             len(documents)
         ):
 
-            metadata = metadatas[index]
+            metadata = metadatas[
+                index
+            ]
 
-            distance = distances[index]
+
+            distance = distances[
+                index
+            ]
+
 
             kb_question = metadata.get(
                 "question",
-                "",
+                ""
             )
+
 
             kb_answer = metadata.get(
                 "answer",
-                "",
+                ""
             )
+
 
             kb_type = metadata.get(
                 "type",
-                "faq",
+                "faq"
             )
+
 
             kb_question_clean = (
                 normalize_text(
                     kb_question
                 )
             )
+
 
             kb_words = (
                 get_meaningful_words(
@@ -1972,19 +2144,23 @@ def search_knowledge(
                 )
             )
 
+
             semantic_score = max(
                 0,
-                1 - distance,
+                1 - distance
             )
+
 
             common_words = (
                 question_words
                 & kb_words
             )
 
+
             keyword_score = len(
                 common_words
             )
+
 
             question_common_words = (
                 question_words
@@ -1993,11 +2169,18 @@ def search_knowledge(
                 )
             )
 
+
             question_keyword_score = len(
                 question_common_words
             )
 
+
             type_bonus = 0
+
+
+            # ------------------------------------------------
+            # Doctor
+            # ------------------------------------------------
 
             if question_type == "doctor":
 
@@ -2014,6 +2197,11 @@ def search_knowledge(
 
                     type_bonus = 10
 
+
+            # ------------------------------------------------
+            # Location
+            # ------------------------------------------------
+
             elif question_type == "location":
 
                 if (
@@ -2028,6 +2216,11 @@ def search_knowledge(
                 ):
 
                     type_bonus = 10
+
+
+            # ------------------------------------------------
+            # OPD
+            # ------------------------------------------------
 
             elif question_type == "opd":
 
@@ -2047,6 +2240,11 @@ def search_knowledge(
 
                     type_bonus = 10
 
+
+            # ------------------------------------------------
+            # Emergency
+            # ------------------------------------------------
+
             elif question_type == "emergency":
 
                 if (
@@ -2057,6 +2255,11 @@ def search_knowledge(
                 ):
 
                     type_bonus = 10
+
+
+            # ------------------------------------------------
+            # Hospital name
+            # ------------------------------------------------
 
             elif question_type == "hospital_name":
 
@@ -2069,19 +2272,38 @@ def search_knowledge(
 
                     type_bonus = 10
 
+
+            # ------------------------------------------------
+            # Medical
+            # ------------------------------------------------
+
             elif question_type == "medical":
 
                 if kb_type == "faq":
+
                     type_bonus = 5
+
+
+            # ------------------------------------------------
+            # Language bonus
+            # ------------------------------------------------
 
             language_bonus = 0
 
+
             if (
-                metadata.get("language")
+                metadata.get(
+                    "language"
+                )
                 == language
             ):
 
                 language_bonus = 2
+
+
+            # ------------------------------------------------
+            # Final score
+            # ------------------------------------------------
 
             final_score = (
 
@@ -2094,54 +2316,81 @@ def search_knowledge(
                 + type_bonus
 
                 + language_bonus
+
             )
+
 
             candidates.append(
                 {
-                    "metadata": metadata,
-                    "score": final_score,
-                    "semantic_score": semantic_score,
-                    "keyword_score": keyword_score,
+                    "metadata":
+                        metadata,
+
+                    "score":
+                        final_score,
+
+                    "semantic_score":
+                        semantic_score,
+
+                    "keyword_score":
+                        keyword_score,
+
                     "question_keyword_score":
                         question_keyword_score,
-                    "type_bonus": type_bonus,
+
+                    "type_bonus":
+                        type_bonus,
                 }
             )
 
+
         candidates.sort(
-            key=lambda item: item["score"],
-            reverse=True,
+            key=lambda item:
+                item["score"],
+            reverse=True
         )
 
+
         if not candidates:
+
             return None
+
 
         best = candidates[0]
 
-        best_metadata = best["metadata"]
+
+        best_metadata = best[
+            "metadata"
+        ]
+
 
         best_semantic = best[
             "semantic_score"
         ]
 
+
         best_keywords = best[
             "keyword_score"
         ]
+
 
         best_question_keywords = best[
             "question_keyword_score"
         ]
 
+
         best_type_bonus = best[
             "type_bonus"
         ]
 
-        # ----------------------------------------------------
-        # Hospital protection
-        # ----------------------------------------------------
+
+        # ====================================================
+        # HOSPITAL INFORMATION PROTECTION
+        # ====================================================
 
         if (
-            best_metadata.get("type")
+            best_metadata.get(
+                "type"
+            )
             == "hospital"
         ):
 
@@ -2154,6 +2403,7 @@ def search_knowledge(
             ]:
 
                 if best_type_bonus < 10:
+
                     return None
 
             else:
@@ -2165,12 +2415,15 @@ def search_knowledge(
 
                     return None
 
-        # ----------------------------------------------------
-        # FAQ protection
-        # ----------------------------------------------------
+
+        # ====================================================
+        # FAQ PROTECTION
+        # ====================================================
 
         if (
-            best_metadata.get("type")
+            best_metadata.get(
+                "type"
+            )
             == "faq"
         ):
 
@@ -2181,9 +2434,10 @@ def search_knowledge(
 
                 return None
 
-        # ----------------------------------------------------
-        # Weak result protection
-        # ----------------------------------------------------
+
+        # ====================================================
+        # WEAK RESULT PROTECTION
+        # ====================================================
 
         if (
             best_semantic < 0.25
@@ -2194,7 +2448,9 @@ def search_knowledge(
 
             return None
 
+
         return best_metadata
+
 
     except Exception:
 
@@ -2208,19 +2464,25 @@ def search_knowledge(
 def display_source(source):
 
     if not source:
+
         return
+
 
     category = source.get(
         "stage",
-        "Radiation Oncology",
+        "Radiation Oncology"
     )
+
 
     matched_question = source.get(
         "question",
-        "",
+        ""
     )
 
-    with st.container(border=True):
+
+    with st.container(
+        border=True
+    ):
 
         st.markdown(
             "### 📚 Source"
@@ -2249,7 +2511,7 @@ def display_source(source):
 def save_feedback(
     question,
     answer,
-    feedback,
+    feedback
 ):
 
     try:
@@ -2258,6 +2520,7 @@ def save_feedback(
             FEEDBACK_FILE.exists()
         )
 
+
         with open(
             FEEDBACK_FILE,
             "a",
@@ -2265,7 +2528,10 @@ def save_feedback(
             encoding="utf-8",
         ) as file:
 
-            writer = csv.writer(file)
+            writer = csv.writer(
+                file
+            )
+
 
             if not file_exists:
 
@@ -2279,30 +2545,39 @@ def save_feedback(
                     ]
                 )
 
+
             writer.writerow(
                 [
                     datetime.now().isoformat(
                         timespec="seconds"
                     ),
+
                     st.session_state.language,
+
                     question,
+
                     answer,
+
                     feedback,
                 ]
             )
 
+
     except Exception:
+
         pass
 
 
 def feedback_buttons(
     message_index,
     question,
-    answer,
+    answer
 ):
 
     if not question:
+
         return
+
 
     already_given = (
         st.session_state.feedback_given.get(
@@ -2310,53 +2585,69 @@ def feedback_buttons(
         )
     )
 
+
     if already_given:
 
-        st.caption(
-            "👍 Thanks for your feedback!"
-        )
+        if already_given == "up":
+
+            st.caption(
+                "👍 Thanks for your feedback!"
+            )
+
+        else:
+
+            st.caption(
+                "👎 Thanks for your feedback!"
+            )
 
         return
+
 
     col1, col2, _ = st.columns(
         [1, 1, 10]
     )
 
+
     with col1:
 
         if st.button(
             "👍",
-            key=f"up_{message_index}",
+            key=f"up_{message_index}"
         ):
 
             save_feedback(
                 question,
                 answer,
-                "up",
+                "up"
             )
+
 
             st.session_state.feedback_given[
                 message_index
             ] = "up"
 
+
             st.rerun()
+
 
     with col2:
 
         if st.button(
             "👎",
-            key=f"down_{message_index}",
+            key=f"down_{message_index}"
         ):
 
             save_feedback(
                 question,
                 answer,
-                "down",
+                "down"
             )
+
 
             st.session_state.feedback_given[
                 message_index
             ] = "down"
+
 
             st.rerun()
 
@@ -2376,32 +2667,18 @@ tab_chat, tab_info, tab_faq, tab_video = st.tabs(
 
 
 # ============================================================
-# CHAT TAB
+# CHAT
 # ============================================================
 
 with tab_chat:
 
-    # --------------------------------------------------------
-    # CHAT HEADER
-    # --------------------------------------------------------
-
     st.markdown(
         """
-<div class="chat-header">
-    <div class="chat-header-row">
-        <div class="chat-avatar">🎗️</div>
-        <div>
-            <div class="chat-name">
-                Radiation Oncology AI Assistant
-            </div>
-            <div class="chat-status">
-                <span class="chat-status-dot"></span>
-                Online · Hospital Knowledge Base
-            </div>
+        <div class="chat-status">
+            <span class="online-dot"></span>
+            AI Assistant • Ready to help
         </div>
-    </div>
-</div>
-""",
+        """,
         unsafe_allow_html=True,
     )
 
@@ -2409,87 +2686,45 @@ with tab_chat:
         f"**{T['chat_intro']}**"
     )
 
-    # --------------------------------------------------------
-    # QUICK QUESTIONS
-    # --------------------------------------------------------
 
-    if len(st.session_state.messages) <= 1:
-
-        st.markdown(
-            f"### {T['quick_questions']}"
-        )
-
-        quick_col1, quick_col2, quick_col3 = (
-            st.columns(3)
-        )
-
-        with quick_col1:
-
-            if st.button(
-                "👨‍⚕️ Who is the radiation oncologist?",
-                use_container_width=True,
-            ):
-
-                st.session_state.quick_prompt = (
-                    "Who is the radiation oncologist?"
-                )
-
-        with quick_col2:
-
-            if st.button(
-                "🩺 What are radiation side effects?",
-                use_container_width=True,
-            ):
-
-                st.session_state.quick_prompt = (
-                    "What are the common side effects of radiation treatment?"
-                )
-
-        with quick_col3:
-
-            if st.button(
-                "📍 Where is the hospital?",
-                use_container_width=True,
-            ):
-
-                st.session_state.quick_prompt = (
-                    "Where is the hospital?"
-                )
-
-    # --------------------------------------------------------
+    # ========================================================
     # DISPLAY CHAT HISTORY
-    # --------------------------------------------------------
+    # ========================================================
 
     for index, message in enumerate(
         st.session_state.messages
     ):
 
-        if message["role"] == "assistant":
+        avatar = (
+            "🎗️"
+            if message["role"]
+            == "assistant"
+            else "🧑"
+        )
 
-            avatar = "🎗️"
-
-        else:
-
-            avatar = "🧑"
 
         with st.chat_message(
             message["role"],
-            avatar=avatar,
+            avatar=avatar
         ):
 
             st.markdown(
                 message["content"]
             )
 
+
             if (
                 message["role"]
                 == "assistant"
-                and message.get("source")
+                and message.get(
+                    "source"
+                )
             ):
 
                 display_source(
                     message["source"]
                 )
+
 
             if (
                 message["role"]
@@ -2503,53 +2738,49 @@ with tab_chat:
                     ]
                 )
 
+
                 if (
-                    previous_message["role"]
+                    previous_message[
+                        "role"
+                    ]
                     == "user"
                 ):
 
                     feedback_buttons(
                         index,
+
                         previous_message[
                             "content"
                         ],
+
                         message[
                             "content"
                         ],
                     )
 
-    # --------------------------------------------------------
-    # INPUT
-    # --------------------------------------------------------
+
+    # ========================================================
+    # CHAT INPUT
+    # ========================================================
 
     prompt = st.chat_input(
         T["placeholder"]
     )
 
-    # Quick-question support
-
-    if (
-        not prompt
-        and "quick_prompt"
-        in st.session_state
-    ):
-
-        prompt = st.session_state.pop(
-            "quick_prompt"
-        )
-
-    # --------------------------------------------------------
-    # PROCESS MESSAGE
-    # --------------------------------------------------------
 
     if prompt:
 
         prompt = prompt.strip()
 
+
         if not prompt:
+
             st.stop()
 
-        # Add user message
+
+        # ====================================================
+        # SAVE USER MESSAGE
+        # ====================================================
 
         st.session_state.messages.append(
             {
@@ -2558,32 +2789,42 @@ with tab_chat:
             }
         )
 
+
+        # ====================================================
+        # DISPLAY USER MESSAGE
+        # ====================================================
+
         with st.chat_message(
             "user",
-            avatar="🧑",
+            avatar="🧑"
         ):
 
             st.markdown(
                 prompt
             )
 
-        # ----------------------------------------------------
-        # SAFETY FIRST
-        # ----------------------------------------------------
-
-        allowed, safety_type, safety_message = (
-            check_guardrails(
-                prompt
-            )
-        )
 
         source = None
 
-        # ----------------------------------------------------
-        # GREETING
-        # ----------------------------------------------------
 
-        if is_simple_greeting(prompt):
+        # ====================================================
+        # IMPORTANT:
+        # GREETING CHECK MUST HAPPEN BEFORE RAG.
+        #
+        # This fixes:
+        # hi
+        # hello
+        # hey
+        # good morning
+        # good afternoon
+        # good evening
+        #
+        # from incorrectly reaching ChromaDB.
+        # ====================================================
+
+        if is_simple_greeting(
+            prompt
+        ):
 
             time_greeting = (
                 get_time_greeting()[
@@ -2591,100 +2832,135 @@ with tab_chat:
                 ]
             )
 
+
             response = (
                 T["greeting_reply"].format(
-                    user=get_user_display_name(),
-                    time_greeting=time_greeting,
+                    user=
+                        get_user_display_name(),
+
+                    time_greeting=
+                        time_greeting,
                 )
             )
 
-        # ----------------------------------------------------
-        # SAFETY RESPONSE
-        # ----------------------------------------------------
-
-        elif not allowed:
-
-            response = safety_message
 
         else:
 
-            question_type = (
-                detect_question_type(
+            # =================================================
+            # SAFETY FIRST
+            # =================================================
+
+            allowed, safety_type, safety_message = (
+                check_guardrails(
                     prompt
                 )
             )
 
-            # ------------------------------------------------
-            # UNRELATED
-            # ------------------------------------------------
 
-            if question_type == "unrelated":
+            if not allowed:
 
-                response = T["unrelated"]
+                response = safety_message
 
-            # ------------------------------------------------
-            # RAG SEARCH
-            # ------------------------------------------------
 
             else:
 
-                # Small visual processing message
+                # =============================================
+                # QUESTION TYPE
+                # =============================================
 
-                with st.chat_message(
-                    "assistant",
-                    avatar="🎗️",
+                question_type = (
+                    detect_question_type(
+                        prompt
+                    )
+                )
+
+
+                # =============================================
+                # UNRELATED
+                # =============================================
+
+                if (
+                    question_type
+                    == "unrelated"
                 ):
 
-                    with st.spinner(
-                        "Searching the approved knowledge base..."
-                    ):
+                    response = T[
+                        "unrelated"
+                    ]
 
-                        result = search_knowledge(
-                            prompt,
-                            st.session_state.language,
-                        )
-
-                if result:
-
-                    source = result
-
-                    answer = result.get(
-                        "answer",
-                        "",
-                    )
-
-                    if (
-                        result.get("type")
-                        == "hospital"
-                    ):
-
-                        response = (
-                            f"**Hospital Information**\n\n"
-                            f"{answer}\n\n"
-                            f"*This answer comes from the approved "
-                            f"hospital knowledge base. For personal "
-                            f"medical decisions, please follow your "
-                            f"treating doctor's advice.*"
-                        )
-
-                    else:
-
-                        response = (
-                            f"**Answer**\n\n"
-                            f"{answer}\n\n"
-                            f"*This answer comes from the approved "
-                            f"hospital knowledge base. For personal "
-                            f"medical decisions, please follow your "
-                            f"treating doctor's advice.*"
-                        )
 
                 else:
 
-                    response = T["unknown"]
+                    # =========================================
+                    # RAG SEARCH
+                    # =========================================
 
-        # ----------------------------------------------------
+                    result = search_knowledge(
+                        prompt,
+                        st.session_state.language
+                    )
+
+
+                    if result:
+
+                        source = result
+
+
+                        answer = result.get(
+                            "answer",
+                            ""
+                        )
+
+
+                        # =====================================
+                        # HOSPITAL INFORMATION
+                        # =====================================
+
+                        if (
+                            result.get(
+                                "type"
+                            )
+                            == "hospital"
+                        ):
+
+                            response = (
+                                "**Hospital Information**\n\n"
+                                f"{answer}\n\n"
+                                "*This answer comes from the "
+                                "approved hospital knowledge base. "
+                                "For personal medical decisions, "
+                                "please follow your treating "
+                                "doctor's advice.*"
+                            )
+
+
+                        # =====================================
+                        # FAQ ANSWER
+                        # =====================================
+
+                        else:
+
+                            response = (
+                                "**Answer**\n\n"
+                                f"{answer}\n\n"
+                                "*This answer comes from the "
+                                "approved hospital knowledge base. "
+                                "For personal medical decisions, "
+                                "please follow your treating "
+                                "doctor's advice.*"
+                            )
+
+
+                    else:
+
+                        response = T[
+                            "unknown"
+                        ]
+
+
+        # ====================================================
         # SAVE ASSISTANT RESPONSE
-        # ----------------------------------------------------
+        # ====================================================
 
         st.session_state.messages.append(
             {
@@ -2694,7 +2970,26 @@ with tab_chat:
             }
         )
 
-        st.rerun()
+
+        # ====================================================
+        # DISPLAY ASSISTANT RESPONSE
+        # ====================================================
+
+        with st.chat_message(
+            "assistant",
+            avatar="🎗️"
+        ):
+
+            st.markdown(
+                response
+            )
+
+
+            if source:
+
+                display_source(
+                    source
+                )
 
 
 # ============================================================
@@ -2707,73 +3002,74 @@ with tab_info:
         f"### {T['treatment']}"
     )
 
-    col1, col2 = st.columns(2)
+
+    col1, col2 = st.columns(
+        2
+    )
+
 
     with col1:
 
         st.markdown(
             """
-<div class="info-card">
-    <div class="info-card-title">
-        📋 Before Treatment
-    </div>
-    <div class="info-card-text">
-        Follow the instructions provided by your radiation oncology
-        treatment team before your treatment sessions.
-    </div>
-</div>
-""",
+            <div class="glass-card">
+                <h4>📋 Before Treatment</h4>
+                <p>
+                    Follow the instructions provided by your
+                    radiation oncology treatment team.
+                </p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
+
 
         st.write("")
 
+
         st.markdown(
             """
-<div class="info-card">
-    <div class="info-card-title">
-        🩺 During Treatment
-    </div>
-    <div class="info-card-text">
-        You will be positioned carefully and asked to remain still
-        during treatment.
-    </div>
-</div>
-""",
+            <div class="glass-card">
+                <h4>🩺 During Treatment</h4>
+                <p>
+                    You will be positioned carefully and asked
+                    to remain still during treatment.
+                </p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
+
 
     with col2:
 
         st.markdown(
             """
-<div class="info-card">
-    <div class="info-card-title">
-        ✅ After Treatment
-    </div>
-    <div class="info-card-text">
-        Follow the instructions given by your healthcare team after
-        each treatment session.
-    </div>
-</div>
-""",
+            <div class="glass-card">
+                <h4>✅ After Treatment</h4>
+                <p>
+                    Follow the instructions given by your
+                    healthcare team after each session.
+                </p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
 
+
         st.write("")
+
 
         st.markdown(
             """
-<div class="info-card">
-    <div class="info-card-title">
-        ☎️ Contact Your Healthcare Team
-    </div>
-    <div class="info-card-text">
-        Contact your healthcare team if you have concerns or symptoms
-        that require attention.
-    </div>
-</div>
-""",
+            <div class="glass-card">
+                <h4>☎️ Contact Your Healthcare Team</h4>
+                <p>
+                    Contact your healthcare team if you have
+                    concerns or symptoms that require attention.
+                </p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
 
@@ -2788,12 +3084,16 @@ with tab_faq:
         f"### {T['faq_header']}"
     )
 
+
     search_text = st.text_input(
         T["faq_search"],
-        placeholder="Example: side effects, pain, skin...",
+        placeholder=
+        "Example: side effects, pain, skin..."
     )
 
+
     all_faqs = []
+
 
     stage_names = {
 
@@ -2807,12 +3107,14 @@ with tab_faq:
             "After Treatment",
     }
 
+
     for stage_key, questions in FAQ_DATA.items():
 
         stage_name = stage_names.get(
             stage_key,
-            "Radiation Oncology",
+            "Radiation Oncology"
         )
+
 
         for item in questions:
 
@@ -2825,6 +3127,7 @@ with tab_faq:
                     st.session_state.language
                 ]
 
+
                 all_faqs.append(
                     (
                         stage_name,
@@ -2833,11 +3136,13 @@ with tab_faq:
                     )
                 )
 
+
     if search_text:
 
         search_lower = (
             search_text.lower()
         )
+
 
         filtered_faqs = [
 
@@ -2857,9 +3162,11 @@ with tab_faq:
 
         ]
 
+
     else:
 
         filtered_faqs = all_faqs
+
 
     if not filtered_faqs:
 
@@ -2867,16 +3174,19 @@ with tab_faq:
             T["no_faq"]
         )
 
+
     else:
 
         st.caption(
-            f"{len(filtered_faqs)} approved FAQ(s)"
+            f"{len(filtered_faqs)} "
+            "approved FAQ(s)"
         )
+
 
         for (
             stage,
             question,
-            answer,
+            answer
         ) in filtered_faqs:
 
             with st.expander(
@@ -2895,13 +3205,15 @@ with tab_faq:
 with tab_video:
 
     st.markdown(
-        f"### 🎥 {T['video']}"
+        "### 🎥 How the Radiation Machine Works"
     )
 
+
     st.caption(
-        "A short video from your care team explaining what "
-        "the radiation machine does during treatment."
+        "A short video from your care team walking you through "
+        "what the machine does during treatment."
     )
+
 
     video_extensions = [
 
@@ -2914,7 +3226,9 @@ with tab_video:
 
     ]
 
+
     video_file = None
+
 
     if VIDEO_DIR.exists():
 
@@ -2926,11 +3240,13 @@ with tab_video:
                 )
             )
 
+
             if matches:
 
                 video_file = matches[0]
 
                 break
+
 
     if video_file:
 
@@ -2950,10 +3266,13 @@ with tab_video:
 # ============================================================
 
 st.markdown(
-    f"""
-<div class="footer-note">
-{T["disclaimer"]}
-</div>
-""",
+    """
+    <div class="footer-note">
+        This chatbot provides patient education information
+        from an approved knowledge base.<br>
+        It does not replace advice from your treating doctor
+        or healthcare team.
+    </div>
+    """,
     unsafe_allow_html=True,
 )
