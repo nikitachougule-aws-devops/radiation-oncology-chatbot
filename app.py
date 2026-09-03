@@ -248,6 +248,12 @@ UI_STRINGS = {
         "placeholder":
             "Type your question here...",
 
+        "welcome":
+            "👋 Hello{user}! {time_greeting}!\n\nI'm your Patient Information Assistant. How may I help you today?",
+
+        "greeting_reply":
+            "👋 Hello{user}! {time_greeting}! How may I help you today?",
+
         "unknown":
             "I couldn't find an approved answer to that question in the hospital knowledge base.\n\n"
             "I don't want to guess or provide incorrect medical information. "
@@ -315,6 +321,12 @@ UI_STRINGS = {
         "placeholder":
             "अपना प्रश्न यहाँ लिखें...",
 
+        "welcome":
+            "👋 नमस्ते{user}! {time_greeting}!\n\nमैं आपका Patient Information Assistant हूँ। मैं आपकी कैसे मदद कर सकता हूँ?",
+
+        "greeting_reply":
+            "👋 नमस्ते{user}! {time_greeting}! मैं आपकी कैसे मदद कर सकता हूँ?",
+
         "unknown":
             "मुझे अस्पताल की स्वीकृत जानकारी में इस प्रश्न का उत्तर नहीं मिला।\n\n"
             "मैं अनुमान लगाकर गलत चिकित्सा जानकारी नहीं देना चाहता। "
@@ -378,6 +390,12 @@ UI_STRINGS = {
         "placeholder":
             "तुमचा प्रश्न येथे लिहा...",
 
+        "welcome":
+            "👋 नमस्कार{user}! {time_greeting}!\n\nमी तुमचा Patient Information Assistant आहे. मी तुमची कशी मदत करू शकतो?",
+
+        "greeting_reply":
+            "👋 नमस्कार{user}! {time_greeting}! मी तुमची कशी मदत करू शकतो?",
+
         "unknown":
             "रुग्णालयाच्या मंजूर माहितीमध्ये मला या प्रश्नाचे उत्तर सापडले नाही.\n\n"
             "मला अंदाज लावून चुकीची वैद्यकीय माहिती द्यायची नाही. "
@@ -432,6 +450,51 @@ UI_STRINGS = {
 
 
 # ============================================================
+# CHAT GREETING HELPERS
+# ============================================================
+
+def get_time_greeting():
+    hour = datetime.now().hour
+    if 5 <= hour < 12:
+        return {"en": "Good morning", "hi": "सुप्रभात", "mr": "शुभ सकाळ"}
+    if 12 <= hour < 17:
+        return {"en": "Good afternoon", "hi": "नमस्कार", "mr": "शुभ दुपार"}
+    if 17 <= hour < 22:
+        return {"en": "Good evening", "hi": "शुभ संध्या", "mr": "शुभ संध्याकाळ"}
+    return {"en": "Hello", "hi": "नमस्ते", "mr": "नमस्कार"}
+
+
+def get_user_display_name():
+    name = st.session_state.get("user_name", "").strip()
+    if not name:
+        return ""
+    return f", {name}"
+
+
+def build_welcome_message():
+    language = st.session_state.language
+    time_greeting = get_time_greeting()[language]
+    user = get_user_display_name()
+    return T[language]["welcome"].format(
+        user=user,
+        time_greeting=time_greeting,
+    )
+
+
+def is_simple_greeting(text):
+    normalized = normalize_text(text) if "normalize_text" in globals() else re.sub(r"\s+", " ", text.lower()).strip()
+    normalized = re.sub(r"[.!?,\-]+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    greeting_phrases = {
+        "hi", "hello", "hey", "hii", "hiii",
+        "good morning", "good afternoon", "good evening",
+        "namaste", "नमस्ते", "सुप्रभात",
+        "नमस्कार", "शुभ सकाळ", "शुभ संध्याकाळ",
+    }
+    return normalized in greeting_phrases
+
+
+# ============================================================
 # SESSION STATE
 # ============================================================
 
@@ -439,14 +502,16 @@ if "language" not in st.session_state:
     st.session_state.language = "en"
 
 
+if "user_name" not in st.session_state:
+    st.session_state.user_name = ""
+
+
 if "messages" not in st.session_state:
 
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content":
-                "👋 Hello! I'm your Patient Information Assistant. "
-                "How can I help you today?",
+            "content": "",
         }
     ]
 
@@ -458,6 +523,10 @@ if "feedback_given" not in st.session_state:
 T = UI_STRINGS[
     st.session_state.language
 ]
+
+
+if not st.session_state.messages[0].get("content"):
+    st.session_state.messages[0]["content"] = build_welcome_message()
 
 
 # ============================================================
@@ -649,6 +718,17 @@ with st.sidebar:
     st.write("")
 
 
+    user_name = st.text_input(
+        "👤 Your name (optional)",
+        value=st.session_state.user_name,
+        placeholder="Enter your name",
+    )
+
+    if user_name != st.session_state.user_name:
+        st.session_state.user_name = user_name.strip()
+        if st.session_state.messages:
+            st.session_state.messages[0]["content"] = build_welcome_message()
+
     selected_language = st.selectbox(
         "🌐 Language",
         options=[
@@ -677,6 +757,9 @@ with st.sidebar:
             selected_language
         )
 
+        if st.session_state.messages:
+            st.session_state.messages[0]["content"] = build_welcome_message()
+
         st.rerun()
 
 
@@ -688,9 +771,7 @@ with st.sidebar:
         st.session_state.messages = [
             {
                 "role": "assistant",
-                "content":
-                    "👋 Hello! I'm your Patient Information Assistant. "
-                    "How can I help you today?",
+                "content": build_welcome_message(),
             }
         ]
 
@@ -2317,7 +2398,17 @@ with tab_chat:
         source = None
 
 
-        if not allowed:
+        # Handle simple greetings locally. This prevents greetings such as
+        # "Hi" or "Good morning" from being sent to the medical KB.
+        if is_simple_greeting(prompt):
+            time_greeting = get_time_greeting()[st.session_state.language]
+            response = T["greeting_reply"].format(
+                user=get_user_display_name(),
+                time_greeting=time_greeting,
+            )
+
+
+        elif not allowed:
 
             response = safety_message
 
