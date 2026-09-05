@@ -722,10 +722,6 @@ with st.sidebar:
     )
 
 
-    st.divider()
-
-
-
     st.caption(
         "🔒 Medical safety guardrails: Enabled"
     )
