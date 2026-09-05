@@ -730,26 +730,6 @@ with st.sidebar:
     )
 
 
-    if HOSPITAL_KB_LOADED:
-        st.success(
-            "✅ Hospital information loaded"
-        )
-    else:
-        st.error(
-            "❌ Hospital information not loaded"
-        )
-
-
-    if FAQ_KB_LOADED:
-        st.success(
-            f"✅ Approved FAQs loaded: {TOTAL_FAQS}"
-        )
-    else:
-        st.error(
-            "❌ FAQ knowledge base not loaded"
-        )
-
-
     st.caption(
         "🔒 Medical safety guardrails: Enabled"
     )
