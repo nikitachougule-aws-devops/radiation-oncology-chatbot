@@ -725,10 +725,6 @@ with st.sidebar:
     st.divider()
 
 
-    st.markdown(
-        "### 📚 Knowledge Base"
-    )
-
 
     st.caption(
         "🔒 Medical safety guardrails: Enabled"
