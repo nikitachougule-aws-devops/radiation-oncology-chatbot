@@ -722,6 +722,9 @@ with st.sidebar:
     )
 
 
+    st.write("")
+
+
     st.caption(
         "🔒 Medical safety guardrails: Enabled"
     )
