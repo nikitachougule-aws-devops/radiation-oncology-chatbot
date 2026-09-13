@@ -248,6 +248,12 @@ UI_STRINGS = {
         "placeholder":
             "Type your question here...",
 
+        "greeting":
+            "👋 Hello! I'm your Radiation Oncology patient information "
+            "assistant. I can help with questions about radiation "
+            "treatment, preparation, side effects, or hospital "
+            "information. What would you like to know?",
+
         "unknown":
             "I couldn't find an approved answer to that question in the hospital knowledge base.\n\n"
             "I don't want to guess or provide incorrect medical information. "
@@ -315,6 +321,11 @@ UI_STRINGS = {
         "placeholder":
             "अपना प्रश्न यहाँ लिखें...",
 
+        "greeting":
+            "👋 नमस्ते! मैं आपकी Radiation Oncology रोगी सूचना सहायक हूँ। "
+            "मैं रेडिएशन उपचार, तैयारी, दुष्प्रभाव या अस्पताल की जानकारी "
+            "से जुड़े सवालों में मदद कर सकता हूँ। आप क्या जानना चाहेंगे?",
+
         "unknown":
             "मुझे अस्पताल की स्वीकृत जानकारी में इस प्रश्न का उत्तर नहीं मिला।\n\n"
             "मैं अनुमान लगाकर गलत चिकित्सा जानकारी नहीं देना चाहता। "
@@ -377,6 +388,11 @@ UI_STRINGS = {
 
         "placeholder":
             "तुमचा प्रश्न येथे लिहा...",
+
+        "greeting":
+            "👋 नमस्कार! मी तुमचा Radiation Oncology रुग्ण माहिती सहाय्यक "
+            "आहे. मी रेडिएशन उपचार, तयारी, दुष्परिणाम किंवा रुग्णालयाच्या "
+            "माहितीबाबत मदत करू शकतो. तुम्हाला काय जाणून घ्यायचे आहे?",
 
         "unknown":
             "रुग्णालयाच्या मंजूर माहितीमध्ये मला या प्रश्नाचे उत्तर सापडले नाही.\n\n"
@@ -1091,6 +1107,43 @@ def normalize_text(text):
 
 
 # ============================================================
+# GREETINGS
+# ============================================================
+# Small-talk / greeting detection, separate from real questions.
+# Only matches when the WHOLE message (after stripping punctuation)
+# is a greeting phrase, so a real question that happens to contain
+# a similar word is never misclassified.
+
+GREETING_PHRASES = {
+
+    "hi", "hii", "hiii", "hello", "helo", "hlo", "hey", "heya",
+    "yo", "hi there", "hello there", "hey there",
+
+    "good morning", "good afternoon", "good evening", "good day",
+
+    "namaste", "namaskar",
+
+    "how are you", "how are you doing", "whats up", "what's up",
+
+    "greetings",
+
+}
+
+
+def is_greeting(text):
+
+    normalized = normalize_text(text)
+
+    normalized = re.sub(
+        r"[^\w\s]",
+        "",
+        normalized
+    ).strip()
+
+    return normalized in GREETING_PHRASES
+
+
+# ============================================================
 # MEANINGFUL WORDS
 # ============================================================
 
@@ -1159,6 +1212,11 @@ def detect_question_type(question):
     text = normalize_text(
         question
     )
+
+
+    if is_greeting(question):
+
+        return "greeting"
 
 
     if any(
@@ -2308,7 +2366,12 @@ with tab_chat:
             )
 
 
-            if question_type == "unrelated":
+            if question_type == "greeting":
+
+                response = T["greeting"]
+
+
+            elif question_type == "unrelated":
 
                 response = T["unrelated"]
 
