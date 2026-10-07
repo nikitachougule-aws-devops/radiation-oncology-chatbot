@@ -1,18 +1,17 @@
-import streamlit as st
-from pathlib import Path
-from datetime import datetime
 import csv
-import re
 import hashlib
 import io
-import os
+import re
+from datetime import datetime
+from pathlib import Path
 
 import chromadb
+import streamlit as st
 from sentence_transformers import SentenceTransformer
 
 
 # ============================================================
-# 1. APP CONFIGURATION
+# CONFIG
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -21,7 +20,7 @@ APP_NAME = "NOVA AI"
 APP_ICON = "✦"
 APP_SUBTITLE = "Your intelligent AI workspace"
 
-KB_DIR = BASE_DIR / "knowledge"
+KNOWLEDGE_DIR = BASE_DIR / "knowledge"
 UPLOAD_DIR = BASE_DIR / "uploads"
 CHROMA_DIR = BASE_DIR / "chroma_db"
 FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
@@ -32,30 +31,13 @@ EMBEDDING_MODEL = (
 
 COLLECTION_NAME = "nova_ai_knowledge"
 
-SUPPORTED_TEXT_FILES = {
-    ".txt",
-    ".md",
-    ".csv",
-}
-
-SUPPORTED_DOCUMENT_FILES = {
-    ".pdf",
-    ".docx",
-    ".xlsx",
-}
-
-
-# ============================================================
-# 2. CREATE DIRECTORIES
-# ============================================================
-
-KB_DIR.mkdir(exist_ok=True)
+KNOWLEDGE_DIR.mkdir(exist_ok=True)
 UPLOAD_DIR.mkdir(exist_ok=True)
 CHROMA_DIR.mkdir(exist_ok=True)
 
 
 # ============================================================
-# 3. PAGE CONFIG
+# PAGE
 # ============================================================
 
 st.set_page_config(
@@ -67,186 +49,117 @@ st.set_page_config(
 
 
 # ============================================================
-# 4. CUSTOM CSS
+# CSS
 # ============================================================
 
 st.markdown(
     """
     <style>
 
-    /* -------------------------------------------------------
-       GLOBAL
-    ------------------------------------------------------- */
-
     .stApp {
-        background:
-            radial-gradient(
-                circle at 20% 10%,
-                rgba(99, 102, 241, 0.10),
-                transparent 28%
-            ),
-            radial-gradient(
-                circle at 85% 20%,
-                rgba(14, 165, 233, 0.10),
-                transparent 25%
-            ),
-            #f8fafc;
+        background: #f8fafc;
     }
-
-    .main {
-        padding-top: 1rem;
-    }
-
-    /* -------------------------------------------------------
-       SIDEBAR
-    ------------------------------------------------------- */
 
     section[data-testid="stSidebar"] {
-        background:
-            linear-gradient(
-                180deg,
-                #0f172a 0%,
-                #111827 55%,
-                #172554 100%
-            );
+        background: linear-gradient(
+            180deg,
+            #0f172a 0%,
+            #172554 100%
+        );
     }
 
     section[data-testid="stSidebar"] * {
         color: #e5e7eb;
     }
 
-    .brand-box {
-        padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.10);
-        margin-bottom: 1rem;
+    .brand {
+        padding: 20px 5px;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+        margin-bottom: 20px;
     }
 
     .brand-title {
-        font-size: 1.65rem;
+        font-size: 27px;
         font-weight: 800;
-        letter-spacing: -0.04em;
     }
 
     .brand-subtitle {
         color: #94a3b8;
-        font-size: 0.82rem;
-        margin-top: 0.25rem;
+        font-size: 13px;
+        margin-top: 5px;
     }
 
-    .status-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 0.8rem;
-        padding: 5px 10px;
-        border-radius: 999px;
-        background: rgba(34, 197, 94, 0.12);
-        color: #86efac !important;
-        font-size: 0.75rem;
-    }
-
-    .status-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #22c55e;
+    .online {
+        margin-top: 12px;
         display: inline-block;
+        background: rgba(34,197,94,.15);
+        color: #86efac !important;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
     }
-
-    /* -------------------------------------------------------
-       HERO
-    ------------------------------------------------------- */
 
     .hero {
+        padding: 42px;
         border-radius: 24px;
-        padding: 2.3rem;
-        margin-bottom: 1.4rem;
-
-        background:
-            linear-gradient(
-                135deg,
-                rgba(79, 70, 229, 0.96),
-                rgba(14, 165, 233, 0.92)
-            );
-
+        margin-bottom: 25px;
         color: white;
-        box-shadow:
-            0 20px 50px rgba(15, 23, 42, 0.12);
+        background: linear-gradient(
+            135deg,
+            #4f46e5,
+            #0891b2
+        );
+        box-shadow: 0 15px 45px rgba(15,23,42,.15);
     }
 
-    .hero-title {
-        font-size: 2.7rem;
-        font-weight: 850;
-        letter-spacing: -0.055em;
-        line-height: 1.05;
+    .hero h1 {
+        font-size: 44px;
+        margin: 0;
+        letter-spacing: -2px;
     }
 
-    .hero-subtitle {
-        font-size: 1.05rem;
-        opacity: 0.90;
-        margin-top: 0.75rem;
-        max-width: 720px;
+    .hero p {
+        font-size: 17px;
+        opacity: .9;
+        max-width: 750px;
     }
 
-    /* -------------------------------------------------------
-       CARDS
-    ------------------------------------------------------- */
-
-    .feature-card {
-        padding: 1.2rem;
+    .feature {
+        padding: 20px;
+        border: 1px solid #e2e8f0;
         border-radius: 18px;
-        border: 1px solid rgba(148,163,184,0.22);
-        background: rgba(255,255,255,0.75);
+        background: white;
         min-height: 130px;
-        transition: 0.2s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 35px rgba(15,23,42,0.08);
     }
 
     .feature-icon {
-        font-size: 1.7rem;
-        margin-bottom: 0.6rem;
+        font-size: 28px;
     }
 
     .feature-title {
-        font-weight: 750;
-        color: #0f172a;
+        font-weight: 700;
+        margin-top: 8px;
     }
 
-    .feature-text {
-        font-size: 0.82rem;
+    .feature-description {
         color: #64748b;
-        margin-top: 0.25rem;
+        font-size: 13px;
+        margin-top: 5px;
     }
 
-    .source-card {
-        border-left: 4px solid #6366f1;
-        padding: 0.75rem 1rem;
+    .source {
+        padding: 12px;
+        margin: 8px 0;
         background: #f8fafc;
+        border-left: 4px solid #6366f1;
         border-radius: 8px;
-        margin-bottom: 0.5rem;
     }
-
-    /* -------------------------------------------------------
-       CHAT
-    ------------------------------------------------------- */
-
-    [data-testid="stChatMessage"] {
-        border-radius: 16px;
-    }
-
-    /* -------------------------------------------------------
-       FOOTER
-    ------------------------------------------------------- */
 
     .footer {
         text-align: center;
         color: #94a3b8;
-        font-size: 0.78rem;
-        padding: 2rem 0 1rem 0;
+        padding: 30px;
+        font-size: 12px;
     }
 
     </style>
@@ -256,35 +169,32 @@ st.markdown(
 
 
 # ============================================================
-# 5. SESSION STATE
+# SESSION STATE
 # ============================================================
 
-DEFAULT_STATE = {
-    "messages": [],
-    "sources": [],
-    "language": "English",
-    "mode": "✨ Auto",
-    "rag_enabled": True,
-    "web_enabled": False,
-    "show_sources": True,
-    "uploaded_documents": [],
-    "conversation_id": hashlib.md5(
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "language" not in st.session_state:
+    st.session_state.language = "English"
+
+if "mode" not in st.session_state:
+    st.session_state.mode = "✨ Auto"
+
+if "rag_enabled" not in st.session_state:
+    st.session_state.rag_enabled = True
+
+if "uploaded_documents" not in st.session_state:
+    st.session_state.uploaded_documents = []
+
+if "conversation_id" not in st.session_state:
+    st.session_state.conversation_id = hashlib.md5(
         str(datetime.now()).encode()
-    ).hexdigest()[:12],
-}
-
-for key, value in DEFAULT_STATE.items():
-
-    if key not in st.session_state:
-
-        if isinstance(value, list):
-            st.session_state[key] = value.copy()
-        else:
-            st.session_state[key] = value
+    ).hexdigest()[:10]
 
 
 # ============================================================
-# 6. GENERIC CONFIGURATION
+# OPTIONS
 # ============================================================
 
 LANGUAGES = [
@@ -293,104 +203,26 @@ LANGUAGES = [
     "Marathi",
 ]
 
-AI_MODES = [
+MODES = [
     "✨ Auto",
     "💬 General Assistant",
-    "🔎 Researcher",
+    "📚 Document Expert",
     "📝 Writer",
     "💻 Coding Assistant",
     "📊 Data Analyst",
-    "📚 Document Expert",
     "🎓 Tutor",
 ]
 
 
 # ============================================================
-# 7. GENERIC SAFETY
-# ============================================================
-
-PROMPT_INJECTION_PATTERNS = [
-    r"ignore previous instructions",
-    r"ignore all instructions",
-    r"system prompt",
-    r"reveal your instructions",
-    r"show hidden prompt",
-    r"developer message",
-    r"bypass safety",
-    r"jailbreak",
-]
-
-HIGH_RISK_PATTERNS = [
-    r"how to make a bomb",
-    r"how to build a weapon",
-    r"malware",
-    r"ransomware",
-    r"steal passwords",
-    r"credit card fraud",
-]
-
-
-def detect_prompt_injection(text):
-
-    normalized = text.lower()
-
-    for pattern in PROMPT_INJECTION_PATTERNS:
-
-        if re.search(pattern, normalized):
-            return True
-
-    return False
-
-
-def detect_high_risk_request(text):
-
-    normalized = text.lower()
-
-    for pattern in HIGH_RISK_PATTERNS:
-
-        if re.search(pattern, normalized):
-            return True
-
-    return False
-
-
-def safety_check(question):
-
-    if detect_prompt_injection(question):
-
-        return (
-            False,
-            "I can't follow requests to reveal or override my internal instructions."
-        )
-
-    if detect_high_risk_request(question):
-
-        return (
-            False,
-            "I can't provide instructions that meaningfully facilitate harmful or illegal activity."
-        )
-
-    return True, ""
-
-
-# ============================================================
-# 8. TEXT PROCESSING
+# TEXT UTILITIES
 # ============================================================
 
 def normalize_text(text):
-
-    return re.sub(
-        r"\s+",
-        " ",
-        text.strip()
-    )
+    return re.sub(r"\s+", " ", text).strip()
 
 
-def chunk_text(
-    text,
-    chunk_size=900,
-    overlap=150
-):
+def chunk_text(text, chunk_size=800, overlap=100):
 
     text = normalize_text(text)
 
@@ -403,198 +235,169 @@ def chunk_text(
 
     while start < len(text):
 
-        end = start + chunk_size
+        end = min(
+            start + chunk_size,
+            len(text)
+        )
 
-        chunk = text[start:end]
+        chunk = text[start:end].strip()
 
-        if chunk.strip():
+        if chunk:
+            chunks.append(chunk)
 
-            chunks.append(chunk.strip())
+        if end >= len(text):
+            break
 
-        start = end - overlap
+        start = max(
+            end - overlap,
+            start + 1
+        )
 
     return chunks
 
 
 # ============================================================
-# 9. DOCUMENT LOADING
+# DOCUMENT READERS
 # ============================================================
-
-def read_text_file(path):
-
-    try:
-
-        return path.read_text(
-            encoding="utf-8",
-            errors="ignore"
-        )
-
-    except Exception:
-
-        return ""
-
 
 def read_uploaded_file(uploaded_file):
 
-    suffix = Path(
+    extension = Path(
         uploaded_file.name
     ).suffix.lower()
 
     try:
 
-        if suffix in {".txt", ".md"}:
+        if extension in [".txt", ".md", ".csv"]:
 
-            return uploaded_file.read().decode(
+            return uploaded_file.getvalue().decode(
                 "utf-8",
                 errors="ignore"
             )
 
-        if suffix == ".csv":
+        if extension == ".pdf":
 
-            data = uploaded_file.read()
+            import pypdf
 
-            return data.decode(
-                "utf-8",
-                errors="ignore"
+            reader = pypdf.PdfReader(
+                io.BytesIO(
+                    uploaded_file.getvalue()
+                )
             )
 
-        if suffix == ".pdf":
+            pages = []
 
-            try:
+            for page in reader.pages:
 
-                import pypdf
+                text = page.extract_text()
 
-                reader = pypdf.PdfReader(
-                    io.BytesIO(
-                        uploaded_file.getvalue()
-                    )
+                if text:
+                    pages.append(text)
+
+            return "\n".join(pages)
+
+        if extension == ".docx":
+
+            from docx import Document
+
+            document = Document(
+                io.BytesIO(
+                    uploaded_file.getvalue()
+                )
+            )
+
+            return "\n".join(
+                p.text
+                for p in document.paragraphs
+                if p.text.strip()
+            )
+
+        if extension == ".xlsx":
+
+            import pandas as pd
+
+            excel_file = io.BytesIO(
+                uploaded_file.getvalue()
+            )
+
+            workbook = pd.ExcelFile(
+                excel_file
+            )
+
+            output = []
+
+            for sheet in workbook.sheet_names:
+
+                df = pd.read_excel(
+                    workbook,
+                    sheet_name=sheet
                 )
 
-                pages = []
-
-                for page in reader.pages:
-
-                    pages.append(
-                        page.extract_text() or ""
-                    )
-
-                return "\n".join(pages)
-
-            except ImportError:
-
-                return (
-                    "PDF support requires the "
-                    "`pypdf` package."
+                output.append(
+                    f"Sheet: {sheet}"
                 )
 
-        if suffix == ".docx":
-
-            try:
-
-                from docx import Document
-
-                doc = Document(
-                    io.BytesIO(
-                        uploaded_file.getvalue()
-                    )
+                output.append(
+                    df.to_string(index=False)
                 )
 
-                return "\n".join(
-                    paragraph.text
-                    for paragraph in doc.paragraphs
-                )
+            return "\n\n".join(output)
 
-            except ImportError:
+    except Exception as error:
 
-                return (
-                    "DOCX support requires the "
-                    "`python-docx` package."
-                )
-
-        if suffix == ".xlsx":
-
-            try:
-
-                import pandas as pd
-
-                excel = pd.ExcelFile(
-                    io.BytesIO(
-                        uploaded_file.getvalue()
-                    )
-                )
-
-                output = []
-
-                for sheet in excel.sheet_names:
-
-                    df = pd.read_excel(
-                        excel,
-                        sheet_name=sheet
-                    )
-
-                    output.append(
-                        f"Sheet: {sheet}\n"
-                    )
-
-                    output.append(
-                        df.to_string(
-                            index=False
-                        )
-                    )
-
-                return "\n\n".join(output)
-
-            except ImportError:
-
-                return (
-                    "XLSX support requires "
-                    "`pandas` and `openpyxl`."
-                )
-
-    except Exception as exc:
-
-        return f"Unable to read file: {exc}"
+        return (
+            f"Could not read "
+            f"{uploaded_file.name}: {error}"
+        )
 
     return ""
 
 
 # ============================================================
-# 10. GENERIC KNOWLEDGE DOCUMENTS
+# KNOWLEDGE BASE
 # ============================================================
 
 @st.cache_data
-def load_knowledge_documents():
+def load_local_knowledge():
 
     documents = []
 
-    if not KB_DIR.exists():
+    if not KNOWLEDGE_DIR.exists():
         return documents
 
-    for path in KB_DIR.rglob("*"):
+    supported = {
+        ".txt",
+        ".md",
+        ".csv",
+    }
 
-        if not path.is_file():
+    for file_path in KNOWLEDGE_DIR.rglob("*"):
+
+        if not file_path.is_file():
             continue
 
-        suffix = path.suffix.lower()
-
-        if suffix not in SUPPORTED_TEXT_FILES:
+        if file_path.suffix.lower() not in supported:
             continue
 
-        text = read_text_file(path)
+        try:
 
-        if not text.strip():
+            text = file_path.read_text(
+                encoding="utf-8",
+                errors="ignore"
+            )
+
+        except Exception:
             continue
 
         chunks = chunk_text(text)
 
-        for index, chunk in enumerate(chunks):
+        for number, chunk in enumerate(chunks):
 
             documents.append(
                 {
                     "text": chunk,
-                    "source": path.name,
-                    "chunk": index,
-                    "path": str(path),
+                    "source": file_path.name,
+                    "chunk": number,
                 }
             )
 
@@ -602,11 +405,11 @@ def load_knowledge_documents():
 
 
 # ============================================================
-# 11. EMBEDDING MODEL
+# EMBEDDINGS
 # ============================================================
 
 @st.cache_resource
-def load_embedding_model():
+def get_embedding_model():
 
     return SentenceTransformer(
         EMBEDDING_MODEL
@@ -614,11 +417,11 @@ def load_embedding_model():
 
 
 # ============================================================
-# 12. CHROMADB
+# CHROMADB
 # ============================================================
 
 @st.cache_resource
-def load_vector_database():
+def get_collection():
 
     client = chromadb.PersistentClient(
         path=str(CHROMA_DIR)
@@ -628,24 +431,23 @@ def load_vector_database():
         name=COLLECTION_NAME
     )
 
-    return client, collection
+    return collection
 
 
 # ============================================================
-# 13. BUILD KNOWLEDGE BASE
+# BUILD INDEX
 # ============================================================
 
-def build_knowledge_base():
+def rebuild_knowledge_base():
 
-    documents = load_knowledge_documents()
+    documents = load_local_knowledge()
 
     if not documents:
-
         return 0
 
-    model = load_embedding_model()
+    model = get_embedding_model()
 
-    _, collection = load_vector_database()
+    collection = get_collection()
 
     texts = [
         item["text"]
@@ -658,24 +460,24 @@ def build_knowledge_base():
     ).tolist()
 
     ids = []
-
     metadatas = []
 
     for item in documents:
 
-        source = item["source"]
-        chunk = item["chunk"]
-
-        identifier = hashlib.md5(
-            f"{source}_{chunk}".encode()
+        unique_id = hashlib.md5(
+            (
+                item["source"]
+                + str(item["chunk"])
+                + item["text"]
+            ).encode()
         ).hexdigest()
 
-        ids.append(identifier)
+        ids.append(unique_id)
 
         metadatas.append(
             {
-                "source": source,
-                "chunk": chunk,
+                "source": item["source"],
+                "chunk": item["chunk"],
             }
         )
 
@@ -690,54 +492,57 @@ def build_knowledge_base():
 
 
 # ============================================================
-# 14. SEARCH KNOWLEDGE BASE
+# SEARCH KNOWLEDGE
 # ============================================================
 
-def search_knowledge(
-    query,
-    top_k=5
-):
+def search_knowledge(query, top_k=5):
 
-    model = load_embedding_model()
+    collection = get_collection()
 
-    _, collection = load_vector_database()
-
-    try:
-
-        query_embedding = model.encode(
-            [query],
-            normalize_embeddings=True
-        ).tolist()
-
-        result = collection.query(
-            query_embeddings=query_embedding,
-            n_results=top_k,
-        )
-
-    except Exception:
-
+    if collection.count() == 0:
         return []
+
+    model = get_embedding_model()
+
+    query_embedding = model.encode(
+        [query],
+        normalize_embeddings=True
+    ).tolist()
+
+    result = collection.query(
+        query_embeddings=query_embedding,
+        n_results=min(
+            top_k,
+            collection.count()
+        ),
+    )
 
     documents = result.get(
         "documents",
         [[]]
-    )[0]
+    )
 
     metadatas = result.get(
         "metadatas",
         [[]]
-    )[0]
+    )
+
+    if not documents:
+        return []
+
+    documents = documents[0]
+    metadatas = metadatas[0]
 
     results = []
 
-    for text, metadata in zip(
+    for document, metadata in zip(
         documents,
         metadatas
     ):
 
         results.append(
             {
-                "text": text,
+                "text": document,
                 "source": metadata.get(
                     "source",
                     "Knowledge Base"
@@ -753,7 +558,7 @@ def search_knowledge(
 
 
 # ============================================================
-# 15. UPLOADED DOCUMENT SEARCH
+# SEARCH UPLOADED FILES
 # ============================================================
 
 def search_uploaded_documents(
@@ -761,15 +566,18 @@ def search_uploaded_documents(
     top_k=5
 ):
 
-    if not st.session_state.uploaded_documents:
+    documents = (
+        st.session_state.uploaded_documents
+    )
 
+    if not documents:
         return []
 
-    model = load_embedding_model()
+    model = get_embedding_model()
 
     texts = [
         item["text"]
-        for item in st.session_state.uploaded_documents
+        for item in documents
     ]
 
     embeddings = model.encode(
@@ -782,270 +590,115 @@ def search_uploaded_documents(
         normalize_embeddings=True
     )[0]
 
-    similarities = embeddings @ query_embedding
+    scores = embeddings @ query_embedding
 
     ranked = sorted(
-        zip(
-            similarities,
-            st.session_state.uploaded_documents
-        ),
-        key=lambda x: x[0],
+        zip(scores, documents),
+        key=lambda item: item[0],
         reverse=True
     )
 
-    results = []
-
-    for score, item in ranked[:top_k]:
-
-        results.append(
-            {
-                "text": item["text"],
-                "source": item["source"],
-                "score": float(score),
-            }
-        )
-
-    return results
-
-
-# ============================================================
-# 16. CONVERSATION MEMORY
-# ============================================================
-
-def build_conversation_context(
-    max_messages=10
-):
-
-    recent = st.session_state.messages[
-        -max_messages:
+    return [
+        {
+            **item,
+            "score": float(score),
+        }
+        for score, item in ranked[:top_k]
     ]
+
+
+# ============================================================
+# CONVERSATION CONTEXT
+# ============================================================
+
+def get_recent_context():
+
+    messages = st.session_state.messages[-8:]
 
     context = []
 
-    for message in recent:
-
-        role = message.get(
-            "role",
-            "user"
-        )
-
-        content = message.get(
-            "content",
-            ""
-        )
+    for message in messages:
 
         context.append(
-            f"{role.upper()}: {content}"
+            f"{message['role'].upper()}: "
+            f"{message['content']}"
         )
 
     return "\n".join(context)
 
 
 # ============================================================
-# 17. SYSTEM PROMPT
+# SIMPLE GENERIC ANSWER ENGINE
+#
+# This makes the application work WITHOUT an external API.
+# Later replace this function with your LLM.
 # ============================================================
 
-def get_system_prompt():
-
-    language = st.session_state.language
-    mode = st.session_state.mode
-
-    return f"""
-You are {APP_NAME}, a helpful, intelligent and
-professional general-purpose AI assistant.
-
-Current language:
-{language}
-
-Current mode:
-{mode}
-
-Your goals:
-
-1. Understand the user's intent.
-2. Give accurate and useful answers.
-3. Be concise when the question is simple.
-4. Give detailed explanations when appropriate.
-5. Never invent sources or facts.
-6. Clearly state uncertainty when information is uncertain.
-7. Use uploaded documents when relevant.
-8. Use knowledge-base information when relevant.
-9. Follow safety policies.
-10. Maintain context from the conversation.
-11. Respond in the user's selected language.
-"""
-
-
-# ============================================================
-# 18. LLM PLACEHOLDER
-# ============================================================
-
-def generate_llm_response(
+def generate_answer(
     question,
-    context="",
-    sources=None
+    sources
 ):
-    """
-    Connect your preferred LLM provider here.
 
-    This function is intentionally provider-neutral.
+    question_lower = question.lower()
 
-    You can connect:
-        - OpenAI
-        - Gemini
-        - Claude
-        - Ollama
-        - LM Studio
-        - Local HuggingFace model
-        - Your own API
+    # Greeting
+    greetings = [
+        "hello",
+        "hi",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good evening",
+    ]
 
-    The function should return a string.
-    """
+    if any(
+        greeting in question_lower
+        for greeting in greetings
+    ):
 
-    system_prompt = get_system_prompt()
+        return (
+            "Hello! 👋\n\n"
+            "I'm NOVA AI. I can help you with "
+            "questions, documents, research, "
+            "writing, coding and data."
+        )
 
-    conversation = build_conversation_context()
-
-    source_context = ""
-
+    # Knowledge-base response
     if sources:
 
-        source_context = "\n\n".join(
-            [
-                f"SOURCE: {item['source']}\n"
-                f"{item['text']}"
-                for item in sources
-            ]
-        )
+        best = sources[0]
 
-    # --------------------------------------------------------
-    # TEMPORARY FALLBACK
-    # --------------------------------------------------------
-    #
-    # Replace this section with your actual LLM API.
-    #
-    # --------------------------------------------------------
-
-    if context:
-
-        answer = (
+        return (
             "I found relevant information in your "
             "knowledge sources.\n\n"
-            f"{context[:3000]}"
+            f"{best['text']}\n\n"
+            f"📚 Source: {best['source']}"
         )
 
-    elif sources:
-
-        answer = (
-            "Here is the most relevant information "
-            "I found in the knowledge base:\n\n"
-            f"{sources[0]['text']}"
-        )
-
-    else:
-
-        answer = (
-            "Your LLM backend is not connected yet.\n\n"
-            "The Streamlit interface, conversation "
-            "memory, RAG pipeline, document upload and "
-            "AI routing architecture are ready. "
-            "Connect your preferred LLM inside "
-            "`generate_llm_response()`."
-        )
-
-    return answer
+    # Generic fallback
+    return (
+        "I’m ready to help with that. However, "
+        "this version of NOVA AI is currently "
+        "running without an external generative "
+        "AI model.\n\n"
+        "You can still:\n"
+        "• Upload documents\n"
+        "• Search your knowledge base\n"
+        "• Ask questions about uploaded files\n"
+        "• Use multilingual semantic search\n\n"
+        "The next step is connecting an LLM "
+        "such as OpenAI, Gemini, Claude, Ollama "
+        "or another model."
+    )
 
 
 # ============================================================
-# 19. REQUEST ROUTER
-# ============================================================
-
-def classify_request(question):
-
-    text = question.lower()
-
-    if any(
-        word in text
-        for word in [
-            "write",
-            "rewrite",
-            "email",
-            "essay",
-            "caption",
-            "report",
-            "proposal",
-        ]
-    ):
-
-        return "writing"
-
-    if any(
-        word in text
-        for word in [
-            "python",
-            "javascript",
-            "code",
-            "debug",
-            "programming",
-            "function",
-        ]
-    ):
-
-        return "coding"
-
-    if any(
-        word in text
-        for word in [
-            "csv",
-            "excel",
-            "spreadsheet",
-            "dataset",
-            "statistics",
-            "data analysis",
-        ]
-    ):
-
-        return "data_analysis"
-
-    if any(
-        word in text
-        for word in [
-            "latest",
-            "today",
-            "current",
-            "recent",
-            "news",
-        ]
-    ):
-
-        return "web_search"
-
-    return "general"
-
-
-# ============================================================
-# 20. HANDLE QUESTION
+# PROCESS QUESTION
 # ============================================================
 
 def process_question(question):
 
-    allowed, safety_message = safety_check(
-        question
-    )
-
-    if not allowed:
-
-        return safety_message, []
-
-    request_type = classify_request(
-        question
-    )
-
     sources = []
-
-    # --------------------------------------------------------
-    # KNOWLEDGE BASE
-    # --------------------------------------------------------
 
     if st.session_state.rag_enabled:
 
@@ -1056,73 +709,47 @@ def process_question(question):
             )
         )
 
-    # --------------------------------------------------------
-    # UPLOADED FILES
-    # --------------------------------------------------------
-
-    if st.session_state.uploaded_documents:
-
-        sources.extend(
-            search_uploaded_documents(
-                question,
-                top_k=5
-            )
+    sources.extend(
+        search_uploaded_documents(
+            question,
+            top_k=5
         )
+    )
 
-    # Remove duplicate sources
-
-    unique_sources = {}
+    # Remove duplicates
+    unique = {}
 
     for source in sources:
 
         key = (
             source.get("source"),
             source.get("chunk"),
-            source.get("text", "")[:100],
+            source.get("text", "")
         )
 
-        unique_sources[key] = source
+        unique[key] = source
 
-    sources = list(
-        unique_sources.values()
-    )[:6]
+    sources = list(unique.values())[:5]
 
-    context = ""
-
-    if sources:
-
-        context = "\n\n".join(
-            [
-                item["text"]
-                for item in sources
-            ]
-        )
-
-    # --------------------------------------------------------
-    # LLM
-    # --------------------------------------------------------
-
-    answer = generate_llm_response(
-        question=question,
-        context=context,
-        sources=sources,
+    answer = generate_answer(
+        question,
+        sources
     )
 
     return answer, sources
 
 
 # ============================================================
-# 21. FEEDBACK
+# FEEDBACK
 # ============================================================
 
 def save_feedback(
     question,
     answer,
-    feedback,
-    reason=""
+    feedback
 ):
 
-    file_exists = FEEDBACK_FILE.exists()
+    exists = FEEDBACK_FILE.exists()
 
     with open(
         FEEDBACK_FILE,
@@ -1133,7 +760,7 @@ def save_feedback(
 
         writer = csv.writer(file)
 
-        if not file_exists:
+        if not exists:
 
             writer.writerow(
                 [
@@ -1142,7 +769,6 @@ def save_feedback(
                     "question",
                     "answer",
                     "feedback",
-                    "reason",
                     "mode",
                     "language",
                 ]
@@ -1155,7 +781,6 @@ def save_feedback(
                 question,
                 answer,
                 feedback,
-                reason,
                 st.session_state.mode,
                 st.session_state.language,
             ]
@@ -1163,14 +788,14 @@ def save_feedback(
 
 
 # ============================================================
-# 22. SIDEBAR
+# SIDEBAR
 # ============================================================
 
 with st.sidebar:
 
     st.markdown(
         f"""
-        <div class="brand-box">
+        <div class="brand">
 
             <div class="brand-title">
                 {APP_ICON} {APP_NAME}
@@ -1180,14 +805,13 @@ with st.sidebar:
                 {APP_SUBTITLE}
             </div>
 
-            <div class="status-pill">
-                <span class="status-dot"></span>
-                AI Workspace Online
+            <div class="online">
+                ● AI Workspace Online
             </div>
 
         </div>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
     if st.button(
@@ -1196,22 +820,21 @@ with st.sidebar:
     ):
 
         st.session_state.messages = []
-        st.session_state.sources = []
 
         st.rerun()
 
     st.markdown("### AI Mode")
 
     st.session_state.mode = st.selectbox(
-        "Choose mode",
-        AI_MODES,
-        index=AI_MODES.index(
+        "Mode",
+        MODES,
+        index=MODES.index(
             st.session_state.mode
         ),
-        label_visibility="collapsed",
+        label_visibility="collapsed"
     )
 
-    st.markdown("### Preferences")
+    st.markdown("### Language")
 
     st.session_state.language = st.selectbox(
         "Language",
@@ -1219,32 +842,14 @@ with st.sidebar:
         index=LANGUAGES.index(
             st.session_state.language
         ),
+        label_visibility="collapsed"
     )
 
-    st.session_state.rag_enabled = st.toggle(
-        "📚 Knowledge Base",
-        value=st.session_state.rag_enabled,
-    )
+    st.markdown("### Knowledge")
 
-    st.session_state.web_enabled = st.toggle(
-        "🔎 Web Search",
-        value=st.session_state.web_enabled,
-    )
-
-    st.session_state.show_sources = st.toggle(
-        "📎 Show Sources",
-        value=st.session_state.show_sources,
-    )
-
-    st.markdown("---")
-
-    st.markdown("### Knowledge Base")
-
-    knowledge_docs = load_knowledge_documents()
-
-    st.metric(
-        "Indexed chunks",
-        len(knowledge_docs)
+    st.session_state.rag_enabled = st.checkbox(
+        "Enable Knowledge Base",
+        value=st.session_state.rag_enabled
     )
 
     if st.button(
@@ -1253,21 +858,26 @@ with st.sidebar:
     ):
 
         with st.spinner(
-            "Building knowledge base..."
+            "Indexing knowledge..."
         ):
 
-            count = build_knowledge_base()
+            count = rebuild_knowledge_base()
 
         st.success(
             f"Indexed {count} chunks."
         )
 
+    st.caption(
+        f"Knowledge chunks: "
+        f"{get_collection().count()}"
+    )
+
     st.markdown("---")
 
-    st.markdown("### Upload Files")
+    st.markdown("### 📎 Upload Files")
 
     uploaded_files = st.file_uploader(
-        "Upload documents",
+        "Upload files",
         type=[
             "txt",
             "md",
@@ -1277,27 +887,21 @@ with st.sidebar:
             "xlsx",
         ],
         accept_multiple_files=True,
-        label_visibility="collapsed",
+        label_visibility="collapsed"
     )
 
     if uploaded_files:
 
         st.session_state.uploaded_documents = []
 
-        for uploaded_file in uploaded_files:
+        for file in uploaded_files:
 
-            text = read_uploaded_file(
-                uploaded_file
-            )
+            text = read_uploaded_file(file)
 
-            if not text.strip():
+            if not text:
                 continue
 
-            chunks = chunk_text(
-                text,
-                chunk_size=900,
-                overlap=150
-            )
+            chunks = chunk_text(text)
 
             for index, chunk in enumerate(
                 chunks
@@ -1306,7 +910,7 @@ with st.sidebar:
                 st.session_state.uploaded_documents.append(
                     {
                         "text": chunk,
-                        "source": uploaded_file.name,
+                        "source": file.name,
                         "chunk": index,
                     }
                 )
@@ -1315,21 +919,27 @@ with st.sidebar:
             f"{len(uploaded_files)} file(s) loaded."
         )
 
+    if st.session_state.uploaded_documents:
+
+        st.caption(
+            "Loaded chunks: "
+            f"{len(st.session_state.uploaded_documents)}"
+        )
+
     st.markdown("---")
 
     if st.button(
-        "🗑️ Clear Conversation",
+        "🗑️ Clear Chat",
         use_container_width=True
     ):
 
         st.session_state.messages = []
-        st.session_state.sources = []
 
         st.rerun()
 
 
 # ============================================================
-# 23. MAIN HERO
+# MAIN HEADER
 # ============================================================
 
 if not st.session_state.messages:
@@ -1338,63 +948,60 @@ if not st.session_state.messages:
         f"""
         <div class="hero">
 
-            <div class="hero-title">
+            <h1>
                 {APP_ICON} {APP_NAME}
-            </div>
+            </h1>
 
-            <div class="hero-subtitle">
+            <p>
                 {APP_SUBTITLE}.
-                Chat, research, analyze documents,
-                explore ideas and get intelligent answers
-                from one workspace.
-            </div>
+                Ask questions, explore your knowledge base,
+                upload documents and discover insights.
+            </p>
 
         </div>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
-    st.markdown(
-        "### What would you like to do?"
-    )
+    st.markdown("### What can I help you with?")
 
-    cols = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4)
 
-    features = [
+    cards = [
         (
             "💬",
             "Ask Anything",
-            "Get help with everyday questions."
+            "Ask general questions"
         ),
         (
             "📚",
-            "Chat with Documents",
-            "Upload files and ask questions."
+            "Documents",
+            "Chat with your files"
         ),
         (
             "🔎",
             "Research",
-            "Find and understand information."
+            "Find useful information"
         ),
         (
             "📊",
-            "Analyze Data",
-            "Explore CSV and Excel files."
+            "Data",
+            "Explore your datasets"
         ),
     ]
 
-    for col, feature in zip(
-        cols,
-        features
+    for column, card in zip(
+        [col1, col2, col3, col4],
+        cards
     ):
 
-        icon, title, text = feature
+        icon, title, description = card
 
-        with col:
+        with column:
 
             st.markdown(
                 f"""
-                <div class="feature-card">
+                <div class="feature">
 
                     <div class="feature-icon">
                         {icon}
@@ -1404,71 +1011,63 @@ if not st.session_state.messages:
                         {title}
                     </div>
 
-                    <div class="feature-text">
-                        {text}
+                    <div class="feature-description">
+                        {description}
                     </div>
 
                 </div>
                 """,
-                unsafe_allow_html=True,
+                unsafe_allow_html=True
             )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    st.info(
-        "Tip: Upload a document from the sidebar "
-        "and ask questions about it."
-    )
 
 
 # ============================================================
-# 24. CHAT HISTORY
+# CHAT HISTORY
 # ============================================================
 
 for index, message in enumerate(
     st.session_state.messages
 ):
 
-    role = message["role"]
+    with st.chat_message(
+        message["role"]
+    ):
 
-    content = message["content"]
-
-    with st.chat_message(role):
-
-        st.markdown(content)
+        st.markdown(
+            message["content"]
+        )
 
         if (
-            role == "assistant"
+            message["role"] == "assistant"
             and message.get("sources")
-            and st.session_state.show_sources
         ):
 
             with st.expander(
-                "📎 Sources"
+                "📎 View Sources"
             ):
 
-                for source in message[
-                    "sources"
-                ]:
+                for source in message["sources"]:
 
                     st.markdown(
                         f"""
-                        <div class="source-card">
-                            <strong>
-                                📄 {source["source"]}
-                            </strong>
-                            <br>
-                            <small>
-                                {source["text"][:500]}
-                            </small>
+                        <div class="source">
+
+                        <strong>
+                            📄 {source["source"]}
+                        </strong>
+
+                        <br><br>
+
+                        {source["text"][:700]}
+
                         </div>
                         """,
-                        unsafe_allow_html=True,
+                        unsafe_allow_html=True
                     )
 
-        if role == "assistant":
+        if message["role"] == "assistant":
 
-            col1, col2, col3 = st.columns(
+            col1, col2, _ = st.columns(
                 [1, 1, 8]
             )
 
@@ -1486,17 +1085,17 @@ for index, message in enumerate(
                         previous_question = (
                             st.session_state
                             .messages[index - 1]
-                            .get("content", "")
+                            ["content"]
                         )
 
                     save_feedback(
                         previous_question,
-                        content,
-                        "positive",
+                        message["content"],
+                        "positive"
                     )
 
                     st.toast(
-                        "Thanks for your feedback!"
+                        "Thanks! 👍"
                     )
 
             with col2:
@@ -1513,28 +1112,29 @@ for index, message in enumerate(
                         previous_question = (
                             st.session_state
                             .messages[index - 1]
-                            .get("content", "")
+                            ["content"]
                         )
 
                     save_feedback(
                         previous_question,
-                        content,
-                        "negative",
+                        message["content"],
+                        "negative"
                     )
 
                     st.toast(
                         "Feedback recorded."
+
+
                     )
 
 
 # ============================================================
-# 25. CHAT INPUT
+# CHAT INPUT
 # ============================================================
 
 question = st.chat_input(
-    "Ask anything..."
+    "Ask NOVA AI anything..."
 )
-
 
 if question:
 
@@ -1542,7 +1142,6 @@ if question:
         {
             "role": "user",
             "content": question,
-            "timestamp": datetime.now().isoformat(),
         }
     )
 
@@ -1553,7 +1152,7 @@ if question:
     with st.chat_message("assistant"):
 
         with st.spinner(
-            "Thinking..."
+            "Searching..."
         ):
 
             answer, sources = process_question(
@@ -1562,10 +1161,7 @@ if question:
 
         st.markdown(answer)
 
-        if (
-            sources
-            and st.session_state.show_sources
-        ):
+        if sources:
 
             with st.expander(
                 "📎 Sources"
@@ -1575,21 +1171,19 @@ if question:
 
                     st.markdown(
                         f"""
-                        <div class="source-card">
+                        <div class="source">
 
-                            <strong>
-                                📄 {source["source"]}
-                            </strong>
+                        <strong>
+                            📄 {source["source"]}
+                        </strong>
 
-                            <br>
+                        <br><br>
 
-                            <small>
-                                {source["text"][:500]}
-                            </small>
+                        {source["text"][:700]}
 
                         </div>
                         """,
-                        unsafe_allow_html=True,
+                        unsafe_allow_html=True
                     )
 
     st.session_state.messages.append(
@@ -1597,69 +1191,69 @@ if question:
             "role": "assistant",
             "content": answer,
             "sources": sources,
-            "timestamp": datetime.now().isoformat(),
         }
     )
-
-    st.session_state.sources = sources
 
     st.rerun()
 
 
 # ============================================================
-# 26. EXPORT CHAT
+# EXPORT
 # ============================================================
 
 if st.session_state.messages:
 
     st.markdown("---")
 
-    export_text = []
-
-    export_text.append(
-        f"{APP_NAME} Conversation"
-    )
-
-    export_text.append(
-        "=" * 50
-    )
+    export_lines = [
+        f"{APP_NAME} Conversation",
+        "=" * 50,
+        "",
+    ]
 
     for message in st.session_state.messages:
 
-        role = message["role"].upper()
-
-        content = message["content"]
-
-        export_text.append(
-            f"\n{role}:\n{content}\n"
+        export_lines.append(
+            message["role"].upper()
         )
 
-    export_content = "\n".join(
-        export_text
+        export_lines.append(
+            message["content"]
+        )
+
+        export_lines.append("")
+
+    export_text = "\n".join(
+        export_lines
     )
 
     st.download_button(
-        "📥 Export Conversation",
-        data=export_content,
+        "📥 Export Chat",
+        data=export_text,
         file_name=(
-            f"nova_ai_chat_"
-            f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+            "nova_ai_chat_"
+            + datetime.now().strftime(
+                "%Y%m%d_%H%M%S"
+            )
+            + ".txt"
         ),
-        mime="text/plain",
+        mime="text/plain"
     )
 
 
 # ============================================================
-# 27. FOOTER
+# FOOTER
 # ============================================================
 
 st.markdown(
     """
     <div class="footer">
-        ✦ NOVA AI · Intelligent AI Workspace
+
+        ✦ NOVA AI
         <br>
-        Built with Streamlit · ChromaDB · Sentence Transformers
+        Generic AI Workspace · Streamlit · ChromaDB
+
     </div>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
