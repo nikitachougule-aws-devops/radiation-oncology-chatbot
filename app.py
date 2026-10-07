@@ -38,7 +38,7 @@ st.markdown(
 
     .hero {
         background: linear-gradient(120deg, #0b3d66 0%, #1a6fb5 60%, #2f9bd6 100%);
-        padding: 0.95rem 1.6rem;
+        padding: 1rem 1.6rem;
         border-radius: 20px;
         margin-bottom: 1.5rem;
         box-shadow: 0 10px 30px rgba(15, 76, 129, 0.20);
@@ -73,7 +73,7 @@ st.markdown(
 
     .hero h1 {
         color: white;
-        font-size: 1.8rem;
+        font-size: 1.85rem;
         font-weight: 800;
         margin: 0;
     }
@@ -117,37 +117,8 @@ st.markdown(
         text-align: center;
         color: #7a8ba0;
         font-size: 0.8rem;
-        margin-top: 1.4rem;
+        margin-top: 2rem;
     }
-
-    /* Always-visible navigation */
-    div[data-testid="stRadio"] > label { display: none !important; }
-    div[data-testid="stRadio"] > div {
-        gap: 0.45rem !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        padding: 0.1rem 0.1rem 0.45rem !important;
-    }
-    div[data-testid="stRadio"] > div > label {
-        background: #ffffff !important;
-        border: 1px solid #cfdbe7 !important;
-        border-radius: 11px !important;
-        padding: 0.48rem 0.72rem !important;
-        min-width: max-content !important;
-        color: #0b3d66 !important;
-        font-weight: 700 !important;
-        font-size: 0.78rem !important;
-        box-shadow: 0 2px 6px rgba(15,76,129,0.06);
-    }
-    div[data-testid="stRadio"] > div > label p,
-    div[data-testid="stRadio"] > div > label span { color: #0b3d66 !important; }
-    div[data-testid="stRadio"] > div > label[data-checked="true"] {
-        background: #1769e0 !important;
-        border-color: #1769e0 !important;
-    }
-    div[data-testid="stRadio"] > div > label[data-checked="true"] p,
-    div[data-testid="stRadio"] > div > label[data-checked="true"] span { color: #ffffff !important; }
-    .nav-divider { height: 3px; border-radius: 99px; background: #1769e0; margin: 0 0 0.9rem 0; }
 
     /* ---------- SIDEBAR ---------- */
     section[data-testid="stSidebar"] {
@@ -397,6 +368,24 @@ st.markdown(
         font-style: italic;
         margin-top: 0.05rem;
     }
+
+    .section-heading { color:#123e67; font-size:1.22rem; font-weight:800; margin:.9rem 0 .7rem; }
+    .section-subtitle { color:#71849a; font-size:.86rem; margin-top:-.45rem; margin-bottom:.9rem; }
+    .topic-card,.access-card,.help-card { background:#fff; border:1px solid #dbe6ef; border-radius:16px; padding:1rem 1.05rem; min-height:138px; box-shadow:0 4px 14px rgba(24,66,104,.07); margin-bottom:.8rem; }
+    .topic-icon,.access-icon,.help-icon { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:#eaf3ff; font-size:1.15rem; margin-bottom:.55rem; }
+    .topic-title,.access-title,.help-title { color:#123e67; font-size:.96rem; font-weight:800; margin-bottom:.25rem; }
+    .topic-text,.access-text,.help-text { color:#6b7e92; font-size:.78rem; line-height:1.45; }
+    .home-banner { background:linear-gradient(135deg,#eef6ff 0%,#f7fbff 100%); border:1px solid #d5e5f5; border-radius:17px; padding:.95rem 1.1rem; margin:.5rem 0 1rem; }
+    .home-banner-title { color:#123e67; font-weight:800; font-size:.92rem; }
+    .home-banner-text { color:#6d8094; font-size:.78rem; margin-top:.2rem; }
+
+    div[data-testid="stRadio"] > label { display:none !important; }
+    div[data-testid="stRadio"] > div { gap:.45rem !important; flex-wrap:nowrap !important; overflow-x:auto !important; padding:.15rem .1rem .45rem !important; scrollbar-width:thin; }
+    div[data-testid="stRadio"] > div > label { background:#fff !important; border:1px solid #d5e0ea !important; border-radius:11px !important; padding:.48rem .72rem !important; min-width:max-content !important; color:#123e67 !important; font-weight:700 !important; font-size:.77rem !important; box-shadow:0 2px 7px rgba(18,62,103,.06); }
+    div[data-testid="stRadio"] > div > label p, div[data-testid="stRadio"] > div > label span { color:#123e67 !important; }
+    div[data-testid="stRadio"] > div > label[data-checked="true"] { background:#1769e0 !important; border-color:#1769e0 !important; }
+    div[data-testid="stRadio"] > div > label[data-checked="true"] p, div[data-testid="stRadio"] > div > label[data-checked="true"] span { color:#fff !important; }
+    .nav-divider { height:3px; border-radius:99px; background:#1769e0; margin:0 0 .9rem; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -1239,87 +1228,137 @@ selected_page = st.radio(
 st.session_state.active_page = selected_page
 st.markdown('<div class="nav-divider"></div>', unsafe_allow_html=True)
 
+
+# ============================================================
+# CHAT ASSISTANT / HOME DASHBOARD
+# ============================================================
+
 if selected_page == "💬 Chat Assistant":
+    st.markdown(
+        '''<div class="home-banner">
+            <div class="home-banner-title">👋 Welcome to your Radiation Oncology AI Assistant</div>
+            <div class="home-banner-text">Explore common topics, access helpful guides, or type a question below. Information is general patient education and does not replace your healthcare team.</div>
+        </div>''',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="section-heading">Popular Topics</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-subtitle">Start with a topic patients commonly ask about.</div>', unsafe_allow_html=True)
+
+    popular_topics = [
+        ("🎯", "Radiation Treatment", "What radiation therapy is and what a typical treatment session involves."),
+        ("🩺", "Treatment Preparation", "General preparation, simulation, positioning, and what to expect."),
+        ("⚠️", "Side Effects", "Common treatment-related effects and general supportive-care information."),
+        ("🧴", "Skin Care", "General skin-care information during and after radiation treatment."),
+        ("😴", "Fatigue", "Why fatigue can happen and general ways to support daily activities."),
+        ("🍎", "Nutrition & Hydration", "General nutrition, hydration, and supportive-care considerations."),
+    ]
+    cols = st.columns(3)
+    for i, (icon, title, desc) in enumerate(popular_topics):
+        with cols[i % 3]:
+            st.markdown(
+                f'''<div class="topic-card">
+                    <div class="topic-icon">{icon}</div>
+                    <div class="topic-title">{title}</div>
+                    <div class="topic-text">{desc}</div>
+                </div>''',
+                unsafe_allow_html=True,
+            )
+
+    st.markdown('<div class="section-heading">Quick Access</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-subtitle">Useful resources available in the assistant.</div>', unsafe_allow_html=True)
+
+    access = [
+        ("🧭", "Treatment Journey", "Follow the radiation therapy journey from consultation to follow-up."),
+        ("📋", "Questions for My Doctor", "Prepare a practical checklist for your next appointment."),
+        ("📚", "FAQs", "Browse common patient questions from the curated knowledge base."),
+        ("📖", "Radiation Oncology Glossary", "Understand common terms in simple patient-friendly language."),
+    ]
+    cols = st.columns(4)
+    for i, (icon, title, desc) in enumerate(access):
+        with cols[i]:
+            st.markdown(
+                f'''<div class="access-card">
+                    <div class="access-icon">{icon}</div>
+                    <div class="access-title">{title}</div>
+                    <div class="access-text">{desc}</div>
+                </div>''',
+                unsafe_allow_html=True,
+            )
+
+    st.markdown('<div class="section-heading">Need Help?</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-subtitle">Know where to go when you need more support.</div>', unsafe_allow_html=True)
+
+    help_cards = [
+        ("☎️", "Talk to Your Care Team", "For personal treatment decisions, symptoms, or questions about your own care, contact your treating team."),
+        ("🚨", "Urgent Symptoms", "For serious or emergency symptoms, seek urgent medical help or contact local emergency services."),
+        ("🎥", "Video Guide", "Watch a generic educational overview of the radiation treatment process."),
+    ]
+    cols = st.columns(3)
+    for i, (icon, title, desc) in enumerate(help_cards):
+        with cols[i]:
+            st.markdown(
+                f'''<div class="help-card">
+                    <div class="help-icon">{icon}</div>
+                    <div class="help-title">{title}</div>
+                    <div class="help-text">{desc}</div>
+                </div>''',
+                unsafe_allow_html=True,
+            )
+
+    st.markdown('<div class="section-heading" style="margin-top:0.4rem;">Ask the Assistant</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-subtitle">Type your question below. The assistant will use the curated Radiation Oncology knowledge base when an answer is available.</div>', unsafe_allow_html=True)
+
     for index, message in enumerate(st.session_state.messages):
         avatar = "🎗️" if message["role"] == "assistant" else "🧑"
-
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
-
             if message["role"] == "assistant" and message.get("source"):
                 display_source(message["source"])
-
             if message["role"] == "assistant" and index > 0:
                 previous_message = st.session_state.messages[index - 1]
-
                 if previous_message["role"] == "user":
-                    feedback_buttons(
-                        index,
-                        previous_message["content"],
-                        message["content"],
-                    )
+                    feedback_buttons(index, previous_message["content"], message["content"])
 
     prompt = st.chat_input(T["placeholder"])
-
     if prompt:
-        st.session_state.messages.append(
-            {"role": "user", "content": prompt}
-        )
-
+        st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user", avatar="🧑"):
             st.markdown(prompt)
 
         allowed, safety_type, safety_message = check_guardrails(prompt)
         source = None
-
         if not allowed:
             response = safety_message
-
         else:
             question_type = detect_question_type(prompt)
-
             if question_type == "greeting":
                 response = T["greeting"]
-
             elif question_type == "unrelated":
                 response = T["unrelated"]
-
             else:
-                result = search_knowledge(
-                    prompt,
-                    st.session_state.language,
-                )
-
+                result = search_knowledge(prompt, st.session_state.language)
                 if result:
                     source = result
                     answer = result.get("answer", "")
-
                     response = (
-                        f"**Answer**\n\n"
-                        f"{answer}\n\n"
-                        f"*This answer is based on the curated Radiation Oncology "
-                        f"knowledge base. For personal medical decisions, please "
-                        f"follow your treating healthcare team's advice.*"
+                        f"**Answer**\n\n{answer}\n\n"
+                        f"*This answer is based on the curated Radiation Oncology knowledge base. "
+                        f"For personal medical decisions, please follow your treating healthcare team's advice.*"
                     )
-
                 else:
                     response = T["unknown"]
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": response,
-                "source": source,
-            }
-        )
-
+        st.session_state.messages.append({"role": "assistant", "content": response, "source": source})
         with st.chat_message("assistant", avatar="🎗️"):
             st.markdown(response)
-
             if source:
                 display_source(source)
 
 
+# ============================================================
+# TREATMENT JOURNEY
+# ============================================================
 
 elif selected_page == "🧭 Treatment Journey":
     st.markdown("### 🧭 Treatment Journey")
@@ -1338,50 +1377,28 @@ elif selected_page == "🧭 Treatment Journey":
             st.markdown(f'<div class="glass-card"><h4>{num}. {title}</h4><p>{desc}</p></div>', unsafe_allow_html=True)
         if i % 3 == 2:
             st.write("")
+
+
+# ============================================================
+# TREATMENT INFORMATION
+# ============================================================
+
 elif selected_page == "📖 Treatment Info":
     st.markdown(f"### {T['treatment']}")
-
     col1, col2 = st.columns(2)
-
     with col1:
-        st.markdown(
-            """<div class="glass-card">
-    <h4>📋 Before Treatment</h4>
-    <p>Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
+        st.markdown('''<div class="glass-card"><h4>📋 Before Treatment</h4><p>Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information.</p></div>''', unsafe_allow_html=True)
         st.write("")
-
-        st.markdown(
-            """<div class="glass-card">
-    <h4>🩺 During Treatment</h4>
-    <p>Understand what typically happens during a radiation treatment session and what patients may experience.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
+        st.markdown('''<div class="glass-card"><h4>🩺 During Treatment</h4><p>Understand what typically happens during a radiation treatment session and what patients may experience.</p></div>''', unsafe_allow_html=True)
     with col2:
-        st.markdown(
-            """<div class="glass-card">
-    <h4>✅ After Treatment</h4>
-    <p>Learn about common post-treatment considerations, general self-care, and when to seek professional guidance.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
+        st.markdown('''<div class="glass-card"><h4>✅ After Treatment</h4><p>Learn about common post-treatment considerations, general self-care, and when to seek professional guidance.</p></div>''', unsafe_allow_html=True)
         st.write("")
-
-        st.markdown(
-            """<div class="glass-card">
-    <h4>☎️ When to Contact Your Healthcare Team</h4>
-    <p>Understand when treatment-related symptoms or concerns should be discussed with your healthcare team.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
+        st.markdown('''<div class="glass-card"><h4>☎️ When to Contact Your Healthcare Team</h4><p>Understand when treatment-related symptoms or concerns should be discussed with your healthcare team.</p></div>''', unsafe_allow_html=True)
 
 
+# ============================================================
+# SIDE EFFECTS
+# ============================================================
 
 elif selected_page == "⚠️ Side Effects":
     st.markdown("### ⚠️ Side Effects & Self-Care")
@@ -1402,6 +1419,11 @@ elif selected_page == "⚠️ Side Effects":
             st.write("")
     st.warning("If symptoms are severe, rapidly worsening, unexpected, or causing significant difficulty, contact your healthcare team or seek urgent care when appropriate.")
 
+
+# ============================================================
+# SAFETY & SELF-CARE
+# ============================================================
+
 elif selected_page == "🛡️ Safety & Self-Care":
     st.markdown("### 🛡️ Safety & Self-Care")
     st.caption("General education only — follow the specific instructions from your treating team.")
@@ -1419,87 +1441,34 @@ elif selected_page == "🛡️ Safety & Self-Care":
             st.markdown(f'<div class="glass-card"><h4>{icon} {title}</h4><p>{desc}</p></div>', unsafe_allow_html=True)
         if i % 3 == 2:
             st.write("")
-elif selected_page == "📚 FAQs":
-    st.markdown(f"### {T['faq_header']}")
 
-    search_text = st.text_input(
-        T["faq_search"],
-        placeholder="Example: side effects, pain, skin...",
-    )
 
-    all_faqs = []
-
-    stage_names = {
-        "FAQS_BEFORE": "Before Treatment",
-        "FAQS_DURING": "During Treatment",
-        "FAQS_AFTER": "After Treatment",
-    }
-
-    for stage_key, questions in FAQ_DATA.items():
-        stage_name = stage_names.get(stage_key, "Radiation Oncology")
-
-        for item in questions:
-            if st.session_state.language in item:
-                question, answer = item[st.session_state.language]
-                all_faqs.append((stage_name, question, answer))
-
-    if search_text:
-        search_lower = search_text.lower()
-
-        filtered_faqs = [
-            item
-            for item in all_faqs
-            if search_lower in item[1].lower()
-            or search_lower in item[2].lower()
-        ]
-    else:
-        filtered_faqs = all_faqs
-
-    if not filtered_faqs:
-        st.info(T["no_faq"])
-    else:
-        st.caption(f"{len(filtered_faqs)} FAQ(s)")
-
-        for stage, question, answer in filtered_faqs:
-            with st.expander(f"❓ {question} · {stage}"):
-                st.markdown(answer)
-
+# ============================================================
+# VIDEO GUIDE
+# ============================================================
 
 elif selected_page == "🎥 Video Guide":
     st.markdown("### 🎥 Radiation Therapy: General Guide")
-
-    st.caption(
-        "An educational video explaining the radiation treatment process. "
-        "Use only generic, non-hospital-specific educational content here."
-    )
-
-    video_extensions = [
-        "*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"
-    ]
-
+    st.caption("An educational video explaining the radiation treatment process. Use only generic, non-hospital-specific educational content here.")
+    video_extensions = ["*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"]
     video_file = None
-
     if VIDEO_DIR.exists():
         for extension in video_extensions:
             matches = sorted(VIDEO_DIR.glob(extension))
             if matches:
                 video_file = matches[0]
                 break
-
     if video_file:
         st.video(str(video_file))
     else:
-        st.info(
-            "No generic educational video found in the assets folder."
-        )
-
+        st.info("No generic educational video found in the assets folder.")
 
 
 # ============================================================
-# SINGLE DISCLAIMER
+# FOOTER / SINGLE DISCLAIMER
 # ============================================================
 
 st.markdown(
-    '<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base and does not replace advice from your treating doctor or healthcare team.</div>',
+    '''<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base and does not replace advice from your treating doctor or healthcare team.</div>''',
     unsafe_allow_html=True,
 )
