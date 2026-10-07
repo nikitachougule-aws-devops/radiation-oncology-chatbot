@@ -378,7 +378,7 @@ st.markdown(
 # PATHS
 # ============================================================
 
-BASE_DIR = Path(_file_).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent
 
 FAQ_FILE = BASE_DIR / "radiation_faq.txt"
 VIDEO_DIR = BASE_DIR / "assets"
@@ -717,7 +717,7 @@ def create_rag_documents():
                 )
 
                 documents.append(document)
-                ids.append(f"{stage_key}{index}{language}")
+                ids.append(f"{stage_key}_{index}_{language}")
 
                 metadatas.append(
                     {
@@ -1107,11 +1107,11 @@ def display_source(source):
 
     with st.container(border=True):
         st.markdown("### 📚 Source")
-        st.write("*Curated Radiation Oncology Knowledge Base*")
-        st.write(f"*Category:* {category}")
+        st.write("**Curated Radiation Oncology Knowledge Base**")
+        st.write(f"**Category:** {category}")
 
         if matched_question:
-            st.write(f"*Matched FAQ:* {matched_question}")
+            st.write(f"**Matched FAQ:** {matched_question}")
 
 
 # ============================================================
@@ -1202,7 +1202,7 @@ tab_chat, tab_info, tab_faq, tab_video = st.tabs(
 # ============================================================
 
 with tab_chat:
-    st.markdown(f"*{T['chat_intro']}*")
+    st.markdown(f"**{T['chat_intro']}**")
 
     for index, message in enumerate(st.session_state.messages):
         avatar = "🎗️" if message["role"] == "assistant" else "🧑"
@@ -1259,7 +1259,7 @@ with tab_chat:
                     answer = result.get("answer", "")
 
                     response = (
-                        f"*Answer*\n\n"
+                        f"**Answer**\n\n"
                         f"{answer}\n\n"
                         f"*This answer is based on the curated Radiation Oncology "
                         f"knowledge base. For personal medical decisions, please "
@@ -1395,7 +1395,7 @@ with tab_video:
     )
 
     video_extensions = [
-        ".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"
+        "*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"
     ]
 
     video_file = None
