@@ -38,11 +38,11 @@ st.markdown(
 
     .hero {
         background: linear-gradient(120deg, #0b3d66 0%, #0757ad 58%, #176fca 100%);
-        padding: 1.45rem 2rem; border-radius: 20px; margin-bottom: 1.2rem;
+        padding: 1.05rem 1.55rem; border-radius: 18px; margin-bottom: 1rem;
         box-shadow: 0 12px 32px rgba(15,76,129,.20); overflow: hidden;
     }
-    .hero h1 { color: white; font-size: 2.25rem; font-weight: 800; margin: 0; letter-spacing: -.02em; }
-    .hero p { color: #d7e9f8; font-size: 1.02rem; margin: .5rem 0 0; }
+    .hero h1 { color: white; font-size: 1.85rem; font-weight: 800; margin: 0; letter-spacing: -.02em; }
+    .hero p { color: #d7e9f8; font-size: .92rem; margin: .35rem 0 0; }
     .badge {
         display: inline-flex; align-items: center; gap: .35rem; background: rgba(255,255,255,.15);
         border: 1px solid rgba(255,255,255,.4); color: white; padding: .28rem .8rem;
@@ -157,6 +157,23 @@ st.markdown(
 
     div[data-testid="stButton"] > button { border-radius: 12px; }
     div[data-testid="stButton"] > button:hover { border-color: #1769e0; color: #1559a8; }
+    /* Top navigation labels stay visible on the white background */
+    div[data-testid="column"] div[data-testid="stButton"] > button {
+        background: #ffffff !important;
+        border: 1px solid #d6e0ea !important;
+        color: #0b3d66 !important;
+        min-height: 2.45rem !important;
+        padding: .35rem .42rem !important;
+        font-size: .76rem !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,.03);
+    }
+    div[data-testid="column"] div[data-testid="stButton"] > button p {
+        color: #0b3d66 !important;
+        font-size: .76rem !important;
+        font-weight: 700 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -502,10 +519,6 @@ st.markdown(
         <div class="badge">● AI Assistant Online</div>
         <h1>🎗️ Radiation Oncology AI Assistant</h1>
         <p>{T["hero_sub"]}</p>
-        <p style="font-size:0.9rem; margin-top:0.3rem;">
-            Ask questions, get clear answers, and learn about treatment, side effects,
-            safety and supportive care.
-        </p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -1065,8 +1078,6 @@ def render_feature_card(icon, title, description):
 # ============================================================
 
 if st.session_state.active_page == "Chat Assistant":
-    st.markdown(f"**{T['chat_intro']}**")
-
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
@@ -1093,27 +1104,6 @@ if st.session_state.active_page == "Chat Assistant":
             st.session_state.active_page = "Glossary"
             st.rerun()
 
-    st.markdown(
-        '<div class="try-box"><div class="try-title">✨ Try asking</div></div>',
-        unsafe_allow_html=True,
-    )
-
-    quick_questions = [
-        "What is IMRT?",
-        "What should I expect during treatment?",
-        "How can I manage fatigue?",
-        "Is radiation therapy safe?",
-    ]
-    qcols = st.columns(4)
-
-    for i, question in enumerate(quick_questions):
-        with qcols[i]:
-            if st.button(question, key=f"quick_{i}", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": question})
-                response, source = process_prompt(question)
-                st.session_state.messages.append({"role": "assistant", "content": response, "source": source})
-                st.rerun()
-
     for index, message in enumerate(st.session_state.messages):
         avatar = "🎗️" if message["role"] == "assistant" else "🧑"
         with st.chat_message(message["role"], avatar=avatar):
@@ -1132,16 +1122,6 @@ if st.session_state.active_page == "Chat Assistant":
         st.session_state.messages.append({"role": "assistant", "content": response, "source": source})
         st.rerun()
 
-    st.markdown(
-        """
-        <div class="trust-note">
-            💡 This assistant provides general patient education from a curated Radiation Oncology
-            knowledge base. It does not diagnose, prescribe, determine radiation dose, or replace
-            your treating healthcare team.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 # ============================================================
@@ -1567,8 +1547,7 @@ elif st.session_state.active_page == "Trusted Resources":
 st.markdown(
     """
     <div class="footer-note">
-        This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
-        It does not replace advice from a treating doctor or healthcare team.
+        This assistant provides general patient education information from a curated Radiation Oncology knowledge base and does not replace advice from your treating doctor or healthcare team.
     </div>
     """,
     unsafe_allow_html=True,
