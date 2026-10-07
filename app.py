@@ -4,7 +4,6 @@ from datetime import datetime
 import ast
 import csv
 import re
-import base64
 
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -205,7 +204,7 @@ st.markdown(
     }
 
     .sb-title {
-        font-size: 1rem;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #ffffff;
         line-height: 1.2;
@@ -601,23 +600,6 @@ with st.sidebar:
             <div class="sb-logo">🎗️</div>
             <div>
                 <div class="sb-title">Radiation Oncology AI</div>
-                <div class="sb-status"><span class="sb-dot"></span>Online</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        f"""
-        <div class="sb-stats">
-            <div class="sb-stat">
-                <div class="sb-stat-num">{TOTAL_FAQS}</div>
-                <div class="sb-stat-label">FAQs</div>
-            </div>
-            <div class="sb-stat">
-                <div class="sb-stat-num">{len(LANGUAGES)}</div>
-                <div class="sb-stat-label">Languages</div>
             </div>
         </div>
         """,
@@ -690,57 +672,6 @@ with st.sidebar:
 # HERO IMAGE
 # ============================================================
 
-def find_hero_image_file():
-    if not VIDEO_DIR.exists():
-        return None
-
-    preferred_names = [
-        "hero_banner.png",
-        "hero_banner.jpg",
-        "hero_banner.jpeg",
-        "hero.png",
-        "hero.jpg",
-        "banner.png",
-        "banner.jpg",
-    ]
-
-    for name in preferred_names:
-        candidate = VIDEO_DIR / name
-        if candidate.exists():
-            return candidate
-
-    for extension in ["*.png", "*.jpg", "*.jpeg", "*.webp"]:
-        matches = sorted(VIDEO_DIR.glob(extension))
-        if matches:
-            return matches[0]
-
-    return None
-
-
-def get_hero_image_data_uri():
-    image_file = find_hero_image_file()
-
-    if image_file is None:
-        return None
-
-    try:
-        extension = image_file.suffix.lower().lstrip(".")
-        mime_type = "jpeg" if extension in ["jpg", "jpeg"] else extension
-        encoded_image = base64.b64encode(image_file.read_bytes()).decode()
-        return f"data:image/{mime_type};base64,{encoded_image}"
-    except Exception:
-        return None
-
-
-HERO_IMAGE_DATA_URI = get_hero_image_data_uri()
-
-HERO_PHOTO_HTML = (
-    f'<div class="hero-photo"><img src="{HERO_IMAGE_DATA_URI}" alt="Radiation Oncology AI"></div>'
-    if HERO_IMAGE_DATA_URI
-    else ""
-)
-
-
 st.markdown(
     f"""<div class="hero">
     <div class="hero-text">
@@ -748,7 +679,6 @@ st.markdown(
         <h1>🎗️ Radiation Oncology AI Assistant</h1>
         <p>{T["hero_sub"]}</p>
     </div>
-    {HERO_PHOTO_HTML}
 </div>""",
     unsafe_allow_html=True,
 )
