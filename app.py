@@ -1,4 +1,3 @@
-
 import streamlit as st
 from pathlib import Path
 from datetime import datetime
@@ -422,17 +421,6 @@ FAQ_KB_LOADED = TOTAL_FAQS > 0
 
 with st.sidebar:
     st.markdown("### 🎗️ Radiation Oncology AI")
-    st.caption("Patient Education Assistant")
-
-    st.markdown(
-        """
-        **General educational information**
-
-        This assistant is designed for Radiation Oncology patient education.
-        It does not provide diagnosis, personalized treatment decisions,
-        medication advice, or radiation dose recommendations.
-        """
-    )
 
     selected_language = st.selectbox(
         "🌐 Language",
@@ -466,15 +454,6 @@ with st.sidebar:
                 <div>
                     <div class="credit-role">AI Assistant Developed by</div>
                     <div class="credit-name">Nikita Chougule</div>
-                </div>
-            </div>
-            <div class="credit-divider"></div>
-            <div class="credit-item">
-                <div class="credit-avatar kb">KB</div>
-                <div>
-                    <div class="credit-role">Knowledge Base</div>
-                    <div class="credit-name">Curated Patient Education</div>
-                    <div class="credit-sub">Radiation Oncology</div>
                 </div>
             </div>
         </div>
