@@ -121,12 +121,187 @@ st.markdown(
         margin-top: 2rem;
     }
 
+    /* ---------- SIDEBAR ---------- */
     section[data-testid="stSidebar"] {
-        background: #0b3d66;
+        background: linear-gradient(180deg, #0d4a7a 0%, #0b3d66 45%, #071f36 100%);
+        border-right: 1px solid rgba(255,255,255,0.08);
     }
 
-    section[data-testid="stSidebar"] * {
-        color: #eaf1f8 !important;
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] label {
+        color: #eaf1f8;
+    }
+
+    /* Selectbox: dark glass look with readable white text */
+    section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+        background: rgba(255,255,255,0.10) !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-baseweb="select"] * {
+        color: #ffffff !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-baseweb="select"] svg {
+        fill: #ffffff !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label p {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #9fc3e0 !important;
+    }
+
+    /* Clear chat button */
+    section[data-testid="stSidebar"] .stButton > button {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 12px;
+        color: #ffffff !important;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    section[data-testid="stSidebar"] .stButton > button p {
+        color: #ffffff !important;
+    }
+
+    section[data-testid="stSidebar"] .stButton > button:hover {
+        background: rgba(47,155,214,0.30);
+        border-color: #2f9bd6;
+        transform: translateY(-1px);
+    }
+
+    /* Brand header */
+    .sb-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.9rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(47,155,214,0.35) 0%, rgba(106,92,245,0.25) 100%);
+        border: 1px solid rgba(255,255,255,0.18);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+        margin-bottom: 0.9rem;
+    }
+
+    .sb-logo {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .sb-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.2;
+    }
+
+    .sb-status {
+        font-size: 0.72rem;
+        color: #b8e8d4;
+        margin-top: 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .sb-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #3be3a5;
+        box-shadow: 0 0 8px #3be3a5;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    /* Stat tiles */
+    .sb-stats {
+        display: flex;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .sb-stat {
+        flex: 1;
+        text-align: center;
+        padding: 0.65rem 0.4rem;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .sb-stat-num {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.1;
+    }
+
+    .sb-stat-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #9fc3e0;
+        margin-top: 0.15rem;
+    }
+
+    /* Safety section */
+    .sb-section-title {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #9fc3e0;
+        margin: 1.1rem 0 0.5rem 0.2rem;
+    }
+
+    .sb-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.55rem 0.75rem;
+        margin-bottom: 0.45rem;
+        border-radius: 12px;
+        background: rgba(59,227,165,0.08);
+        border: 1px solid rgba(59,227,165,0.28);
+        font-size: 0.82rem;
+        color: #eaf1f8;
+    }
+
+    .sb-pill-icon {
+        font-size: 1rem;
+        width: 1.2rem;
+        text-align: center;
+    }
+
+    .sb-pill-text {
+        flex: 1;
+        line-height: 1.2;
+    }
+
+    .sb-pill-on {
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: #07331f;
+        background: #3be3a5;
+        padding: 0.12rem 0.45rem;
+        border-radius: 999px;
     }
 
     .credit-card {
@@ -420,7 +595,34 @@ FAQ_KB_LOADED = TOTAL_FAQS > 0
 # ============================================================
 
 with st.sidebar:
-    st.markdown("### 🎗️ Radiation Oncology AI")
+    st.markdown(
+        """
+        <div class="sb-brand">
+            <div class="sb-logo">🎗️</div>
+            <div>
+                <div class="sb-title">Radiation Oncology AI</div>
+                <div class="sb-status"><span class="sb-dot"></span>Online</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="sb-stats">
+            <div class="sb-stat">
+                <div class="sb-stat-num">{TOTAL_FAQS}</div>
+                <div class="sb-stat-label">FAQs</div>
+            </div>
+            <div class="sb-stat">
+                <div class="sb-stat-num">{len(LANGUAGES)}</div>
+                <div class="sb-stat-label">Languages</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     selected_language = st.selectbox(
         "🌐 Language",
@@ -448,6 +650,28 @@ with st.sidebar:
 
     st.markdown(
         """
+        <div class="sb-section-title">Safety &amp; Trust</div>
+        <div class="sb-pill">
+            <span class="sb-pill-icon">🔒</span>
+            <span class="sb-pill-text">Medical safety guardrails</span>
+            <span class="sb-pill-on">ON</span>
+        </div>
+        <div class="sb-pill">
+            <span class="sb-pill-icon">🛡️</span>
+            <span class="sb-pill-text">Prompt-injection protection</span>
+            <span class="sb-pill-on">ON</span>
+        </div>
+        <div class="sb-pill">
+            <span class="sb-pill-icon">📚</span>
+            <span class="sb-pill-text">Source-grounded responses</span>
+            <span class="sb-pill-on">ON</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
         <div class="credit-card">
             <div class="credit-item">
                 <div class="credit-avatar dev">NC</div>
@@ -460,11 +684,6 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
-
-    st.write("")
-    st.caption("🔒 Medical safety guardrails: Enabled")
-    st.caption("🛡️ Prompt-injection protection: Enabled")
-    st.caption("📚 Source-grounded responses: Enabled")
 
 
 # ============================================================
