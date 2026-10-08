@@ -868,7 +868,7 @@ NAV_ITEMS = [
     ("effects", "⚠️ Side Effects"),
     ("safety", "🛡️ Safety & Self-Care"),
     ("video", "▶️ Video Guide"),
-    ("faq", "❓ FAQ"),
+    ("faq", "FAQ"),
     ("support", "💙 Support & Wellness"),
     ("after", "🌿 After Treatment Care"),
 ]
