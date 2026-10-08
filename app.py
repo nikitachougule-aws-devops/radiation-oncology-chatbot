@@ -6,9 +6,9 @@ import csv
 import re
 import os
 import json
+import tempfile
 import html
 import hmac
-import io
 from collections import Counter
 
 import streamlit.components.v1 as components
@@ -22,7 +22,6 @@ from sentence_transformers import SentenceTransformer
 
 st.set_page_config(
     page_title="Radiation Oncology AI Assistant",
-    page_icon="🎗️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -68,15 +67,6 @@ st.markdown(
         background: rgba(47,155,214,0.30); border-color: #5fb8ec; transform: translateY(-1px);
     }
 
-    section[data-testid="stSidebar"] div[data-testid="stDownloadButton"] > button {
-        background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.35) !important;
-        border-radius: 10px !important; color: #ffffff !important; font-weight: 600;
-    }
-    section[data-testid="stSidebar"] div[data-testid="stDownloadButton"] > button p { color: #ffffff !important; }
-    section[data-testid="stSidebar"] div[data-testid="stDownloadButton"] > button:hover {
-        background: rgba(47,155,214,0.30) !important; border-color: #5fb8ec !important; transform: translateY(-1px);
-    }
-
     .sb-brand {
         padding: 0.9rem 1rem; border-radius: 14px;
         background: linear-gradient(135deg, rgba(47,155,214,0.35) 0%, rgba(30,80,200,0.35) 100%);
@@ -120,6 +110,19 @@ st.markdown(
         text-align: center; white-space: normal; margin: 0;
     }
     .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .5rem; }
+    .st-key-navrow .nav-row { margin-bottom: .5rem; }
+    .st-key-navrow .nav-row [data-testid="stColumn"] { min-width: 0 !important; }
+    section[data-testid="stSidebar"] [data-testid="stDownloadButton"] > button {
+        background: linear-gradient(120deg, #0f55b8 0%, #1a72d4 100%) !important;
+        color: #ffffff !important; border: 1.5px solid #0f55b8 !important;
+        border-radius: 10px !important; font-weight: 700 !important;
+        box-shadow: 0 4px 12px rgba(15,85,184,0.24) !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stDownloadButton"] > button p { color: #ffffff !important; }
+    .qr-poster { background: #fff; border: 1px solid #dbe6f1; border-radius: 16px; padding: 1rem;
+        text-align: center; box-shadow: 0 2px 10px rgba(20,60,110,0.05); }
+    .qr-poster h4 { color: #0b3d66; margin: 0 0 .3rem 0; }
+    .qr-poster p { color: #4d6279; margin: .2rem 0; }
     [class*="st-key-nav_"] button:hover {
         background: #eaf3fc !important; border-color: #1a6fb5 !important;
     }
@@ -217,15 +220,11 @@ st.markdown(
 
     /* ---------------- MOBILE ---------------- */
     @media (max-width: 900px) {
-        .st-key-navrow [data-testid="stHorizontalBlock"] {
-            flex-direction: row !important; flex-wrap: nowrap !important;
-            overflow-x: auto; padding-bottom: .4rem;
-        }
-        .st-key-navrow [data-testid="stColumn"], .st-key-navrow [data-testid="column"] {
-            min-width: 122px !important; flex: 0 0 122px !important; width: 122px !important;
-        }
         .hero h1 { font-size: 1.6rem; }
         .block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
+        .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .35rem; }
+        [class*="st-key-nav_"] button { height: 4.1rem; padding: .25rem .15rem; }
+        [class*="st-key-nav_"] button p { font-size: .72rem; }
     }
     </style>
     """,
@@ -251,6 +250,7 @@ HOSPITAL = {
     "phone": "",        # e.g. "+91-00000-00000"
     "opd_hours": "",    # e.g. "Mon-Sat, 9:00 AM - 4:00 PM"
     "emergency": "",    # after-hours / emergency number
+    "app_url": os.environ.get("APP_URL", ""),  # public URL used for the waiting-room QR poster
 }
 
 REVIEW = {
@@ -264,8 +264,6 @@ SAVE_QUESTION_TEXT = True
 # Admin dashboard: set an environment variable ADMIN_PASSWORD, then open
 # the app with  ?admin=1  at the end of the web address.
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
-# Public URL used by the waiting-room QR code. Set APP_URL in deployment.
-APP_URL = os.environ.get("APP_URL", "http://localhost:8501")
 
 
 # ============================================================
@@ -283,11 +281,7 @@ UI_STRINGS = {
         "hero_sub": "Your patient education assistant for Radiation Oncology.",
         "hero_sub2": "Ask questions, get clear answers, and learn about your treatment, side effects, safety and more.",
         "placeholder": "Type your question here...",
-        "greeting": (
-            "👋 Hello! I'm your Radiation Oncology AI Assistant. "
-            "I can help with general questions about radiation treatment, "
-            "preparation, common side effects, and supportive care. What would you like to know?"
-        ),
+        "greeting": "",
         "unknown": (
             "I couldn't find a reliable answer to that question in the curated "
             "Radiation Oncology knowledge base.\n\n"
@@ -323,11 +317,7 @@ UI_STRINGS = {
         "hero_sub": "रेडिएशन ऑन्कोलॉजी के लिए आपका रोगी शिक्षा सहायक।",
         "hero_sub2": "प्रश्न पूछें, स्पष्ट उत्तर पाएँ और अपने उपचार, दुष्प्रभाव व सुरक्षा के बारे में जानें।",
         "placeholder": "अपना प्रश्न यहाँ लिखें...",
-        "greeting": (
-            "👋 नमस्ते! मैं आपका Radiation Oncology AI Assistant हूँ। "
-            "मैं रेडिएशन उपचार, तैयारी, सामान्य दुष्प्रभाव और सहायक देखभाल से जुड़े "
-            "सामान्य सवालों में मदद कर सकता हूँ।"
-        ),
+        "greeting": "",
         "unknown": (
             "मुझे Radiation Oncology के क्यूरेटेड ज्ञान आधार में इस प्रश्न का विश्वसनीय "
             "उत्तर नहीं मिला।\n\nकृपया व्यक्तिगत चिकित्सा सलाह के लिए अपनी स्वास्थ्य टीम से बात करें।"
@@ -357,11 +347,7 @@ UI_STRINGS = {
         "hero_sub": "रेडिएशन ऑन्कोलॉजीसाठी तुमचा रुग्ण शिक्षण सहाय्यक.",
         "hero_sub2": "प्रश्न विचारा, स्पष्ट उत्तरे मिळवा आणि तुमचे उपचार, दुष्परिणाम व सुरक्षिततेबद्दल जाणून घ्या.",
         "placeholder": "तुमचा प्रश्न येथे लिहा...",
-        "greeting": (
-            "👋 नमस्कार! मी तुमचा Radiation Oncology AI Assistant आहे. "
-            "मी रेडिएशन उपचार, तयारी, सामान्य दुष्परिणाम आणि सहाय्यक काळजीबाबत "
-            "सामान्य प्रश्नांमध्ये मदत करू शकतो."
-        ),
+        "greeting": "",
         "unknown": (
             "Radiation Oncology च्या क्यूरेटेड ज्ञान आधारामध्ये मला या प्रश्नाचे "
             "विश्वसनीय उत्तर सापडले नाही.\n\n"
@@ -399,17 +385,11 @@ UI_EXTRA = {
     "en": {
         "nav": {
             "chat": "Chat Assistant", "journey": "Treatment Journey", "info": "Treatment Info",
-            "effects": "Side Effects", "safety": "Safety", "diet": "Diet & Nutrition", "video": "Video & Photo Guide",
-            "faq": "FAQ", "support": "Support & Wellness", "after": "After Treatment Care",
+            "video": "Video and Photo Guide", "faq": "FAQ", "diet": "Diet and Nutrition",
+            "effects": "Side Effects", "safety": "Safety", "support": "Support & Wellness",
+            "after": "After Treatment Care",
         },
         "lang_label": "🌐 Language",
-        "voice": "🎙️ Speak your question",
-        "voice_hint": "In Chrome, voice input supports Hindi (hi-IN) and Marathi (mr-IN). Allow microphone access when prompted.",
-        "voice_unsupported": "Voice input is not supported in this browser. Please use Chrome or type your question.",
-        "qr_title": "📱 Waiting-room QR poster",
-        "qr_caption": "Scan this QR code with a phone camera to open the patient education app.",
-        "qr_download": "⬇️ Download QR poster",
-        "diet_sub": "Food and nutrition information to support you during radiation therapy.",
         "clear_chat": "🗑️ Clear Chat",
         "safety_trust": "Safety &amp; Trust",
         "pill1": "Medical safety guardrails",
@@ -429,8 +409,8 @@ UI_EXTRA = {
         "matched": "Matched FAQ",
         "thanks_up": "👍 Thanks for your feedback!",
         "thanks_down": "👎 Thanks for your feedback!",
-        "video_title": "🎥 Video & Photo Guide",
-        "video_caption": "Videos and photos showing the radiation treatment machine, mask, skin markings and department environment.",
+        "video_title": "🎥 Radiation Therapy: General Guide",
+        "video_caption": "An educational video explaining the radiation treatment process.",
         "no_video": "No generic educational video found in the assets folder.",
         "faq_placeholder": "Example: side effects, pain, skin...",
         "faq_count": "{n} FAQ(s)",
@@ -439,17 +419,11 @@ UI_EXTRA = {
     "hi": {
         "nav": {
             "chat": "चैट सहायक", "journey": "उपचार यात्रा", "info": "उपचार जानकारी",
-            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "diet": "आहार और पोषण", "video": "वीडियो और फोटो गाइड",
-            "faq": "सामान्य प्रश्न", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
+            "video": "वीडियो और फोटो गाइड", "faq": "सामान्य प्रश्न", "diet": "आहार और पोषण",
+            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "support": "सहायता और कल्याण",
+            "after": "उपचार के बाद की देखभाल",
         },
         "lang_label": "🌐 भाषा",
-        "voice": "🎙️ अपना प्रश्न बोलें",
-        "voice_hint": "Chrome में वॉइस इनपुट हिंदी (hi-IN) और मराठी (mr-IN) को सपोर्ट करता है। पूछे जाने पर माइक्रोफ़ोन की अनुमति दें।",
-        "voice_unsupported": "इस ब्राउज़र में वॉइस इनपुट उपलब्ध नहीं है। कृपया Chrome का उपयोग करें या अपना प्रश्न टाइप करें।",
-        "qr_title": "📱 वेटिंग-रूम QR पोस्टर",
-        "qr_caption": "फोन के कैमरे से QR कोड स्कैन करके रोगी शिक्षा ऐप खोलें।",
-        "qr_download": "⬇️ QR पोस्टर डाउनलोड करें",
-        "diet_sub": "रेडिएशन थेरेपी के दौरान आपकी मदद के लिए भोजन और पोषण की जानकारी।",
         "clear_chat": "🗑️ चैट साफ़ करें",
         "safety_trust": "सुरक्षा और विश्वास",
         "pill1": "चिकित्सा सुरक्षा नियम",
@@ -459,7 +433,7 @@ UI_EXTRA = {
         "dev_by": "AI सहायक विकसित करने वाली",
         "brand_sub": "आपका रोगी शिक्षा सहायक",
         "badge": "AI सहायक ऑनलाइन",
-        "hero_title": "रेडिएशन ऑन्कोलॉजी AI सहायक",
+        "hero_title": "🎗️ रेडिएशन ऑन्कोलॉजी AI सहायक",
         "ask_title": "✨ अपना प्रश्न पूछें",
         "disclaimer": "💡 यह सहायक क्यूरेटेड Radiation Oncology ज्ञान आधार से सामान्य रोगी शिक्षा जानकारी देता है। यह आपके उपचार करने वाले डॉक्टर या स्वास्थ्य टीम की सलाह का विकल्प नहीं है।",
         "answer": "**उत्तर**",
@@ -469,8 +443,8 @@ UI_EXTRA = {
         "matched": "मिलता-जुलता FAQ",
         "thanks_up": "👍 आपकी प्रतिक्रिया के लिए धन्यवाद!",
         "thanks_down": "👎 आपकी प्रतिक्रिया के लिए धन्यवाद!",
-        "video_title": "🎥 वीडियो और फोटो गाइड",
-        "video_caption": "रेडिएशन उपचार मशीन, मास्क, त्वचा की मार्किंग और विभाग के वातावरण को दिखाने वाले वीडियो और फोटो।",
+        "video_title": "🎥 रेडिएशन थेरेपी: सामान्य मार्गदर्शिका",
+        "video_caption": "रेडिएशन उपचार प्रक्रिया समझाने वाला एक शैक्षणिक वीडियो।",
         "no_video": "assets फ़ोल्डर में कोई सामान्य शैक्षणिक वीडियो नहीं मिला।",
         "faq_placeholder": "उदाहरण: दुष्प्रभाव, दर्द, त्वचा...",
         "faq_count": "{n} FAQ",
@@ -479,17 +453,10 @@ UI_EXTRA = {
     "mr": {
         "nav": {
             "chat": "चॅट सहाय्यक", "journey": "उपचार प्रवास", "info": "उपचार माहिती",
-            "effects": "दुष्परिणाम", "safety": "सुरक्षा", "diet": "आहार आणि पोषण", "video": "व्हिडिओ आणि फोटो मार्गदर्शक",
+            "effects": "दुष्परिणाम", "safety": "सुरक्षा आणि स्वतःची काळजी", "video": "व्हिडिओ मार्गदर्शक",
             "faq": "सामान्य प्रश्न", "support": "आधार आणि निरोगीपणा", "after": "उपचारानंतरची काळजी",
         },
         "lang_label": "🌐 भाषा",
-        "voice": "🎙️ तुमचा प्रश्न बोला",
-        "voice_hint": "Chrome मध्ये व्हॉइस इनपुट हिंदी (hi-IN) आणि मराठी (mr-IN) ला सपोर्ट करतो. विचारल्यास मायक्रोफोनची परवानगी द्या.",
-        "voice_unsupported": "या ब्राउझरमध्ये व्हॉइस इनपुट उपलब्ध नाही. कृपया Chrome वापरा किंवा तुमचा प्रश्न टाइप करा.",
-        "qr_title": "📱 वेटिंग-रूम QR पोस्टर",
-        "qr_caption": "फोनच्या कॅमेऱ्याने QR कोड स्कॅन करून रुग्ण शिक्षण अॅप उघडा.",
-        "qr_download": "⬇️ QR पोस्टर डाउनलोड करा",
-        "diet_sub": "रेडिएशन थेरपीदरम्यान तुम्हाला मदत करण्यासाठी आहार आणि पोषणाची माहिती.",
         "clear_chat": "🗑️ चॅट साफ करा",
         "safety_trust": "सुरक्षा आणि विश्वास",
         "pill1": "वैद्यकीय सुरक्षा नियम",
@@ -499,7 +466,7 @@ UI_EXTRA = {
         "dev_by": "AI सहाय्यक विकसित करणारी",
         "brand_sub": "तुमचा रुग्ण शिक्षण सहाय्यक",
         "badge": "AI सहाय्यक ऑनलाइन",
-        "hero_title": "रेडिएशन ऑन्कोलॉजी AI सहाय्यक",
+        "hero_title": "🎗️ रेडिएशन ऑन्कोलॉजी AI सहाय्यक",
         "ask_title": "✨ तुमचा प्रश्न विचारा",
         "disclaimer": "💡 हा सहाय्यक क्यूरेटेड Radiation Oncology ज्ञान आधारातून सामान्य रुग्ण शिक्षण माहिती देतो. हे तुमच्या उपचार करणाऱ्या डॉक्टरांच्या किंवा आरोग्य टीमच्या सल्ल्याला पर्याय नाही.",
         "answer": "**उत्तर**",
@@ -509,8 +476,8 @@ UI_EXTRA = {
         "matched": "जुळणारा FAQ",
         "thanks_up": "👍 तुमच्या अभिप्रायाबद्दल धन्यवाद!",
         "thanks_down": "👎 तुमच्या अभिप्रायाबद्दल धन्यवाद!",
-        "video_title": "🎥 व्हिडिओ आणि फोटो मार्गदर्शक",
-        "video_caption": "रेडिएशन उपचार मशीन, मास्क, त्वचेवरील खुणा आणि विभागाचे वातावरण दाखवणारे व्हिडिओ व फोटो.",
+        "video_title": "🎥 रेडिएशन थेरपी: सामान्य मार्गदर्शिका",
+        "video_caption": "रेडिएशन उपचार प्रक्रिया समजावून सांगणारा शैक्षणिक व्हिडिओ.",
         "no_video": "assets फोल्डरमध्ये सामान्य शैक्षणिक व्हिडिओ सापडला नाही.",
         "faq_placeholder": "उदाहरण: दुष्परिणाम, वेदना, त्वचा...",
         "faq_count": "{n} FAQ",
@@ -535,7 +502,7 @@ PAGE_TEXT = {
         "info_cards": [
             ("📋", "Before Treatment", "Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information."),
             ("🩺", "During Treatment", "Understand what typically happens during a radiation treatment session and what patients may experience."),
-            ("✅", "After Treatment", "Learn about common post-treatment considerations, general care, and when to seek professional guidance."),
+            ("✅", "After Treatment", "Learn about common post-treatment considerations, general self-care, and when to seek professional guidance."),
             ("☎️", "When to Contact Your Healthcare Team", "Understand when treatment-related symptoms or concerns should be discussed with your healthcare team."),
         ],
         "effects_sub": "Side effects depend on the area treated, the dose and the person. Not everyone has all of them.",
@@ -599,7 +566,7 @@ PAGE_TEXT = {
         "info_cards": [
             ("📋", "उपचार से पहले", "रेडिएशन थेरेपी शुरू करने से पहले क्या अपेक्षा करें, इसकी जानकारी, जिसमें सामान्य तैयारी और उपचार-योजना की जानकारी शामिल है।"),
             ("🩺", "उपचार के दौरान", "रेडिएशन उपचार सत्र के दौरान आमतौर पर क्या होता है और मरीज़ क्या अनुभव कर सकते हैं, इसे समझें।"),
-            ("✅", "उपचार के बाद", "उपचार के बाद की सामान्य बातों, सामान्य देखभाल और पेशेवर सलाह कब लेनी चाहिए, इसके बारे में जानें।"),
+            ("✅", "उपचार के बाद", "उपचार के बाद की सामान्य बातों, सामान्य स्व-देखभाल और पेशेवर सलाह कब लेनी चाहिए, इसके बारे में जानें।"),
             ("☎️", "अपनी स्वास्थ्य टीम से कब संपर्क करें", "समझें कि उपचार से जुड़े लक्षणों या चिंताओं पर अपनी स्वास्थ्य टीम से कब चर्चा करनी चाहिए।"),
         ],
         "effects_sub": "दुष्प्रभाव उपचार किए गए क्षेत्र, डोज़ और व्यक्ति पर निर्भर करते हैं। ज़रूरी नहीं कि हर किसी को सभी दुष्प्रभाव हों।",
@@ -663,7 +630,7 @@ PAGE_TEXT = {
         "info_cards": [
             ("📋", "उपचारापूर्वी", "रेडिएशन थेरपी सुरू करण्यापूर्वी काय अपेक्षित आहे हे जाणून घ्या, यात सामान्य तयारी आणि उपचार-नियोजनाची माहिती समाविष्ट आहे."),
             ("🩺", "उपचारादरम्यान", "रेडिएशन उपचार सत्रादरम्यान साधारणपणे काय होते आणि रुग्णांना काय अनुभव येऊ शकतो हे समजून घ्या."),
-            ("✅", "उपचारानंतर", "उपचारानंतरच्या सामान्य बाबी, सामान्य काळजी आणि व्यावसायिक सल्ला कधी घ्यावा याबद्दल जाणून घ्या."),
+            ("✅", "उपचारानंतर", "उपचारानंतरच्या सामान्य बाबी, सामान्य स्वतःची काळजी आणि व्यावसायिक सल्ला कधी घ्यावा याबद्दल जाणून घ्या."),
             ("☎️", "तुमच्या आरोग्य टीमशी केव्हा संपर्क साधावा", "उपचाराशी संबंधित लक्षणे किंवा चिंता तुमच्या आरोग्य टीमशी केव्हा चर्चा कराव्यात हे समजून घ्या."),
         ],
         "effects_sub": "दुष्परिणाम उपचार केलेला भाग, डोस आणि व्यक्ती यावर अवलंबून असतात. प्रत्येकाला सर्व दुष्परिणाम होतातच असे नाही.",
@@ -726,10 +693,14 @@ EXTRA_UI = {
         "hosp_opd": "OPD timings", "hosp_emergency": "After-hours / emergency",
         "reviewed": "Content reviewed by {by} on {date}",
         "download_guide": "📄 Download patient guide",
+        "voice_button": "🎙️ Speak your question",
+        "voice_hint": "In Chrome, voice input supports Hindi (hi-IN) and Marathi (mr-IN). Allow microphone access when prompted.",
+        "qr_title": "Waiting-room QR poster",
+        "qr_hint": "Scan this QR code to open the patient education app.",
         "guide_title": "Radiation Therapy: Patient Guide",
         "tab_safety": "Safety", "tab_diet": "Diet & Nutrition",
         "tab_general": "General", "tab_area": "By treatment area",
-        "tab_wellbeing": "Wellbeing", "tab_caregivers": "For Caregivers",
+        "tab_wellbeing": "Wellbeing", "tab_caregivers": "For Caregivers", "tab_costs": "Costs & Schemes",
         "lang_code": "en-IN",
     },
     "hi": {
@@ -739,10 +710,14 @@ EXTRA_UI = {
         "hosp_opd": "ओपीडी का समय", "hosp_emergency": "समय के बाद / आपातकाल",
         "reviewed": "सामग्री की समीक्षा: {by}, दिनांक {date}",
         "download_guide": "📄 रोगी मार्गदर्शिका डाउनलोड करें",
+        "voice_button": "🎙️ अपना प्रश्न बोलें",
+        "voice_hint": "Chrome में वॉइस इनपुट Hindi (hi-IN) और Marathi (mr-IN) को सपोर्ट करता है। पूछे जाने पर माइक्रोफ़ोन की अनुमति दें।",
+        "qr_title": "वेटिंग-रूम QR पोस्टर",
+        "qr_hint": "इस QR कोड को स्कैन करके रोगी शिक्षा ऐप खोलें।",
         "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार और पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार क्षेत्र के अनुसार",
-        "tab_wellbeing": "कल्याण", "tab_caregivers": "देखभाल करने वालों के लिए",
+        "tab_wellbeing": "कल्याण", "tab_caregivers": "देखभाल करने वालों के लिए", "tab_costs": "खर्च और योजनाएँ",
         "lang_code": "hi-IN",
     },
     "mr": {
@@ -752,10 +727,14 @@ EXTRA_UI = {
         "hosp_opd": "ओपीडी वेळ", "hosp_emergency": "वेळेनंतर / आपत्कालीन",
         "reviewed": "मजकुराचे पुनरावलोकन: {by}, दिनांक {date}",
         "download_guide": "📄 रुग्ण मार्गदर्शिका डाउनलोड करा",
+        "voice_button": "🎙️ तुमचा प्रश्न बोला",
+        "voice_hint": "Chrome मध्ये voice input Hindi (hi-IN) आणि Marathi (mr-IN) ला सपोर्ट करते. विचारल्यास मायक्रोफोनची परवानगी द्या.",
+        "qr_title": "वेटिंग-रूम QR पोस्टर",
+        "qr_hint": "हा QR कोड स्कॅन करून रुग्ण शिक्षण अॅप उघडा.",
         "guide_title": "रेडिएशन थेरपी: रुग्ण मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार आणि पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार भागानुसार",
-        "tab_wellbeing": "आधार", "tab_caregivers": "काळजी घेणाऱ्यांसाठी",
+        "tab_wellbeing": "आधार", "tab_caregivers": "काळजी घेणाऱ्यांसाठी", "tab_costs": "खर्च आणि योजना",
         "lang_code": "mr-IN",
     },
 }
@@ -864,11 +843,6 @@ if "page" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
-# Remove the old one-line welcome message if it exists in an existing session.
-if len(st.session_state.messages) == 1 and st.session_state.messages[0].get("role") == "assistant":
-    if st.session_state.messages[0].get("content") in UI_STRINGS["en"].get("greeting", "") or st.session_state.messages[0].get("content") in UI_STRINGS["hi"].get("greeting", "") or st.session_state.messages[0].get("content") in UI_STRINGS["mr"].get("greeting", ""):
-        st.session_state.messages = []
 
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
@@ -1028,7 +1002,6 @@ with st.sidebar:
         mime="text/html",
         use_container_width=True,
     )
-
     st.markdown(
         f"""<div class="sb-section-title">{U["safety_trust"]}</div>
 <div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">{U["pill1"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
@@ -1396,7 +1369,6 @@ def search_knowledge(question, language):
         ):
             return None
 
-        # Return only the matched answer metadata. Related-question suggestions are intentionally disabled.
         return dict(best_metadata)
 
     except Exception:
@@ -1470,21 +1442,6 @@ def get_response(prompt):
 # SOURCE + FEEDBACK
 # ============================================================
 
-def display_source(source):
-    if not source:
-        return
-
-    stage = source.get("stage", "Radiation Oncology")
-    stage = U["stages"].get(stage, stage)
-
-    with st.container(border=True):
-        st.markdown(f"**{U['source']}**")
-        st.write(U["source_kb"])
-        st.write(f"**{U['category']}:** {stage}")
-        if source.get("question"):
-            st.write(f"**{U['matched']}:** {source['question']}")
-
-
 def redact(text):
     """Remove phone-like numbers and e-mail addresses before anything is saved."""
     text = re.sub(r"[\w.+-]+@[\w-]+\.[\w.-]+", "[email]", text)
@@ -1535,28 +1492,6 @@ def save_feedback(question, answer, feedback):
         pass
 
 
-def feedback_buttons(message_index, question, answer):
-    if not question:
-        return
-
-    already_given = st.session_state.feedback_given.get(message_index)
-    if already_given:
-        st.caption(U["thanks_up"] if already_given == "up" else U["thanks_down"])
-        return
-
-    col1, col2, _ = st.columns([1, 1, 10])
-    with col1:
-        if st.button("👍", key=f"up_{message_index}"):
-            save_feedback(question, answer, "up")
-            st.session_state.feedback_given[message_index] = "up"
-            st.rerun()
-    with col2:
-        if st.button("👎", key=f"down_{message_index}"):
-            save_feedback(question, answer, "down")
-            st.session_state.feedback_given[message_index] = "down"
-            st.rerun()
-
-
 # ============================================================
 # UI HELPERS
 # ============================================================
@@ -1565,11 +1500,11 @@ NAV_ITEMS = [
     ("chat", "💬"),
     ("journey", "🧭"),
     ("info", "📖"),
+    ("video", "🎥"),
+    ("faq", "❓"),
+    ("diet", "🥗"),
     ("effects", "⚠️"),
     ("safety", "🛡️"),
-    ("diet", "🥗"),
-    ("video", "▶️"),
-    ("faq", "❓"),
     ("support", "💙"),
     ("after", "🌿"),
 ]
@@ -1577,19 +1512,20 @@ NAV_ITEMS = [
 
 def render_nav():
     with st.container(key="navrow"):
-        cols = st.columns(len(NAV_ITEMS))
-
-        for col, (key, icon) in zip(cols, NAV_ITEMS):
-            with col:
-                st.button(
-                    f"{icon}  \n{U['nav'][key]}",
-                    key=f"nav_{key}",
-                    type="primary" if st.session_state.page == key else "secondary",
-                    use_container_width=True,
-                    on_click=go,
-                    args=(key,),
-                )
-
+        for row_index in range(2):
+            row_items = NAV_ITEMS[row_index * 5:(row_index + 1) * 5]
+            with st.container(key=f"nav_row_{row_index}"):
+                cols = st.columns(5)
+                for col, (key, icon) in zip(cols, row_items):
+                    with col:
+                        st.button(
+                            f"{icon}  \n{U['nav'][key]}",
+                            key=f"nav_{key}",
+                            type="primary" if st.session_state.page == key else "secondary",
+                            use_container_width=True,
+                            on_click=go,
+                            args=(key,),
+                        )
     st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
 
 
@@ -1684,76 +1620,88 @@ def read_csv_rows(path):
 
 
 # ============================================================
-# PAGES
+# BROWSER VOICE INPUT
 # ============================================================
 
-def voice_input():
-    """Speech-to-text input that places the recognized question into Streamlit's chat box."""
-    lang = U["lang_code"]
-    label = U["voice"]
-    hint = U["voice_hint"]
-    unsupported = U["voice_unsupported"]
-    page = f"""
-<style>
-.voice-wrap {{ margin: .2rem 0 .35rem 0; }}
-.voice-btn {{ font-family: 'Segoe UI', sans-serif; padding: 7px 16px; border-radius: 999px;
-  border: 1px solid #bcd3ea; background: #fff; color: #1a4f86; cursor: pointer; font-size: 14px; font-weight: 600; }}
-.voice-btn:hover {{ background: #e8f2fc; }}
-.voice-status {{ color: #66788c; font-size: 12px; margin-top: 5px; }}
-</style>
-<div class="voice-wrap">
-  <button class="voice-btn" id="voiceBtn">{html.escape(label)}</button>
-  <div class="voice-status" id="voiceStatus">{html.escape(hint)}</div>
-</div>
+@st.cache_resource
+def get_voice_component():
+    component_dir = Path(os.environ.get("STREAMLIT_VOICE_COMPONENT_DIR", Path(tempfile.gettempdir()) / "radiation_voice_component"))
+    component_dir.mkdir(parents=True, exist_ok=True)
+    index = component_dir / "index.html"
+    index.write_text("""<!doctype html>
+<html><head><meta charset="utf-8"><script src="https://unpkg.com/streamlit-component-lib/dist/streamlit-component-lib.js"></script>
+<style>body{margin:0;font-family:Segoe UI,Arial,sans-serif}.wrap{display:flex;gap:8px;align-items:center}.btn{border:1px solid #bcd3ea;background:#fff;color:#1a4f86;border-radius:999px;padding:7px 15px;font-weight:700;cursor:pointer}.btn:hover{background:#e8f2fc}.status{font-size:12px;color:#4d6279}</style></head>
+<body><div class="wrap"><button class="btn" id="start"></button><span class="status" id="status"></span></div>
 <script>
-(() => {{
-  const Btn = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const btn = document.getElementById('voiceBtn');
-  const status = document.getElementById('voiceStatus');
-  const lang = {json.dumps(lang)};
-  const unsupported = {json.dumps(unsupported, ensure_ascii=False)};
-  if (!Btn) {{
-    btn.disabled = true;
-    status.textContent = unsupported;
-    return;
-  }}
-  const recognition = new Btn();
-  recognition.lang = lang;
-  recognition.interimResults = false;
-  recognition.continuous = false;
-  btn.onclick = () => {{
-    try {{
-      status.textContent = '🎙️ Listening…';
-      recognition.start();
-    }} catch (e) {{}}
-  }};
-  recognition.onresult = (event) => {{
-    const text = event.results[0][0].transcript;
-    const setChatInput = () => {{
-      const parent = window.parent;
-      const textarea = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]')
-        || parent.document.querySelector('div[data-testid="stChatInput"] textarea');
-      if (!textarea) return false;
-      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
-      setter.call(textarea, text);
-      textarea.dispatchEvent(new Event('input', {{ bubbles: true }}));
-      textarea.focus();
-      return true;
-    }};
-    let tries = 0;
-    const timer = setInterval(() => {{
-      tries++;
-      if (setChatInput() || tries > 20) clearInterval(timer);
-    }}, 100);
-    status.textContent = '✓ Question added to the text box. Press send to submit.';
-  }};
-  recognition.onerror = () => {{ status.textContent = unsupported; }};
-  recognition.onend = () => {{ if (status.textContent === '🎙️ Listening…') status.textContent = {json.dumps(hint)}; }};
-}})();
-</script>
-"""
-    components.html(page, height=78)
+const Streamlit = window.Streamlit;
+const start = document.getElementById('start'); const status = document.getElementById('status');
+let recognition = null;
+let currentReset = '0';
+function configure(args){
+  const label = args.label || 'Speak your question';
+  const lang = args.lang || 'en-IN';
+  currentReset = String(args.reset || '0');
+  start.textContent = '🎙️ ' + label;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { start.disabled=true; status.textContent='Speech input is not supported in this browser.'; return; }
+  start.disabled=false;
+  recognition = new SR(); recognition.lang=lang; recognition.interimResults=false; recognition.continuous=false;
+  start.onclick=()=>{ status.textContent='Listening…'; try{recognition.start()}catch(e){} };
+  recognition.onresult=(e)=>{ const text=e.results[0][0].transcript; status.textContent=text; Streamlit.setComponentValue({text:text, reset:currentReset}); };
+  recognition.onerror=()=>{ status.textContent='Microphone or speech recognition error. Please try again.'; };
+  recognition.onend=()=>{};
+}
+Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, (event)=>{ configure(event.detail.args || {}); Streamlit.setFrameHeight(44); });
+Streamlit.setFrameHeight(44);
+Streamlit.setComponentReady();
+</script></body></html>""", encoding="utf-8")
+    return components.declare_component("radiation_voice_input", path=str(component_dir))
 
+
+def voice_input():
+    if "voice_reset" not in st.session_state:
+        st.session_state.voice_reset = 0
+    component = get_voice_component()
+    result = component(
+        label=U["voice_button"].replace("🎙️ ", ""),
+        lang=U["lang_code"],
+        reset=str(st.session_state.voice_reset),
+        key=f"voice_{st.session_state.voice_reset}",
+        default=None,
+    )
+    if isinstance(result, dict):
+        text = (result.get("text") or "").strip()
+        if text:
+            st.session_state.voice_reset += 1
+            return text
+    return ""
+
+
+def qr_poster():
+    """Optional waiting-room QR poster. Set APP_URL or HOSPITAL['app_url'] to the public app URL."""
+    app_url = HOSPITAL.get("app_url", "").strip()
+    if not app_url:
+        return
+    try:
+        import qrcode
+        from io import BytesIO
+        qr = qrcode.QRCode(box_size=8, border=3)
+        qr.add_data(app_url)
+        qr.make(fit=True)
+        image = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+        st.markdown(f'<div class="qr-poster"><h4>📱 {U["qr_title"]}</h4><p>{U["qr_hint"]}</p></div>', unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1.2, 1])
+        with col2:
+            st.image(image, use_container_width=True)
+            buf = BytesIO(); image.save(buf, format="PNG")
+            st.download_button("⬇️ Download QR poster image", buf.getvalue(), file_name="waiting_room_qr.png", mime="image/png", use_container_width=True)
+    except ImportError:
+        st.info("Install the optional `qrcode` package to generate the waiting-room QR poster.")
+
+
+# ============================================================
+# PAGES
+# ============================================================
 
 def page_chat():
     # ---- Hero ----
@@ -1770,10 +1718,11 @@ def page_chat():
     with st.container(border=True):
         st.markdown(f'<div class="panel-title">{U["ask_title"]}</div>', unsafe_allow_html=True)
 
-        voice_input()
         typed = st.chat_input(T["placeholder"])
+        voice_prompt = voice_input()
+        st.caption(U["voice_hint"])
         st.caption(U["privacy"])
-        prompt = typed or st.session_state.pop("pending_prompt", None)
+        prompt = typed or voice_prompt or st.session_state.pop("pending_prompt", None)
 
         if prompt:
             response, source = get_response(prompt)
@@ -1787,13 +1736,14 @@ def page_chat():
         last_index = len(st.session_state.messages) - 1
 
         for index, message in enumerate(st.session_state.messages):
-            with st.chat_message(message["role"]):
+            avatar = None if message["role"] == "assistant" else "🧑"
+
+            with st.chat_message(message["role"], avatar=avatar):
                 st.markdown(message["content"])
 
                 is_answer = message["role"] == "assistant" and message.get("source")
 
                 if is_answer:
-                    # Source box, related questions, and thumbs-up/down feedback are intentionally hidden.
                     speak_button(message["content"], U["listen"], U["stop"])
 
     st.write("")
@@ -1837,9 +1787,10 @@ def page_safety():
 
 
 def page_diet():
-    page_header("🥗", U["nav"]["diet"], U["diet_sub"])
+    page_header("🥗", U["nav"]["diet"], "Practical food, hydration and nutrition guidance during treatment.")
     info_cards(C["diet_cards"])
     hospital_box()
+    contact_team_box()
 
 
 def pick_video():
@@ -1865,50 +1816,9 @@ def pick_video():
     return videos[0]
 
 
-def pick_photos():
-    """Return department/treatment photos stored in the assets folder."""
-    if not VIDEO_DIR.exists():
-        return []
-    photos = []
-    for extension in ["*.jpg", "*.jpeg", "*.png", "*.webp"]:
-        photos.extend(VIDEO_DIR.glob(extension))
-    return sorted(set(photos), key=lambda p: p.name.lower())
-
-
-def make_qr_png(url):
-    """Create a QR image for the configured app URL."""
-    import qrcode
-    qr = qrcode.QRCode(version=1, box_size=8, border=4)
-    qr.add_data(url)
-    qr.make(fit=True)
-    image = qr.make_image(fill_color="#0f55b8", back_color="white").convert("RGB")
-    buffer = io.BytesIO()
-    image.save(buffer, format="PNG")
-    return buffer.getvalue()
-
-
-def waiting_room_qr():
-    qr_bytes = make_qr_png(APP_URL)
-    st.markdown(f"### {U['qr_title']}")
-    st.caption(U["qr_caption"])
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        st.image(qr_bytes, width=260)
-    with c2:
-        st.markdown(f"**App link:** {html.escape(APP_URL)}")
-        st.download_button(
-            U["qr_download"],
-            qr_bytes,
-            file_name="radiation_app_waiting_room_qr.png",
-            mime="image/png",
-        )
-
-
 def page_video():
-    st.markdown(f"### {U['video_title']}")
-    st.caption(U["video_caption"])
-
-    waiting_room_qr()
+    st.markdown(f"### {U['nav']['video']}")
+    st.caption("Videos and photos can help patients become familiar with the treatment room, machine, mask and skin markings.")
 
     video_file = pick_video()
     if video_file:
@@ -1916,14 +1826,23 @@ def page_video():
     else:
         st.info(U["no_video"])
 
-    photos = pick_photos()
-    if photos:
-        st.markdown("#### 📸 Photo guide")
-        st.caption("Photos from the treatment/department area can be placed in the assets folder and will appear here.")
-        cols = st.columns(2)
-        for index, photo in enumerate(photos):
-            with cols[index % 2]:
-                st.image(str(photo), caption=photo.stem.replace("_", " ").replace("-", " ").title(), use_container_width=True)
+    photo_dirs = [VIDEO_DIR / "photos", VIDEO_DIR]
+    image_files = []
+    for folder in photo_dirs:
+        if folder.exists():
+            for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
+                image_files.extend(sorted(folder.glob(ext)))
+    # Keep the first occurrence of each file when assets/photos is also under assets.
+    image_files = list(dict.fromkeys(image_files))
+    if image_files:
+        st.markdown("#### 📷 Photo tour")
+        cols = st.columns(3)
+        for i, image_file in enumerate(image_files):
+            with cols[i % 3]:
+                st.image(str(image_file), caption=image_file.stem.replace("_", " ").title(), use_container_width=True)
+    else:
+        st.info("Add department photos to the assets/photos folder to show the treatment machine, mask, skin markings and treatment room.")
+
 
 
 def page_faq():
@@ -1974,6 +1893,7 @@ def page_support():
         info_cards(C["support_cards"])
     with tab_care:
         info_cards(C["caregiver_cards"])
+    qr_poster()
 
 
 def page_after():
@@ -2052,9 +1972,9 @@ PAGES = {
     "info": page_info,
     "effects": page_effects,
     "safety": page_safety,
-    "diet": page_diet,
     "video": page_video,
     "faq": page_faq,
+    "diet": page_diet,
     "support": page_support,
     "after": page_after,
     "admin": page_admin,
