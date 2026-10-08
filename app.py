@@ -21,6 +21,7 @@ from sentence_transformers import SentenceTransformer
 
 st.set_page_config(
     page_title="Radiation Oncology AI Assistant",
+    page_icon="🎗️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -39,13 +40,6 @@ st.markdown(
     .block-container { padding-top: 4.2rem !important; max-width: 1400px; }
     header[data-testid="stHeader"] { background: transparent; }
     .stApp .main p, .stApp .main li, .stApp .main span, .stApp .main label { color: #1f3350; }
-
-    [class*="st-key-download_patient_guide"] button {
-        background: linear-gradient(120deg, #0f55b8 0%, #1a72d4 100%) !important;
-        border: 1.5px solid #0f55b8 !important; color: #fff !important; border-radius: 10px !important;
-        font-weight: 700;
-    }
-    [class*="st-key-download_patient_guide"] button p { color: #fff !important; }
 
     /* ---------------- SIDEBAR ---------------- */
     section[data-testid="stSidebar"] {
@@ -104,19 +98,18 @@ st.markdown(
     .credit-name { font-size: .95rem; font-weight: 700; color: #fff !important; }
 
     /* ---------------- TOP NAV (tabs) ---------------- */
-    .st-key-navrow { margin-bottom: .15rem; }
-    .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .45rem; margin-bottom: .45rem; }
     [class*="st-key-nav_"] button {
-        background: #ffffff !important; border: 1.5px solid #b9d0e8 !important; border-radius: 10px !important;
+        background: #ffffff !important; border: 1.5px solid #b9d0e8 !important; border-radius: 12px !important;
         box-shadow: 0 2px 6px rgba(20,60,110,0.06) !important;
-        color: #24425f !important; font-weight: 700; padding: .2rem .18rem;
-        height: 3.65rem; width: 100%; display: flex; align-items: center; justify-content: center;
+        color: #24425f !important; font-weight: 700; padding: .3rem .25rem;
+        height: 4.6rem; width: 100%; display: flex; align-items: center; justify-content: center;
         transition: all .15s ease;
     }
     [class*="st-key-nav_"] button p {
-        color: #24425f !important; font-size: .76rem; line-height: 1.15;
+        color: #24425f !important; font-size: .88rem; line-height: 1.25;
         text-align: center; white-space: normal; margin: 0;
     }
+    .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .5rem; }
     [class*="st-key-nav_"] button:hover {
         background: #eaf3fc !important; border-color: #1a6fb5 !important;
     }
@@ -133,12 +126,12 @@ st.markdown(
     .hero {
         position: relative; overflow: hidden;
         background: linear-gradient(110deg, #0a3a8f 0%, #0f55b8 55%, #1a72d4 100%);
-        padding: 1.7rem 2rem; border-radius: 16px; margin-bottom: 1.1rem;
+        padding: 1.25rem 1.5rem; border-radius: 16px; margin: 0 auto 1.1rem auto; width: 88%;
         box-shadow: 0 10px 28px rgba(15,76,160,0.25);
     }
     .hero::after { content: ""; position: absolute; right: -60px; top: -80px; width: 340px; height: 340px;
         border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.16), rgba(255,255,255,0) 70%); }
-    .hero h1 { color: #fff !important; font-size: 2.4rem; font-weight: 800; margin: .3rem 0 .6rem 0; letter-spacing: -.01em; }
+    .hero h1 { color: #fff !important; font-size: 2.2rem; font-weight: 800; margin: .3rem 0 .6rem 0; letter-spacing: -.01em; }
     .hero p { color: #e4f0fb !important; font-size: 1rem; margin: .15rem 0; }
     .hero p.hero-sub2 { font-size: .92rem; margin-top: .6rem; }
     .badge { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,255,255,0.14);
@@ -215,13 +208,12 @@ st.markdown(
     /* ---------------- MOBILE ---------------- */
     @media (max-width: 900px) {
         .st-key-navrow [data-testid="stHorizontalBlock"] {
-            flex-wrap: wrap !important; overflow: visible;
+            flex-direction: row !important; flex-wrap: nowrap !important;
+            overflow-x: auto; padding-bottom: .4rem;
         }
         .st-key-navrow [data-testid="stColumn"], .st-key-navrow [data-testid="column"] {
-            min-width: 0 !important; flex: 1 1 18% !important; width: auto !important;
+            min-width: 122px !important; flex: 0 0 122px !important; width: 122px !important;
         }
-        [class*="st-key-nav_"] button { height: 3.55rem; }
-        [class*="st-key-nav_"] button p { font-size: .68rem; }
         .hero h1 { font-size: 1.6rem; }
         .block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
     }
@@ -276,7 +268,7 @@ LANGUAGES = {
 
 UI_STRINGS = {
     "en": {
-        "hero_sub": "Your patient education assistant for Radiation Oncology.",
+        "hero_sub": "",
         "hero_sub2": "Ask questions, get clear answers, and learn about your treatment, side effects, safety and more.",
         "placeholder": "Type your question here...",
         "greeting": (
@@ -316,7 +308,7 @@ UI_STRINGS = {
         "no_faq": "No matching questions found.",
     },
     "hi": {
-        "hero_sub": "रेडिएशन ऑन्कोलॉजी के लिए आपका रोगी शिक्षा सहायक।",
+        "hero_sub": "",
         "hero_sub2": "प्रश्न पूछें, स्पष्ट उत्तर पाएँ और अपने उपचार, दुष्प्रभाव व सुरक्षा के बारे में जानें।",
         "placeholder": "अपना प्रश्न यहाँ लिखें...",
         "greeting": (
@@ -350,7 +342,7 @@ UI_STRINGS = {
         "no_faq": "कोई मिलती-जुलती जानकारी नहीं मिली।",
     },
     "mr": {
-        "hero_sub": "रेडिएशन ऑन्कोलॉजीसाठी तुमचा रुग्ण शिक्षण सहाय्यक.",
+        "hero_sub": "",
         "hero_sub2": "प्रश्न विचारा, स्पष्ट उत्तरे मिळवा आणि तुमचे उपचार, दुष्परिणाम व सुरक्षिततेबद्दल जाणून घ्या.",
         "placeholder": "तुमचा प्रश्न येथे लिहा...",
         "greeting": (
@@ -395,8 +387,8 @@ UI_EXTRA = {
     "en": {
         "nav": {
             "chat": "Chat Assistant", "journey": "Treatment Journey", "info": "Treatment Info",
-            "effects": "Side Effects", "safety": "Safety", "video": "Video & Photo Guide",
-            "faq": "FAQ", "diet": "Diet and Nutrition", "support": "Support & Wellness", "after": "After Treatment Care",
+            "effects": "Side Effects", "safety": "Safety & Self-Care", "video": "Video Guide",
+            "faq": "FAQ", "support": "Support & Wellness", "after": "After Treatment Care",
         },
         "lang_label": "🌐 Language",
         "clear_chat": "🗑️ Clear Chat",
@@ -428,8 +420,8 @@ UI_EXTRA = {
     "hi": {
         "nav": {
             "chat": "चैट सहायक", "journey": "उपचार यात्रा", "info": "उपचार जानकारी",
-            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "video": "वीडियो और फोटो गाइड",
-            "faq": "सामान्य प्रश्न", "diet": "आहार और पोषण", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
+            "effects": "दुष्प्रभाव", "safety": "सुरक्षा और स्व-देखभाल", "video": "वीडियो गाइड",
+            "faq": "सामान्य प्रश्न", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
         },
         "lang_label": "🌐 भाषा",
         "clear_chat": "🗑️ चैट साफ़ करें",
@@ -461,8 +453,8 @@ UI_EXTRA = {
     "mr": {
         "nav": {
             "chat": "चॅट सहाय्यक", "journey": "उपचार प्रवास", "info": "उपचार माहिती",
-            "effects": "दुष्परिणाम", "safety": "सुरक्षा", "video": "व्हिडिओ आणि फोटो मार्गदर्शक",
-            "faq": "सामान्य प्रश्न", "diet": "आहार आणि पोषण", "support": "सहाय्य आणि कल्याण", "after": "उपचारानंतरची काळजी",
+            "effects": "दुष्परिणाम", "safety": "सुरक्षा आणि स्वतःची काळजी", "video": "व्हिडिओ मार्गदर्शक",
+            "faq": "सामान्य प्रश्न", "support": "आधार आणि निरोगीपणा", "after": "उपचारानंतरची काळजी",
         },
         "lang_label": "🌐 भाषा",
         "clear_chat": "🗑️ चॅट साफ करा",
@@ -704,7 +696,9 @@ EXTRA_UI = {
         "hosp_opd": "OPD timings", "hosp_emergency": "After-hours / emergency",
         "reviewed": "Content reviewed by {by} on {date}",
         "download_guide": "📄 Download patient guide",
-                "guide_title": "Radiation Therapy: Patient Guide",
+        "guide_hint": "Open the file, then choose Print → Save as PDF.",
+        "large_text": "🔠 Large text",
+        "guide_title": "Radiation Therapy: Patient Guide",
         "tab_safety": "Safety", "tab_diet": "Diet & Nutrition",
         "tab_general": "General", "tab_area": "By treatment area",
         "tab_wellbeing": "Wellbeing", "tab_caregivers": "For Caregivers", "tab_costs": "Costs & Schemes",
@@ -717,7 +711,9 @@ EXTRA_UI = {
         "hosp_opd": "ओपीडी का समय", "hosp_emergency": "समय के बाद / आपातकाल",
         "reviewed": "सामग्री की समीक्षा: {by}, दिनांक {date}",
         "download_guide": "📄 रोगी मार्गदर्शिका डाउनलोड करें",
-                "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
+        "guide_hint": "फ़ाइल खोलें, फिर प्रिंट → PDF के रूप में सहेजें चुनें।",
+        "large_text": "🔠 बड़े अक्षर",
+        "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार और पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार क्षेत्र के अनुसार",
         "tab_wellbeing": "कल्याण", "tab_caregivers": "देखभाल करने वालों के लिए", "tab_costs": "खर्च और योजनाएँ",
@@ -730,6 +726,8 @@ EXTRA_UI = {
         "hosp_opd": "ओपीडी वेळ", "hosp_emergency": "वेळेनंतर / आपत्कालीन",
         "reviewed": "मजकुराचे पुनरावलोकन: {by}, दिनांक {date}",
         "download_guide": "📄 रुग्ण मार्गदर्शिका डाउनलोड करा",
+        "guide_hint": "फाइल उघडा, नंतर प्रिंट → PDF म्हणून सेव्ह करा निवडा.",
+        "large_text": "🔠 मोठी अक्षरे",
         "guide_title": "रेडिएशन थेरपी: रुग्ण मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार आणि पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार भागानुसार",
@@ -841,7 +839,9 @@ if "page" not in st.session_state:
     st.session_state.page = "chat"
 
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = [
+        {"role": "assistant", "content": UI_STRINGS[st.session_state.language]["greeting"]}
+    ]
 
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
@@ -963,7 +963,7 @@ h3 {{ color:#0b3d66; margin-bottom:4px; }} .box {{ border:1px solid #bcd3ea; bor
 <h2>{esc(U["nav"]["journey"])}</h2>{steps}
 <h2>{esc(U["nav"]["effects"])}</h2><p>{esc(C["effects_sub"])}</p>{cards(C["effects_cards"])}{cards(C["area_cards"])}
 <h2>{esc(U["nav"]["safety"])}</h2>{cards(C["safety_cards"])}
-<h2>{esc(U["nav"]["diet"])}</h2>{cards(C["diet_cards"])}
+<h2>{esc(U["tab_diet"])}</h2>{cards(C["diet_cards"])}
 <h2>{esc(U["nav"]["after"])}</h2>{cards(C["after_cards"])}
 {contact}{review}
 <p class="foot">{esc(U["disclaimer"])}</p>
@@ -987,12 +987,17 @@ with st.sidebar:
 
     if selected_language != st.session_state.language:
         st.session_state.language = selected_language
+        # Keep the opening greeting in the newly selected language
+        if st.session_state.messages:
+            st.session_state.messages[0]["content"] = UI_STRINGS[selected_language]["greeting"]
         st.rerun()
 
     if st.button(U["clear_chat"], use_container_width=True):
-        st.session_state.messages = []
+        st.session_state.messages = [{"role": "assistant", "content": T["greeting"]}]
         st.session_state.feedback_given = {}
         st.rerun()
+
+    st.toggle(U["large_text"], key="large_text")
 
     st.download_button(
         U["download_guide"],
@@ -1000,8 +1005,8 @@ with st.sidebar:
         file_name="radiation_patient_guide.html",
         mime="text/html",
         use_container_width=True,
-        key="download_patient_guide",
     )
+    st.caption(U["guide_hint"])
 
     st.markdown(
         f"""<div class="sb-section-title">{U["safety_trust"]}</div>
@@ -1026,6 +1031,10 @@ with st.sidebar:
                 st.button("Open dashboard", on_click=go, args=("admin",), use_container_width=True)
             elif password:
                 st.error("Wrong password")
+
+if st.session_state.get("large_text"):
+    st.markdown("<style>html { font-size: 19px !important; }</style>", unsafe_allow_html=True)
+
 
 # ============================================================
 # RAG
@@ -1462,18 +1471,8 @@ def get_response(prompt):
 # ============================================================
 
 def display_source(source):
-    if not source:
-        return
-
-    stage = source.get("stage", "Radiation Oncology")
-    stage = U["stages"].get(stage, stage)
-
-    with st.container(border=True):
-        st.markdown(f"**{U['source']}**")
-        st.write(U["source_kb"])
-        st.write(f"**{U['category']}:** {stage}")
-        if source.get("question"):
-            st.write(f"**{U['matched']}:** {source['question']}")
+    """Source metadata is intentionally hidden from the patient-facing chat."""
+    return
 
 
 def redact(text):
@@ -1556,11 +1555,10 @@ NAV_ITEMS = [
     ("chat", "💬"),
     ("journey", "🧭"),
     ("info", "📖"),
-    ("video", "▶️"),
-    ("faq", "❓"),
-    ("diet", "🥗"),
     ("effects", "⚠️"),
     ("safety", "🛡️"),
+    ("video", "▶️"),
+    ("faq", "❓"),
     ("support", "💙"),
     ("after", "🌿"),
 ]
@@ -1568,18 +1566,18 @@ NAV_ITEMS = [
 
 def render_nav():
     with st.container(key="navrow"):
-        for row_items in (NAV_ITEMS[:5], NAV_ITEMS[5:]):
-            cols = st.columns(5)
-            for col, (key, icon) in zip(cols, row_items):
-                with col:
-                    st.button(
-                        f"{icon}  \n{U['nav'][key]}",
-                        key=f"nav_{key}",
-                        type="primary" if st.session_state.page == key else "secondary",
-                        use_container_width=True,
-                        on_click=go,
-                        args=(key,),
-                    )
+        cols = st.columns(len(NAV_ITEMS))
+
+        for col, (key, icon) in zip(cols, NAV_ITEMS):
+            with col:
+                st.button(
+                    f"{icon}  \n{U['nav'][key]}",
+                    key=f"nav_{key}",
+                    type="primary" if st.session_state.page == key else "secondary",
+                    use_container_width=True,
+                    on_click=go,
+                    args=(key,),
+                )
 
     st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
 
@@ -1678,91 +1676,35 @@ def read_csv_rows(path):
 # PAGES
 # ============================================================
 
-def voice_input_box():
-    """Visible browser speech input. Chrome supports English, Hindi and Marathi speech recognition.
-    The component copies the transcript so it can be pasted into the question box.
-    """
-    lang_map = {"en": "en-IN", "hi": "hi-IN", "mr": "mr-IN"}
-    selected = lang_map.get(st.session_state.language, "en-IN")
-    page = f"""
-<div style="font-family:Segoe UI,Arial,sans-serif;border:1px solid #bcd3ea;border-radius:12px;padding:10px 12px;background:#f7fbff;">
-  <div style="font-weight:700;color:#0b3d66;margin-bottom:6px;">🎙️ Voice input</div>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-    <button id="mic" style="border:1px solid #1a6fb5;background:#fff;color:#1a6fb5;border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer;">🎙️ Speak</button>
-    <select id="lang" style="border:1px solid #bcd3ea;border-radius:8px;padding:7px;color:#24425f;">
-      <option value="en-IN" {'selected' if selected=='en-IN' else ''}>English</option>
-      <option value="hi-IN" {'selected' if selected=='hi-IN' else ''}>हिन्दी</option>
-      <option value="mr-IN" {'selected' if selected=='mr-IN' else ''}>मराठी</option>
-    </select>
-    <button id="copy" style="border:1px solid #bcd3ea;background:#fff;color:#24425f;border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer;">📋 Copy question</button>
-  </div>
-  <textarea id="out" placeholder="Your spoken question will appear here…" style="margin-top:8px;width:100%;min-height:64px;border:1px solid #bcd3ea;border-radius:9px;padding:8px;box-sizing:border-box;color:#1f3350;resize:vertical;"></textarea>
-  <div id="status" style="font-size:12px;color:#5c7188;margin-top:5px;">Use Chrome for Marathi or Hindi speech recognition. After copying, paste it into the question box below.</div>
-</div>
-<script>
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const mic=document.getElementById('mic'), out=document.getElementById('out'), status=document.getElementById('status');
-let rec=null, listening=false;
-if(!SR){{mic.disabled=true; mic.textContent='🎙️ Voice not supported'; status.textContent='Voice input needs a browser with Speech Recognition support, such as Chrome.';}}
-else{{
-  rec=new SR(); rec.continuous=false; rec.interimResults=false;
-  mic.onclick=()=>{{
-    if(listening){{rec.stop();return;}}
-    rec.lang=document.getElementById('lang').value; rec.start(); listening=true; mic.textContent='⏹ Stop'; status.textContent='Listening… please speak your question.';
-  }};
-  rec.onresult=(e)=>{{out.value=e.results[0][0].transcript; status.textContent='Voice captured. Click Copy question, then paste it into the question box.';}};
-  rec.onerror=(e)=>{{status.textContent='Could not capture speech: '+e.error+'. Please try again.';}};
-  rec.onend=()=>{{listening=false; mic.textContent='🎙️ Speak';}};
-}}
-document.getElementById('copy').onclick=async()=>{{
-  const text=out.value.trim(); if(!text){{status.textContent='Please speak a question first.';return;}}
-  try{{await navigator.clipboard.writeText(text); status.textContent='Copied. Paste the question into the chat box below.';}}
-  catch(e){{out.focus(); out.select(); status.textContent='Please copy the selected text and paste it into the chat box below.';}}
-}};
-</script>
-"""
-    components.html(page, height=175)
-
-
 def page_chat():
     # ---- Hero ----
     st.markdown(
         f"""<div class="hero">
 <div class="badge"><span class="dot"></span>{U["badge"]}</div>
 <h1>{U["hero_title"]}</h1>
-<p>{T["hero_sub"]}</p>
 </div>""",
         unsafe_allow_html=True,
     )
 
-    # ---- Question box first, then conversation ----
-    with st.container(border=True):
-        st.markdown(f'<div class="panel-title">{U["ask_title"]}</div>', unsafe_allow_html=True)
-        voice_input_box()
+    # Clean chat area: no separate question/copy box, source metadata, related questions, or thumbs feedback.
+    typed = st.chat_input(T["placeholder"])
+    st.caption(U["privacy"])
+    prompt = typed or st.session_state.pop("pending_prompt", None)
 
-        typed = st.chat_input(T["placeholder"])
-        st.caption(U["privacy"])
-        prompt = typed or st.session_state.pop("pending_prompt", None)
+    if prompt:
+        response, source = get_response(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append(
+            {"role": "assistant", "content": response, "source": source}
+        )
 
-        if prompt:
-            response, source = get_response(prompt)
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            st.session_state.messages.append(
-                {"role": "assistant", "content": response, "source": source}
-            )
-
-        st.write("")
-
-        last_index = len(st.session_state.messages) - 1
-
-        for index, message in enumerate(st.session_state.messages):
-            avatar = "🎗️" if message["role"] == "assistant" else "🧑"
-
-            with st.chat_message(message["role"], avatar=avatar):
-                st.markdown(message["content"])
-
-                if message["role"] == "assistant" and message.get("source"):
-                    speak_button(message["content"], U["listen"], U["stop"])
+    for index, message in enumerate(st.session_state.messages):
+        avatar = "🎗️" if message["role"] == "assistant" else "🧑"
+        with st.chat_message(message["role"], avatar=avatar):
+            st.markdown(message["content"])
+            is_answer = message["role"] == "assistant" and message.get("source")
+            if is_answer:
+                speak_button(message["content"], U["listen"], U["stop"])
 
     st.write("")
     hospital_box()
@@ -1799,14 +1741,15 @@ def page_effects():
 
 def page_safety():
     page_header("🛡️", U["nav"]["safety"], C["safety_sub"])
-    info_cards(C["safety_cards"])
+
+    tab_safety, tab_diet = st.tabs([U["tab_safety"], U["tab_diet"]])
+    with tab_safety:
+        info_cards(C["safety_cards"])
+    with tab_diet:
+        info_cards(C["diet_cards"])
+
     hospital_box()
     contact_team_box()
-
-
-def page_diet():
-    page_header("🥗", U["nav"]["diet"], "Food, hydration and nutrition support during radiation treatment.")
-    info_cards(C["diet_cards"])
 
 
 def pick_video():
@@ -1841,15 +1784,6 @@ def page_video():
         st.video(str(video_file))
     else:
         st.info(U["no_video"])
-
-    photo_files = []
-    if VIDEO_DIR.exists():
-        for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
-            photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
-    if photo_files:
-        st.markdown("### 📸 Department and treatment photos")
-        for photo in photo_files:
-            st.image(str(photo), use_container_width=True)
 
 
 def page_faq():
@@ -1893,13 +1827,15 @@ def page_faq():
 def page_support():
     page_header("💙", U["nav"]["support"], C["support_sub"])
 
-    tab_well, tab_care = st.tabs(
-        [U["tab_wellbeing"], U["tab_caregivers"]]
+    tab_well, tab_care, tab_cost = st.tabs(
+        [U["tab_wellbeing"], U["tab_caregivers"], U["tab_costs"]]
     )
     with tab_well:
         info_cards(C["support_cards"])
     with tab_care:
         info_cards(C["caregiver_cards"])
+    with tab_cost:
+        info_cards(C["cost_cards"])
 
 
 def page_after():
@@ -1978,7 +1914,6 @@ PAGES = {
     "info": page_info,
     "effects": page_effects,
     "safety": page_safety,
-    "diet": page_diet,
     "video": page_video,
     "faq": page_faq,
     "support": page_support,
