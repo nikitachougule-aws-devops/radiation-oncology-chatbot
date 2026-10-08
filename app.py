@@ -7,7 +7,6 @@ import re
 import os
 import json
 import html
-import urllib.parse
 import hmac
 from collections import Counter
 
@@ -68,14 +67,13 @@ st.markdown(
         background: rgba(47,155,214,0.30); border-color: #5fb8ec; transform: translateY(-1px);
     }
 
-    section[data-testid="stSidebar"] .stDownloadButton > button {
-        background: #1a6fb5 !important; border: 1px solid #1a6fb5 !important;
-        border-radius: 10px !important; color: #ffffff !important; font-weight: 700 !important;
-        box-shadow: 0 2px 6px rgba(20,60,110,0.12);
+    section[data-testid="stSidebar"] div[data-testid="stDownloadButton"] > button {
+        background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.35) !important;
+        border-radius: 10px !important; color: #ffffff !important; font-weight: 600;
     }
-    section[data-testid="stSidebar"] .stDownloadButton > button p { color: #ffffff !important; }
-    section[data-testid="stSidebar"] .stDownloadButton > button:hover {
-        background: #0f55b8 !important; border-color: #0f55b8 !important;
+    section[data-testid="stSidebar"] div[data-testid="stDownloadButton"] > button p { color: #ffffff !important; }
+    section[data-testid="stSidebar"] div[data-testid="stDownloadButton"] > button:hover {
+        background: rgba(47,155,214,0.30) !important; border-color: #5fb8ec !important; transform: translateY(-1px);
     }
 
     .sb-brand {
@@ -398,7 +396,7 @@ UI_EXTRA = {
     "en": {
         "nav": {
             "chat": "Chat Assistant", "journey": "Treatment Journey", "info": "Treatment Info",
-            "effects": "Side Effects", "safety": "Safety & Self-Care", "video": "Video Guide",
+            "effects": "Side Effects", "safety": "Safety", "video": "Video & Photo Guide",
             "faq": "FAQ", "support": "Support & Wellness", "after": "After Treatment Care",
         },
         "lang_label": "🌐 Language",
@@ -411,7 +409,7 @@ UI_EXTRA = {
         "dev_by": "AI Assistant Developed by",
         "brand_sub": "Your Patient Education Assistant",
         "badge": "AI Assistant Online",
-        "hero_title": "🎗️ Radiation Oncology AI Assistant",
+        "hero_title": "Radiation Oncology AI Assistant",
         "ask_title": "✨ Ask your question",
         "disclaimer": "💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.",
         "answer": "**Answer**",
@@ -421,19 +419,9 @@ UI_EXTRA = {
         "matched": "Matched FAQ",
         "thanks_up": "👍 Thanks for your feedback!",
         "thanks_down": "👎 Thanks for your feedback!",
-        "video_title": "🎥 Radiation Therapy: General Guide",
-        "video_caption": "An educational video explaining the radiation treatment process.",
+        "video_title": "🎥 Video & Photo Guide",
+        "video_caption": "Videos and photos showing the radiation treatment machine, mask, skin markings and department environment.",
         "no_video": "No generic educational video found in the assets folder.",
-        "visual_title": "🖼️ See the treatment room before you arrive",
-        "visual_sub": "Pictures can make the first visit feel more familiar and reduce anxiety. These simple visuals explain the machine, mask and skin markings. Add your department photos to assets/department_tour/ to show the real room.",
-        "machine_label": "Treatment machine",
-        "mask_label": "Custom mask",
-        "markings_label": "Skin markings",
-        "tour_label": "Department photo tour",
-        "tour_empty": "Add JPG/PNG photos to assets/department_tour/ for a real photo tour of your department.",
-        "voice_label": "🎙️ Speak your question",
-        "voice_hint": "In Chrome, voice input can use Hindi (hi-IN) or Marathi (mr-IN). Allow microphone access when prompted.",
-        "share_answer": "📱 Share this answer on WhatsApp",
         "faq_placeholder": "Example: side effects, pain, skin...",
         "faq_count": "{n} FAQ(s)",
         "stages": {"Before Treatment": "Before Treatment", "During Treatment": "During Treatment", "After Treatment": "After Treatment"},
@@ -441,7 +429,7 @@ UI_EXTRA = {
     "hi": {
         "nav": {
             "chat": "चैट सहायक", "journey": "उपचार यात्रा", "info": "उपचार जानकारी",
-            "effects": "दुष्प्रभाव", "safety": "सुरक्षा और स्व-देखभाल", "video": "वीडियो गाइड",
+            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "video": "वीडियो और फोटो गाइड",
             "faq": "सामान्य प्रश्न", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
         },
         "lang_label": "🌐 भाषा",
@@ -454,7 +442,7 @@ UI_EXTRA = {
         "dev_by": "AI सहायक विकसित करने वाली",
         "brand_sub": "आपका रोगी शिक्षा सहायक",
         "badge": "AI सहायक ऑनलाइन",
-        "hero_title": "🎗️ रेडिएशन ऑन्कोलॉजी AI सहायक",
+        "hero_title": "रेडिएशन ऑन्कोलॉजी AI सहायक",
         "ask_title": "✨ अपना प्रश्न पूछें",
         "disclaimer": "💡 यह सहायक क्यूरेटेड Radiation Oncology ज्ञान आधार से सामान्य रोगी शिक्षा जानकारी देता है। यह आपके उपचार करने वाले डॉक्टर या स्वास्थ्य टीम की सलाह का विकल्प नहीं है।",
         "answer": "**उत्तर**",
@@ -464,19 +452,9 @@ UI_EXTRA = {
         "matched": "मिलता-जुलता FAQ",
         "thanks_up": "👍 आपकी प्रतिक्रिया के लिए धन्यवाद!",
         "thanks_down": "👎 आपकी प्रतिक्रिया के लिए धन्यवाद!",
-        "video_title": "🎥 रेडिएशन थेरेपी: सामान्य मार्गदर्शिका",
-        "video_caption": "रेडिएशन उपचार प्रक्रिया समझाने वाला एक शैक्षणिक वीडियो।",
+        "video_title": "🎥 वीडियो और फोटो गाइड",
+        "video_caption": "रेडिएशन उपचार मशीन, मास्क, त्वचा की मार्किंग और विभाग के वातावरण को दिखाने वाले वीडियो और फोटो।",
         "no_video": "assets फ़ोल्डर में कोई सामान्य शैक्षणिक वीडियो नहीं मिला।",
-        "visual_title": "🖼️ आने से पहले उपचार कक्ष देखें",
-        "visual_sub": "तस्वीरें पहली मुलाकात को अधिक परिचित बना सकती हैं और चिंता कम कर सकती हैं। मशीन, मास्क और त्वचा की निशानियों को समझने के लिए ये सरल दृश्य देखें। असली विभाग की तस्वीरों के लिए assets/department_tour/ में फोटो जोड़ें।",
-        "machine_label": "उपचार मशीन",
-        "mask_label": "कस्टम मास्क",
-        "markings_label": "त्वचा की निशानियाँ",
-        "tour_label": "विभाग का फोटो टूर",
-        "tour_empty": "अपने विभाग के फोटो टूर के लिए assets/department_tour/ में JPG/PNG फोटो जोड़ें।",
-        "voice_label": "🎙️ अपना प्रश्न बोलें",
-        "voice_hint": "Chrome में Hindi (hi-IN) या Marathi (mr-IN) voice input का उपयोग किया जा सकता है। पूछे जाने पर माइक्रोफ़ोन की अनुमति दें।",
-        "share_answer": "📱 यह उत्तर WhatsApp पर साझा करें",
         "faq_placeholder": "उदाहरण: दुष्प्रभाव, दर्द, त्वचा...",
         "faq_count": "{n} FAQ",
         "stages": {"Before Treatment": "उपचार से पहले", "During Treatment": "उपचार के दौरान", "After Treatment": "उपचार के बाद"},
@@ -484,7 +462,7 @@ UI_EXTRA = {
     "mr": {
         "nav": {
             "chat": "चॅट सहाय्यक", "journey": "उपचार प्रवास", "info": "उपचार माहिती",
-            "effects": "दुष्परिणाम", "safety": "सुरक्षा आणि स्वतःची काळजी", "video": "व्हिडिओ मार्गदर्शक",
+            "effects": "दुष्परिणाम", "safety": "सुरक्षा", "video": "व्हिडिओ आणि फोटो मार्गदर्शक",
             "faq": "सामान्य प्रश्न", "support": "आधार आणि निरोगीपणा", "after": "उपचारानंतरची काळजी",
         },
         "lang_label": "🌐 भाषा",
@@ -497,7 +475,7 @@ UI_EXTRA = {
         "dev_by": "AI सहाय्यक विकसित करणारी",
         "brand_sub": "तुमचा रुग्ण शिक्षण सहाय्यक",
         "badge": "AI सहाय्यक ऑनलाइन",
-        "hero_title": "🎗️ रेडिएशन ऑन्कोलॉजी AI सहाय्यक",
+        "hero_title": "रेडिएशन ऑन्कोलॉजी AI सहाय्यक",
         "ask_title": "✨ तुमचा प्रश्न विचारा",
         "disclaimer": "💡 हा सहाय्यक क्यूरेटेड Radiation Oncology ज्ञान आधारातून सामान्य रुग्ण शिक्षण माहिती देतो. हे तुमच्या उपचार करणाऱ्या डॉक्टरांच्या किंवा आरोग्य टीमच्या सल्ल्याला पर्याय नाही.",
         "answer": "**उत्तर**",
@@ -507,19 +485,9 @@ UI_EXTRA = {
         "matched": "जुळणारा FAQ",
         "thanks_up": "👍 तुमच्या अभिप्रायाबद्दल धन्यवाद!",
         "thanks_down": "👎 तुमच्या अभिप्रायाबद्दल धन्यवाद!",
-        "video_title": "🎥 रेडिएशन थेरपी: सामान्य मार्गदर्शिका",
-        "video_caption": "रेडिएशन उपचार प्रक्रिया समजावून सांगणारा शैक्षणिक व्हिडिओ.",
+        "video_title": "🎥 व्हिडिओ आणि फोटो मार्गदर्शक",
+        "video_caption": "रेडिएशन उपचार मशीन, मास्क, त्वचेवरील खुणा आणि विभागाचे वातावरण दाखवणारे व्हिडिओ व फोटो.",
         "no_video": "assets फोल्डरमध्ये सामान्य शैक्षणिक व्हिडिओ सापडला नाही.",
-        "visual_title": "🖼️ येण्यापूर्वी उपचार कक्ष पहा",
-        "visual_sub": "चित्रांमुळे पहिली भेट अधिक परिचित वाटू शकते आणि चिंता कमी होऊ शकते. मशीन, मास्क आणि त्वचेवरील खुणा समजून घेण्यासाठी हे साधे दृश्य पहा. तुमच्या विभागाचे फोटो दाखवण्यासाठी assets/department_tour/ मध्ये फोटो जोडा.",
-        "machine_label": "उपचार मशीन",
-        "mask_label": "कस्टम मास्क",
-        "markings_label": "त्वचेवरील खुणा",
-        "tour_label": "विभागाचा फोटो टूर",
-        "tour_empty": "तुमच्या विभागाचा फोटो टूर दाखवण्यासाठी assets/department_tour/ मध्ये JPG/PNG फोटो जोडा.",
-        "voice_label": "🎙️ तुमचा प्रश्न बोला",
-        "voice_hint": "Chrome मध्ये Hindi (hi-IN) किंवा Marathi (mr-IN) voice input वापरता येते. विचारल्यास मायक्रोफोनची परवानगी द्या.",
-        "share_answer": "📱 हे उत्तर WhatsApp वर शेअर करा",
         "faq_placeholder": "उदाहरण: दुष्परिणाम, वेदना, त्वचा...",
         "faq_count": "{n} FAQ",
         "stages": {"Before Treatment": "उपचारापूर्वी", "During Treatment": "उपचारादरम्यान", "After Treatment": "उपचारानंतर"},
@@ -732,7 +700,7 @@ PAGE_TEXT = {
 EXTRA_UI = {
     "en": {
         "privacy": "🔒 Please don't type your name, phone number or medical report details here.",
-        "listen": "Listen", "stop": "Stop", "related": "Related questions",
+        "listen": "Listen", "stop": "Stop",
         "hosp_title": "Contact your care team", "hosp_phone": "Phone",
         "hosp_opd": "OPD timings", "hosp_emergency": "After-hours / emergency",
         "reviewed": "Content reviewed by {by} on {date}",
@@ -745,7 +713,7 @@ EXTRA_UI = {
     },
     "hi": {
         "privacy": "🔒 कृपया यहाँ अपना नाम, फ़ोन नंबर या मेडिकल रिपोर्ट का विवरण न लिखें।",
-        "listen": "सुनें", "stop": "रोकें", "related": "संबंधित प्रश्न",
+        "listen": "सुनें", "stop": "रोकें",
         "hosp_title": "अपनी देखभाल टीम से संपर्क करें", "hosp_phone": "फ़ोन",
         "hosp_opd": "ओपीडी का समय", "hosp_emergency": "समय के बाद / आपातकाल",
         "reviewed": "सामग्री की समीक्षा: {by}, दिनांक {date}",
@@ -758,7 +726,7 @@ EXTRA_UI = {
     },
     "mr": {
         "privacy": "🔒 कृपया येथे तुमचे नाव, फोन नंबर किंवा वैद्यकीय अहवालाचा तपशील लिहू नका.",
-        "listen": "ऐका", "stop": "थांबवा", "related": "संबंधित प्रश्न",
+        "listen": "ऐका", "stop": "थांबवा",
         "hosp_title": "तुमच्या देखभाल टीमशी संपर्क साधा", "hosp_phone": "फोन",
         "hosp_opd": "ओपीडी वेळ", "hosp_emergency": "वेळेनंतर / आपत्कालीन",
         "reviewed": "मजकुराचे पुनरावलोकन: {by}, दिनांक {date}",
@@ -793,6 +761,12 @@ EXTRA_PAGES = {
             ("⚠️", "Watch for warning signs", ["Fever, severe pain, trouble eating or drinking, or skin breaking down need a call to the team.", "Keep the team's phone number somewhere easy to find."]),
             ("💙", "Look after yourself", ["Share the load with other family members.", "Rest, eat well and talk to someone if you feel overwhelmed.", "Caregiver stress is common, and counsellors can help."]),
         ],
+        "cost_cards": [
+            ("🧾", "Ask for a cost estimate", ["Ask the billing or social work desk what the full course of radiation will cost and what is included.", "Ask whether scans, planning and follow-up visits are charged separately."]),
+            ("🏛️", "Government schemes", ["Schemes such as Ayushman Bharat (PM-JAY) and, in Maharashtra, the Mahatma Jyotiba Phule Jan Arogya Yojana may cover cancer treatment at listed hospitals.", "Coverage, eligibility and hospitals change over time, so confirm with the hospital before relying on them."]),
+            ("📄", "Documents to keep ready", ["Aadhaar card, ration card, income certificate and medical reports are often needed.", "Ask the hospital's scheme desk which documents your scheme requires."]),
+            ("🤲", "Other help", ["Many hospitals have charity funds, trusts or social workers who can guide you.", "State relief funds and some NGOs also support cancer patients. Ask the social worker how to apply."]),
+        ],
     },
     "hi": {
         "diet_cards": [
@@ -814,6 +788,12 @@ EXTRA_PAGES = {
             ("🏠", "घर पर मदद", ["भोजन, तरल पदार्थ, त्वचा की देखभाल और आराम में मदद करें।", "छोटी गतिविधियों के लिए प्रोत्साहित करें, पर गति मरीज़ को तय करने दें।"]),
             ("⚠️", "चेतावनी संकेतों पर नज़र रखें", ["बुखार, तेज़ दर्द, खाने-पीने में परेशानी या त्वचा के फटने पर टीम को फ़ोन करें।", "टीम का फ़ोन नंबर ऐसी जगह रखें जहाँ आसानी से मिल जाए।"]),
             ("💙", "अपना भी ध्यान रखें", ["ज़िम्मेदारी परिवार के अन्य सदस्यों के साथ बाँटें।", "आराम करें, अच्छा खाएँ और अभिभूत महसूस हो तो किसी से बात करें।", "देखभाल करने वालों में तनाव आम है, और काउंसलर मदद कर सकते हैं।"]),
+        ],
+        "cost_cards": [
+            ("🧾", "खर्च का अनुमान माँगें", ["बिलिंग या सामाजिक कार्य डेस्क से पूछें कि रेडिएशन के पूरे कोर्स का खर्च कितना होगा और उसमें क्या शामिल है।", "पूछें कि स्कैन, प्लानिंग और फॉलो-अप मुलाकातों का शुल्क अलग से लगता है या नहीं।"]),
+            ("🏛️", "सरकारी योजनाएँ", ["आयुष्मान भारत (PM-JAY) और महाराष्ट्र में महात्मा ज्योतिबा फुले जन आरोग्य योजना जैसी योजनाएँ सूचीबद्ध अस्पतालों में कैंसर उपचार को कवर कर सकती हैं।", "कवरेज, पात्रता और अस्पताल समय के साथ बदलते हैं, इसलिए भरोसा करने से पहले अस्पताल से पुष्टि करें।"]),
+            ("📄", "तैयार रखने के लिए दस्तावेज़", ["आधार कार्ड, राशन कार्ड, आय प्रमाणपत्र और मेडिकल रिपोर्ट अक्सर ज़रूरी होते हैं।", "अस्पताल के योजना डेस्क से पूछें कि आपकी योजना में कौन से दस्तावेज़ चाहिए।"]),
+            ("🤲", "अन्य सहायता", ["कई अस्पतालों में चैरिटी फंड, ट्रस्ट या सामाजिक कार्यकर्ता होते हैं जो आपका मार्गदर्शन कर सकते हैं।", "राज्य की राहत निधियाँ और कुछ गैर-सरकारी संस्थाएँ भी कैंसर रोगियों की मदद करती हैं; आवेदन कैसे करें, यह सामाजिक कार्यकर्ता से पूछें।"]),
         ],
     },
     "mr": {
@@ -837,6 +817,12 @@ EXTRA_PAGES = {
             ("⚠️", "धोक्याच्या खुणांवर लक्ष ठेवा", ["ताप, तीव्र वेदना, खाण्यापिण्यात अडचण किंवा त्वचा फाटल्यास टीमला फोन करा.", "टीमचा फोन नंबर सहज सापडेल अशा ठिकाणी ठेवा."]),
             ("💙", "स्वतःचीही काळजी घ्या", ["जबाबदारी कुटुंबातील इतर सदस्यांसोबत वाटून घ्या.", "विश्रांती घ्या, नीट खा आणि दडपण वाटल्यास कोणाशी तरी बोला.", "काळजी घेणाऱ्यांमध्ये ताण सामान्य आहे आणि समुपदेशक मदत करू शकतात."]),
         ],
+        "cost_cards": [
+            ("🧾", "खर्चाचा अंदाज मागा", ["बिलिंग किंवा समाजसेवा डेस्कला विचारा की रेडिएशनच्या संपूर्ण कोर्सचा खर्च किती येईल आणि त्यात काय समाविष्ट आहे.", "स्कॅन, नियोजन आणि पाठपुरावा भेटींसाठी स्वतंत्र शुल्क आहे का ते विचारा."]),
+            ("🏛️", "सरकारी योजना", ["आयुष्मान भारत (PM-JAY) आणि महाराष्ट्रातील महात्मा ज्योतिबा फुले जन आरोग्य योजना यांसारख्या योजना सूचीबद्ध रुग्णालयांमध्ये कर्करोग उपचार कव्हर करू शकतात.", "कव्हरेज, पात्रता आणि रुग्णालये कालांतराने बदलतात, म्हणून अवलंबून राहण्यापूर्वी रुग्णालयाकडून खात्री करा."]),
+            ("📄", "तयार ठेवायची कागदपत्रे", ["आधार कार्ड, रेशन कार्ड, उत्पन्न प्रमाणपत्र आणि वैद्यकीय अहवाल अनेकदा लागतात.", "तुमच्या योजनेसाठी कोणती कागदपत्रे हवीत ते रुग्णालयाच्या योजना डेस्कला विचारा."]),
+            ("🤲", "इतर मदत", ["अनेक रुग्णालयांमध्ये धर्मादाय निधी, ट्रस्ट किंवा समाजसेवक असतात जे तुम्हाला मार्गदर्शन करू शकतात.", "राज्यातील मदत निधी आणि काही स्वयंसेवी संस्थाही कर्करोग रुग्णांना मदत करतात; अर्ज कसा करायचा ते समाजसेवकाला विचारा."]),
+        ],
     },
 }
 
@@ -857,6 +843,11 @@ if "page" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# Remove the old one-line welcome message if it exists in an existing session.
+if len(st.session_state.messages) == 1 and st.session_state.messages[0].get("role") == "assistant":
+    if st.session_state.messages[0].get("content") in UI_STRINGS["en"].get("greeting", "") or st.session_state.messages[0].get("content") in UI_STRINGS["hi"].get("greeting", "") or st.session_state.messages[0].get("content") in UI_STRINGS["mr"].get("greeting", ""):
+        st.session_state.messages = []
 
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
@@ -1009,14 +1000,14 @@ with st.sidebar:
         st.session_state.feedback_given = {}
         st.rerun()
 
-    guide_html = build_guide_html()
     st.download_button(
         U["download_guide"],
-        guide_html.encode("utf-8"),
+        build_guide_html().encode("utf-8"),
         file_name="radiation_patient_guide.html",
         mime="text/html",
         use_container_width=True,
     )
+
     st.markdown(
         f"""<div class="sb-section-title">{U["safety_trust"]}</div>
 <div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">{U["pill1"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
@@ -1384,25 +1375,8 @@ def search_knowledge(question, language):
         ):
             return None
 
-        related = []
-        seen = {normalize_text(best_metadata.get("question", ""))}
-        for candidate in candidates[1:]:
-            meta = candidate["metadata"]
-            q_norm = normalize_text(meta.get("question", ""))
-            if (
-                meta.get("language") != language
-                or q_norm in seen
-                or candidate["semantic_score"] < 0.3
-            ):
-                continue
-            seen.add(q_norm)
-            related.append(meta.get("question", ""))
-            if len(related) == 3:
-                break
-
-        best_metadata = dict(best_metadata)
-        best_metadata["related"] = related
-        return best_metadata
+        # Return only the matched answer metadata. Related-question suggestions are intentionally disabled.
+        return dict(best_metadata)
 
     except Exception:
         return None
@@ -1688,106 +1662,6 @@ def read_csv_rows(path):
 
 
 # ============================================================
-# VISUAL + VOICE + SHARING HELPERS
-# ============================================================
-
-def _svg_data_uri(svg):
-    return "data:image/svg+xml;charset=utf-8," + urllib.parse.quote(svg)
-
-
-def treatment_visuals():
-    """Show simple explanatory visuals and optional real department photos."""
-    st.markdown(f"### {U['visual_title']}")
-    st.caption(U["visual_sub"])
-
-    visuals = [
-        (
-            U["machine_label"],
-            _svg_data_uri(
-                """<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 300'><rect width='520' height='300' fill='#eef6fc'/><rect x='40' y='215' width='440' height='28' rx='8' fill='#7f9db5'/><rect x='195' y='160' width='130' height='28' rx='14' fill='#dbe9f4'/><rect x='220' y='65' width='80' height='110' rx='12' fill='#b7cad9'/><path d='M260 65 C250 30 190 28 180 65 L180 90 L340 90 L340 65 C330 28 270 30 260 65Z' fill='#d8e6f0'/><circle cx='260' cy='115' r='30' fill='#f8fbfd' stroke='#6b879e' stroke-width='5'/><path d='M85 205 H435' stroke='#315d7d' stroke-width='8'/><text x='260' y='275' text-anchor='middle' font-family='Arial' font-size='20' fill='#23445e'>Treatment machine — schematic</text></svg>"""
-            ),
-        ),
-        (
-            U["mask_label"],
-            _svg_data_uri(
-                """<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 300'><rect width='520' height='300' fill='#f4f8fb'/><path d='M170 70 Q260 25 350 70 L335 190 Q260 240 185 190Z' fill='#e8eef2' stroke='#7895aa' stroke-width='6'/><ellipse cx='220' cy='125' rx='25' ry='34' fill='#fff' stroke='#7895aa' stroke-width='4'/><ellipse cx='300' cy='125' rx='25' ry='34' fill='#fff' stroke='#7895aa' stroke-width='4'/><path d='M235 170 Q260 185 285 170' fill='none' stroke='#7895aa' stroke-width='5'/><path d='M130 60 L170 70 M390 60 L350 70 M150 205 L185 190 M370 205 L335 190' stroke='#2b6d99' stroke-width='6'/><text x='260' y='270' text-anchor='middle' font-family='Arial' font-size='20' fill='#23445e'>Custom positioning mask — schematic</text></svg>"""
-            ),
-        ),
-        (
-            U["markings_label"],
-            _svg_data_uri(
-                """<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 300'><rect width='520' height='300' fill='#fff7f7'/><circle cx='260' cy='85' r='34' fill='#f1c7b8'/><path d='M210 125 Q260 100 310 125 L335 230 L185 230Z' fill='#f1c7b8'/><path d='M260 120 V225 M215 170 H305' stroke='#c62828' stroke-width='5' stroke-dasharray='8 6'/><circle cx='260' cy='170' r='10' fill='none' stroke='#c62828' stroke-width='4'/><text x='260' y='270' text-anchor='middle' font-family='Arial' font-size='20' fill='#23445e'>Skin alignment markings — schematic</text></svg>"""
-            ),
-        ),
-    ]
-    cols = st.columns(3)
-    for col, (label, src) in zip(cols, visuals):
-        with col:
-            st.image(src, use_container_width=True, caption=label)
-
-    tour_dir = VIDEO_DIR / "department_tour"
-    photos = []
-    if tour_dir.exists():
-        for pattern in ("*.jpg", "*.jpeg", "*.png", "*.webp"):
-            photos.extend(sorted(tour_dir.glob(pattern)))
-    if photos:
-        st.markdown(f"#### 📸 {U['tour_label']}")
-        photo_cols = st.columns(min(3, len(photos)))
-        for i, photo in enumerate(photos):
-            with photo_cols[i % len(photo_cols)]:
-                st.image(str(photo), use_container_width=True)
-    else:
-        st.info(U["tour_empty"])
-
-
-def voice_input():
-    """Browser speech-to-text control. Chrome supports Hindi and Marathi recognition."""
-    lang = U["lang_code"]
-    label = U["voice_label"]
-    hint = U["voice_hint"]
-    page = f"""
-<div style='font-family:Segoe UI,sans-serif;margin:4px 0 8px'>
-<button id='voiceBtn' style='padding:8px 14px;border-radius:999px;border:1px solid #bcd3ea;background:#fff;color:#1a4f86;cursor:pointer;font-weight:700'>{html.escape(label)}</button>
-<div style='font-size:12px;color:#667;margin-top:4px'>{html.escape(hint)}</div>
-<div id='voiceStatus' style='font-size:12px;color:#1a6fb5;margin-top:3px'></div>
-</div>
-<script>
-(() => {{
- const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
- const btn = document.getElementById('voiceBtn');
- const status = document.getElementById('voiceStatus');
- if (!SR) {{ btn.disabled=true; status.textContent='Speech recognition is not available in this browser.'; return; }}
- const r = new SR(); r.lang = {json.dumps(lang)}; r.interimResults=false; r.maxAlternatives=1;
- btn.onclick = () => {{ status.textContent='Listening…'; r.start(); }};
- r.onresult = e => {{
-   const text = e.results[0][0].transcript;
-   status.textContent = text;
-   const inputs = window.parent.document.querySelectorAll('textarea, input');
-   const target = Array.from(inputs).find(el => el.getAttribute('placeholder') && el.getAttribute('placeholder').includes({json.dumps(T['placeholder'])}));
-   if (target) {{
-      const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), 'value')?.set;
-      if (setter) setter.call(target, text); else target.value = text;
-      target.dispatchEvent(new Event('input', {{bubbles:true}}));
-      target.dispatchEvent(new Event('change', {{bubbles:true}}));
-      target.focus();
-   }}
- }};
- r.onerror = e => status.textContent = 'Microphone/speech error: ' + e.error;
-}})();
-</script>
-"""
-    components.html(page, height=86)
-
-
-def whatsapp_share(text, label):
-    share_text = urllib.parse.quote(text)
-    st.markdown(
-        f'<a class="wa-share" href="https://wa.me/?text={share_text}" target="_blank" rel="noopener noreferrer">{html.escape(label)}</a>',
-        unsafe_allow_html=True,
-    )
-
-
-# ============================================================
 # PAGES
 # ============================================================
 
@@ -1808,7 +1682,6 @@ def page_chat():
 
         typed = st.chat_input(T["placeholder"])
         st.caption(U["privacy"])
-        voice_input()
         prompt = typed or st.session_state.pop("pending_prompt", None)
 
         if prompt:
@@ -1823,31 +1696,14 @@ def page_chat():
         last_index = len(st.session_state.messages) - 1
 
         for index, message in enumerate(st.session_state.messages):
-            avatar = "🎗️" if message["role"] == "assistant" else "🧑"
-
-            with st.chat_message(message["role"], avatar=avatar):
+            with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
                 is_answer = message["role"] == "assistant" and message.get("source")
 
                 if is_answer:
-                    # Keep only the answer and Listen control. Hide source metadata,
-                    # WhatsApp answer sharing, and thumbs up/down feedback from patients.
+                    # Source box, related questions, and thumbs-up/down feedback are intentionally hidden.
                     speak_button(message["content"], U["listen"], U["stop"])
-
-                # Follow-up suggestions (latest answer only)
-                if is_answer and index == last_index:
-                    related = message["source"].get("related") or []
-                    if related:
-                        st.caption(U["related"])
-                        for i, question in enumerate(related):
-                            st.button(
-                                question,
-                                key=f"chip_{index}_{i}",
-                                on_click=ask,
-                                args=(question,),
-                                use_container_width=True,
-                            )
 
     st.write("")
     hospital_box()
@@ -1855,8 +1711,6 @@ def page_chat():
 
 def page_journey():
     page_header("🧭", U["nav"]["journey"], C["journey_sub"])
-    treatment_visuals()
-    st.divider()
 
     for i, (title, desc) in enumerate(C["journey_steps"], start=1):
         st.markdown(
@@ -1920,6 +1774,16 @@ def pick_video():
     return videos[0]
 
 
+def pick_photos():
+    """Return department/treatment photos stored in the assets folder."""
+    if not VIDEO_DIR.exists():
+        return []
+    photos = []
+    for extension in ["*.jpg", "*.jpeg", "*.png", "*.webp"]:
+        photos.extend(VIDEO_DIR.glob(extension))
+    return sorted(set(photos), key=lambda p: p.name.lower())
+
+
 def page_video():
     st.markdown(f"### {U['video_title']}")
     st.caption(U["video_caption"])
@@ -1929,6 +1793,15 @@ def page_video():
         st.video(str(video_file))
     else:
         st.info(U["no_video"])
+
+    photos = pick_photos()
+    if photos:
+        st.markdown("#### 📸 Photo guide")
+        st.caption("Photos from the treatment/department area can be placed in the assets folder and will appear here.")
+        cols = st.columns(2)
+        for index, photo in enumerate(photos):
+            with cols[index % 2]:
+                st.image(str(photo), caption=photo.stem.replace("_", " ").replace("-", " ").title(), use_container_width=True)
 
 
 def page_faq():
