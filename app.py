@@ -68,6 +68,16 @@ st.markdown(
         background: rgba(47,155,214,0.30); border-color: #5fb8ec; transform: translateY(-1px);
     }
 
+    section[data-testid="stSidebar"] .stDownloadButton > button {
+        background: #1a6fb5 !important; border: 1px solid #1a6fb5 !important;
+        border-radius: 10px !important; color: #ffffff !important; font-weight: 700 !important;
+        box-shadow: 0 2px 6px rgba(20,60,110,0.12);
+    }
+    section[data-testid="stSidebar"] .stDownloadButton > button p { color: #ffffff !important; }
+    section[data-testid="stSidebar"] .stDownloadButton > button:hover {
+        background: #0f55b8 !important; border-color: #0f55b8 !important;
+    }
+
     .sb-brand {
         padding: 0.9rem 1rem; border-radius: 14px;
         background: linear-gradient(135deg, rgba(47,155,214,0.35) 0%, rgba(30,80,200,0.35) 100%);
@@ -846,9 +856,7 @@ if "page" not in st.session_state:
     st.session_state.page = "chat"
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "assistant", "content": UI_STRINGS[st.session_state.language]["greeting"]}
-    ]
+    st.session_state.messages = []
 
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
@@ -994,13 +1002,10 @@ with st.sidebar:
 
     if selected_language != st.session_state.language:
         st.session_state.language = selected_language
-        # Keep the opening greeting in the newly selected language
-        if st.session_state.messages:
-            st.session_state.messages[0]["content"] = UI_STRINGS[selected_language]["greeting"]
         st.rerun()
 
     if st.button(U["clear_chat"], use_container_width=True):
-        st.session_state.messages = [{"role": "assistant", "content": T["greeting"]}]
+        st.session_state.messages = []
         st.session_state.feedback_given = {}
         st.rerun()
 
@@ -1012,14 +1017,6 @@ with st.sidebar:
         mime="text/html",
         use_container_width=True,
     )
-    guide_share_text = urllib.parse.quote(
-        f"{U['guide_title']} — patient education guide. Download it from the app and share it with your family."
-    )
-    st.markdown(
-        f'<a class="wa-share" href="https://wa.me/?text={guide_share_text}" target="_blank" rel="noopener noreferrer">📱 Share the guide on WhatsApp</a>',
-        unsafe_allow_html=True,
-    )
-
     st.markdown(
         f"""<div class="sb-section-title">{U["safety_trust"]}</div>
 <div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">{U["pill1"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
