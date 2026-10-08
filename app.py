@@ -4,7 +4,13 @@ from datetime import datetime
 import ast
 import csv
 import re
+import os
+import json
+import html
+import hmac
+from collections import Counter
 
+import streamlit.components.v1 as components
 import chromadb
 from sentence_transformers import SentenceTransformer
 
@@ -198,6 +204,19 @@ st.markdown(
     .warn-box h4 { color: #a3321f; margin: 0 0 .4rem 0; }
     .warn-box li { color: #6b2a20; }
     .footer-note { text-align: center; color: #7a8ba0; font-size: .78rem; margin: 2rem 0 .5rem 0; }
+
+    /* ---------------- MOBILE ---------------- */
+    @media (max-width: 900px) {
+        .st-key-navrow [data-testid="stHorizontalBlock"] {
+            flex-direction: row !important; flex-wrap: nowrap !important;
+            overflow-x: auto; padding-bottom: .4rem;
+        }
+        .st-key-navrow [data-testid="stColumn"], .st-key-navrow [data-testid="column"] {
+            min-width: 122px !important; flex: 0 0 122px !important; width: 122px !important;
+        }
+        .hero h1 { font-size: 1.6rem; }
+        .block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -212,6 +231,29 @@ BASE_DIR = Path(__file__).resolve().parent
 FAQ_FILE = BASE_DIR / "radiation_faq.txt"
 VIDEO_DIR = BASE_DIR / "assets"
 FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
+UNANSWERED_FILE = BASE_DIR / "unanswered_log.csv"
+
+# ------------------------------------------------------------
+# YOUR HOSPITAL SETTINGS  (fill these in; empty values are hidden)
+# ------------------------------------------------------------
+HOSPITAL = {
+    "name": "",         # e.g. "XYZ Cancer Hospital, Radiation Oncology"
+    "phone": "",        # e.g. "+91-00000-00000"
+    "opd_hours": "",    # e.g. "Mon-Sat, 9:00 AM - 4:00 PM"
+    "emergency": "",    # after-hours / emergency number
+}
+
+REVIEW = {
+    "by": "",           # e.g. "Dr. A. B. Patil, Radiation Oncologist"
+    "date": "",         # e.g. "October 2026"
+}
+
+# Set to False if you do not want patient questions saved in feedback_log.csv
+SAVE_QUESTION_TEXT = True
+
+# Admin dashboard: set an environment variable ADMIN_PASSWORD, then open
+# the app with  ?admin=1  at the end of the web address.
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 
 
 # ============================================================
@@ -643,6 +685,150 @@ PAGE_TEXT = {
 
 
 # ============================================================
+# EXTRA TRANSLATIONS (new features)
+# ============================================================
+
+EXTRA_UI = {
+    "en": {
+        "privacy": "🔒 Please don't type your name, phone number or medical report details here.",
+        "listen": "Listen", "stop": "Stop", "related": "Related questions",
+        "hosp_title": "Contact your care team", "hosp_phone": "Phone",
+        "hosp_opd": "OPD timings", "hosp_emergency": "After-hours / emergency",
+        "reviewed": "Content reviewed by {by} on {date}",
+        "download_guide": "📄 Download patient guide",
+        "guide_hint": "Open the file, then choose Print → Save as PDF.",
+        "large_text": "🔠 Large text",
+        "guide_title": "Radiation Therapy: Patient Guide",
+        "tab_safety": "Safety", "tab_diet": "Diet & Nutrition",
+        "tab_general": "General", "tab_area": "By treatment area",
+        "tab_wellbeing": "Wellbeing", "tab_caregivers": "For Caregivers", "tab_costs": "Costs & Schemes",
+        "lang_code": "en-IN",
+    },
+    "hi": {
+        "privacy": "🔒 कृपया यहाँ अपना नाम, फ़ोन नंबर या मेडिकल रिपोर्ट का विवरण न लिखें।",
+        "listen": "सुनें", "stop": "रोकें", "related": "संबंधित प्रश्न",
+        "hosp_title": "अपनी देखभाल टीम से संपर्क करें", "hosp_phone": "फ़ोन",
+        "hosp_opd": "ओपीडी का समय", "hosp_emergency": "समय के बाद / आपातकाल",
+        "reviewed": "सामग्री की समीक्षा: {by}, दिनांक {date}",
+        "download_guide": "📄 रोगी मार्गदर्शिका डाउनलोड करें",
+        "guide_hint": "फ़ाइल खोलें, फिर प्रिंट → PDF के रूप में सहेजें चुनें।",
+        "large_text": "🔠 बड़े अक्षर",
+        "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
+        "tab_safety": "सुरक्षा", "tab_diet": "आहार और पोषण",
+        "tab_general": "सामान्य", "tab_area": "उपचार क्षेत्र के अनुसार",
+        "tab_wellbeing": "कल्याण", "tab_caregivers": "देखभाल करने वालों के लिए", "tab_costs": "खर्च और योजनाएँ",
+        "lang_code": "hi-IN",
+    },
+    "mr": {
+        "privacy": "🔒 कृपया येथे तुमचे नाव, फोन नंबर किंवा वैद्यकीय अहवालाचा तपशील लिहू नका.",
+        "listen": "ऐका", "stop": "थांबवा", "related": "संबंधित प्रश्न",
+        "hosp_title": "तुमच्या देखभाल टीमशी संपर्क साधा", "hosp_phone": "फोन",
+        "hosp_opd": "ओपीडी वेळ", "hosp_emergency": "वेळेनंतर / आपत्कालीन",
+        "reviewed": "मजकुराचे पुनरावलोकन: {by}, दिनांक {date}",
+        "download_guide": "📄 रुग्ण मार्गदर्शिका डाउनलोड करा",
+        "guide_hint": "फाइल उघडा, नंतर प्रिंट → PDF म्हणून सेव्ह करा निवडा.",
+        "large_text": "🔠 मोठी अक्षरे",
+        "guide_title": "रेडिएशन थेरपी: रुग्ण मार्गदर्शिका",
+        "tab_safety": "सुरक्षा", "tab_diet": "आहार आणि पोषण",
+        "tab_general": "सामान्य", "tab_area": "उपचार भागानुसार",
+        "tab_wellbeing": "आधार", "tab_caregivers": "काळजी घेणाऱ्यांसाठी", "tab_costs": "खर्च आणि योजना",
+        "lang_code": "mr-IN",
+    },
+}
+
+EXTRA_PAGES = {
+    "en": {
+        "diet_cards": [
+            ("🍚", "Eat regularly", ["Small, frequent meals are often easier than three large ones.", "Include protein such as dal, eggs, curd, paneer, fish or chicken if you eat them.", "Ask your dietitian before making major diet changes."]),
+            ("💧", "Stay hydrated", ["Sip water, buttermilk, coconut water or soup through the day unless your doctor limits fluids.", "Dehydration makes tiredness and nausea worse."]),
+            ("🤢", "If you feel sick or have no appetite", ["Try bland, dry foods such as toast, khichdi or biscuits.", "Avoid very oily, spicy or strongly scented foods.", "Eat slowly and stay sitting upright after meals."]),
+            ("👄", "If swallowing or your mouth is sore", ["Choose soft, moist foods like porridge, curd rice, mashed banana or well-cooked dal.", "Avoid hot, spicy, sour or rough foods.", "Rinse your mouth gently as advised by your team."]),
+            ("⚖️", "Keep your weight steady", ["Weigh yourself once a week.", "Tell your team if you lose weight without trying.", "Take nutritional supplements only if your team advises."]),
+            ("🧼", "Food safety and myths", ["There is no proof that any special diet or herbal product cures cancer or replaces treatment.", "Check with your team before taking supplements, herbal or Ayurvedic products, as some can interact with treatment.", "Wash fruits and vegetables and eat freshly cooked food."]),
+        ],
+        "area_cards": [
+            ("🎀", "Breast", ["Skin of the breast, underarm and chest may become red, dry or sore, like sunburn.", "Wear soft, loose cotton clothing and avoid tight or underwired bras if they rub.", "Tiredness is common. Gentle arm and shoulder movements may help keep movement easy if your team advises.", "Tell your team about swelling, severe skin breakdown or breathing difficulty."]),
+            ("🗣️", "Head and neck", ["A sore mouth and throat, changes in taste and a dry mouth are common.", "Keep teeth and mouth clean, and see a dentist before starting if your team asks.", "Avoid tobacco, alcohol, and very hot or spicy foods.", "Tell your team early if swallowing becomes painful or you cannot eat or drink enough."]),
+            ("🌸", "Cervix and uterus (pelvis)", ["Loose stools, needing to pass urine often, or burning when passing urine can occur.", "Drink plenty of fluids unless told otherwise.", "Skin in the groin and lower abdomen may become red or sore.", "Ask your team about vaginal care and when it is safe to resume intimacy.", "Tell your team about fever, heavy bleeding or being unable to pass urine."]),
+            ("🩺", "Prostate", ["Passing urine more often or with burning, and loose stools, can occur.", "Your team may ask you to come with a comfortably full bladder. Follow their instructions exactly.", "Cut down on caffeine and fizzy drinks if urine symptoms bother you.", "Tell your team about blood in the urine, fever or being unable to pass urine."]),
+        ],
+        "caregiver_cards": [
+            ("🤝", "Be part of the team", ["Go to key appointments and write down what the team says.", "Keep a list of medicines and symptoms to share with the team."]),
+            ("🏠", "Help at home", ["Help with meals, fluids, skin care and rest.", "Encourage small activities, but let the patient set the pace."]),
+            ("⚠️", "Watch for warning signs", ["Fever, severe pain, trouble eating or drinking, or skin breaking down need a call to the team.", "Keep the team's phone number somewhere easy to find."]),
+            ("💙", "Look after yourself", ["Share the load with other family members.", "Rest, eat well and talk to someone if you feel overwhelmed.", "Caregiver stress is common, and counsellors can help."]),
+        ],
+        "cost_cards": [
+            ("🧾", "Ask for a cost estimate", ["Ask the billing or social work desk what the full course of radiation will cost and what is included.", "Ask whether scans, planning and follow-up visits are charged separately."]),
+            ("🏛️", "Government schemes", ["Schemes such as Ayushman Bharat (PM-JAY) and, in Maharashtra, the Mahatma Jyotiba Phule Jan Arogya Yojana may cover cancer treatment at listed hospitals.", "Coverage, eligibility and hospitals change over time, so confirm with the hospital before relying on them."]),
+            ("📄", "Documents to keep ready", ["Aadhaar card, ration card, income certificate and medical reports are often needed.", "Ask the hospital's scheme desk which documents your scheme requires."]),
+            ("🤲", "Other help", ["Many hospitals have charity funds, trusts or social workers who can guide you.", "State relief funds and some NGOs also support cancer patients. Ask the social worker how to apply."]),
+        ],
+    },
+    "hi": {
+        "diet_cards": [
+            ("🍚", "नियमित खाएँ", ["तीन बड़े भोजन की तुलना में थोड़ा-थोड़ा बार-बार खाना अक्सर आसान होता है।", "यदि आप खाते हैं तो दाल, अंडे, दही, पनीर, मछली या चिकन जैसा प्रोटीन शामिल करें।", "आहार में बड़े बदलाव से पहले अपने आहार विशेषज्ञ से पूछें।"]),
+            ("💧", "शरीर में पानी की कमी न होने दें", ["जब तक डॉक्टर तरल पदार्थ सीमित न करें, दिन भर पानी, छाछ, नारियल पानी या सूप पीते रहें।", "पानी की कमी से थकान और मतली बढ़ती है।"]),
+            ("🤢", "जी मिचलाने या भूख न लगने पर", ["टोस्ट, खिचड़ी या बिस्किट जैसे सादे, सूखे खाद्य पदार्थ आज़माएँ।", "बहुत तैलीय, मसालेदार या तेज़ गंध वाले भोजन से बचें।", "धीरे-धीरे खाएँ और भोजन के बाद सीधे बैठे रहें।"]),
+            ("👄", "निगलने में या मुँह में दर्द हो तो", ["दलिया, दही-चावल, मसला केला या अच्छी तरह पकी दाल जैसे नरम, गीले खाद्य पदार्थ चुनें।", "गर्म, मसालेदार, खट्टे या खुरदुरे भोजन से बचें।", "अपनी टीम की सलाह के अनुसार मुँह को धीरे से धोएँ।"]),
+            ("⚖️", "वज़न स्थिर रखें", ["सप्ताह में एक बार अपना वज़न लें।", "यदि बिना कोशिश वज़न घटे तो अपनी टीम को बताएँ।", "पोषण सप्लीमेंट केवल तभी लें जब आपकी टीम सलाह दे।"]),
+            ("🧼", "भोजन सुरक्षा और भ्रांतियाँ", ["इसका कोई प्रमाण नहीं कि कोई विशेष आहार या जड़ी-बूटी का उत्पाद कैंसर ठीक करता है या उपचार की जगह ले सकता है।", "सप्लीमेंट, हर्बल या आयुर्वेदिक उत्पाद लेने से पहले अपनी टीम से पूछें, क्योंकि कुछ उपचार के साथ प्रतिक्रिया कर सकते हैं।", "फल और सब्ज़ियाँ धोएँ और ताज़ा पका भोजन खाएँ।"]),
+        ],
+        "area_cards": [
+            ("🎀", "स्तन", ["स्तन, बगल और छाती के क्षेत्र की त्वचा धूप से जलने जैसी लाल, रूखी या दर्दभरी हो सकती है।", "नरम, ढीले सूती कपड़े पहनें और यदि तंग या तार वाली ब्रा रगड़ती हो तो उससे बचें।", "थकान आम है। आपकी टीम की सलाह पर बाँह और कंधे की हल्की गतिविधियाँ गति बनाए रखने में मदद कर सकती हैं।", "सूजन, त्वचा के गंभीर रूप से फटने या साँस लेने में कठिनाई होने पर अपनी टीम को बताएँ।"]),
+            ("🗣️", "सिर और गर्दन", ["मुँह और गले में दर्द, स्वाद में बदलाव और मुँह सूखना आम है।", "दाँत और मुँह साफ़ रखें; आपकी टीम कहे तो शुरू करने से पहले दंत चिकित्सक को दिखाएँ।", "तंबाकू, शराब और बहुत गर्म या मसालेदार भोजन से बचें।", "यदि निगलना दर्दभरा हो जाए या आप पर्याप्त खा-पी न सकें तो जल्दी अपनी टीम को बताएँ।"]),
+            ("🌸", "गर्भाशय ग्रीवा और गर्भाशय (पेल्विस)", ["पतले दस्त, बार-बार पेशाब की इच्छा या पेशाब में जलन हो सकती है।", "जब तक मना न किया जाए, खूब तरल पदार्थ पिएँ।", "ग्रोइन और पेट के निचले हिस्से की त्वचा लाल या दर्दभरी हो सकती है।", "योनि की देखभाल और अंतरंगता दोबारा कब सुरक्षित है, इस बारे में अपनी टीम से पूछें।", "बुखार, भारी रक्तस्राव या पेशाब न कर पाने पर अपनी टीम को बताएँ।"]),
+            ("🩺", "प्रोस्टेट", ["बार-बार पेशाब आना या जलन, और पतले दस्त हो सकते हैं।", "आपकी टीम आपको आराम से भरे मूत्राशय के साथ आने को कह सकती है; उनके निर्देशों का ठीक से पालन करें।", "यदि मूत्र संबंधी लक्षण परेशान करें तो कैफ़ीन और फ़िज़ी ड्रिंक कम करें।", "पेशाब में खून, बुखार या पेशाब न कर पाने पर अपनी टीम को बताएँ।"]),
+        ],
+        "caregiver_cards": [
+            ("🤝", "टीम का हिस्सा बनें", ["महत्वपूर्ण अपॉइंटमेंट पर जाएँ और टीम की बातें लिख लें।", "दवाइयों और लक्षणों की सूची रखें ताकि टीम को बता सकें।"]),
+            ("🏠", "घर पर मदद", ["भोजन, तरल पदार्थ, त्वचा की देखभाल और आराम में मदद करें।", "छोटी गतिविधियों के लिए प्रोत्साहित करें, पर गति मरीज़ को तय करने दें।"]),
+            ("⚠️", "चेतावनी संकेतों पर नज़र रखें", ["बुखार, तेज़ दर्द, खाने-पीने में परेशानी या त्वचा के फटने पर टीम को फ़ोन करें।", "टीम का फ़ोन नंबर ऐसी जगह रखें जहाँ आसानी से मिल जाए।"]),
+            ("💙", "अपना भी ध्यान रखें", ["ज़िम्मेदारी परिवार के अन्य सदस्यों के साथ बाँटें।", "आराम करें, अच्छा खाएँ और अभिभूत महसूस हो तो किसी से बात करें।", "देखभाल करने वालों में तनाव आम है, और काउंसलर मदद कर सकते हैं।"]),
+        ],
+        "cost_cards": [
+            ("🧾", "खर्च का अनुमान माँगें", ["बिलिंग या सामाजिक कार्य डेस्क से पूछें कि रेडिएशन के पूरे कोर्स का खर्च कितना होगा और उसमें क्या शामिल है।", "पूछें कि स्कैन, प्लानिंग और फॉलो-अप मुलाकातों का शुल्क अलग से लगता है या नहीं।"]),
+            ("🏛️", "सरकारी योजनाएँ", ["आयुष्मान भारत (PM-JAY) और महाराष्ट्र में महात्मा ज्योतिबा फुले जन आरोग्य योजना जैसी योजनाएँ सूचीबद्ध अस्पतालों में कैंसर उपचार को कवर कर सकती हैं।", "कवरेज, पात्रता और अस्पताल समय के साथ बदलते हैं, इसलिए भरोसा करने से पहले अस्पताल से पुष्टि करें।"]),
+            ("📄", "तैयार रखने के लिए दस्तावेज़", ["आधार कार्ड, राशन कार्ड, आय प्रमाणपत्र और मेडिकल रिपोर्ट अक्सर ज़रूरी होते हैं।", "अस्पताल के योजना डेस्क से पूछें कि आपकी योजना में कौन से दस्तावेज़ चाहिए।"]),
+            ("🤲", "अन्य सहायता", ["कई अस्पतालों में चैरिटी फंड, ट्रस्ट या सामाजिक कार्यकर्ता होते हैं जो आपका मार्गदर्शन कर सकते हैं।", "राज्य की राहत निधियाँ और कुछ गैर-सरकारी संस्थाएँ भी कैंसर रोगियों की मदद करती हैं; आवेदन कैसे करें, यह सामाजिक कार्यकर्ता से पूछें।"]),
+        ],
+    },
+    "mr": {
+        "diet_cards": [
+            ("🍚", "नियमित खा", ["तीन मोठ्या जेवणांपेक्षा थोडे थोडे आणि वारंवार खाणे अनेकदा सोपे असते.", "तुम्ही खात असल्यास डाळ, अंडी, दही, पनीर, मासे किंवा चिकन यांसारखे प्रथिने घ्या.", "आहारात मोठे बदल करण्यापूर्वी आहारतज्ज्ञांना विचारा."]),
+            ("💧", "शरीरातील पाणी कमी होऊ देऊ नका", ["डॉक्टरांनी द्रवपदार्थ मर्यादित केले नसतील तर दिवसभर पाणी, ताक, नारळपाणी किंवा सूप घेत राहा.", "पाण्याच्या कमतरतेमुळे थकवा आणि मळमळ वाढते."]),
+            ("🤢", "मळमळ किंवा भूक नसल्यास", ["टोस्ट, खिचडी किंवा बिस्किटे यांसारखे सौम्य, कोरडे पदार्थ वापरून पाहा.", "खूप तेलकट, तिखट किंवा तीव्र वासाचे पदार्थ टाळा.", "हळूहळू खा आणि जेवणानंतर सरळ बसा."]),
+            ("👄", "गिळताना किंवा तोंडात वेदना होत असल्यास", ["लापशी, दही-भात, कुस्करलेले केळे किंवा नीट शिजवलेली डाळ यांसारखे मऊ, ओलसर पदार्थ निवडा.", "गरम, तिखट, आंबट किंवा खरखरीत पदार्थ टाळा.", "तुमच्या टीमच्या सल्ल्यानुसार तोंड हळुवारपणे धुवा."]),
+            ("⚖️", "वजन स्थिर ठेवा", ["आठवड्यातून एकदा वजन करा.", "प्रयत्न न करता वजन कमी झाल्यास टीमला सांगा.", "पोषण पूरके फक्त तुमच्या टीमने सांगितले तरच घ्या."]),
+            ("🧼", "अन्न सुरक्षा आणि गैरसमज", ["कोणताही विशिष्ट आहार किंवा वनौषधी उत्पादन कर्करोग बरा करते किंवा उपचारांची जागा घेते याचा पुरावा नाही.", "सप्लिमेंट, हर्बल किंवा आयुर्वेदिक उत्पादने घेण्यापूर्वी टीमला विचारा, कारण काही उपचारांशी परस्परक्रिया करू शकतात.", "फळे आणि भाज्या धुवा आणि ताजे शिजवलेले अन्न खा."]),
+        ],
+        "area_cards": [
+            ("🎀", "स्तन", ["स्तन, काख आणि छातीच्या भागातील त्वचा उन्हाने भाजल्यासारखी लाल, कोरडी किंवा दुखरी होऊ शकते.", "मऊ, सैल सुती कपडे घाला आणि घासत असल्यास घट्ट किंवा तारेच्या ब्रा टाळा.", "थकवा सामान्य आहे. तुमच्या टीमने सांगितल्यास हात आणि खांद्याच्या हलक्या हालचाली लवचिकता टिकवण्यास मदत करू शकतात.", "सूज, त्वचा गंभीरपणे फाटणे किंवा श्वास घेण्यास त्रास झाल्यास तुमच्या टीमला सांगा."]),
+            ("🗣️", "डोके आणि मान", ["तोंड आणि घशात वेदना, चव बदलणे आणि तोंड कोरडे पडणे सामान्य आहे.", "दात आणि तोंड स्वच्छ ठेवा; टीमने सांगितल्यास सुरू करण्यापूर्वी दंतवैद्याला दाखवा.", "तंबाखू, मद्य आणि खूप गरम किंवा तिखट पदार्थ टाळा.", "गिळताना वेदना होऊ लागल्यास किंवा पुरेसे खाणे-पिणे जमत नसल्यास लवकर टीमला सांगा."]),
+            ("🌸", "गर्भाशयमुख आणि गर्भाशय (ओटीपोट)", ["पातळ शौच, वारंवार लघवीची घाई किंवा लघवीला जळजळ होऊ शकते.", "सांगितले नसल्यास भरपूर द्रवपदार्थ प्या.", "जांघेतील आणि खालच्या पोटावरील त्वचा लाल किंवा दुखरी होऊ शकते.", "योनीची काळजी आणि जवळीक पुन्हा कधी सुरक्षित आहे याबद्दल टीमला विचारा.", "ताप, जास्त रक्तस्राव किंवा लघवी न होणे असल्यास टीमला सांगा."]),
+            ("🩺", "प्रोस्टेट", ["वारंवार लघवी होणे किंवा जळजळ, आणि पातळ शौच होऊ शकते.", "तुमची टीम तुम्हाला आरामात भरलेल्या मूत्राशयासह येण्यास सांगू शकते; त्यांच्या सूचनांचे नीट पालन करा.", "लघवीची लक्षणे त्रास देत असल्यास कॅफीन आणि फसफसणारी पेये कमी करा.", "लघवीत रक्त, ताप किंवा लघवी न होणे असल्यास टीमला सांगा."]),
+        ],
+        "caregiver_cards": [
+            ("🤝", "टीमचा भाग व्हा", ["महत्त्वाच्या भेटींना जा आणि टीम जे सांगते ते लिहून ठेवा.", "औषधे आणि लक्षणांची यादी ठेवा, म्हणजे टीमला सांगता येईल."]),
+            ("🏠", "घरी मदत", ["जेवण, द्रवपदार्थ, त्वचेची काळजी आणि विश्रांतीमध्ये मदत करा.", "छोट्या हालचालींना प्रोत्साहन द्या, पण गती रुग्णाला ठरवू द्या."]),
+            ("⚠️", "धोक्याच्या खुणांवर लक्ष ठेवा", ["ताप, तीव्र वेदना, खाण्यापिण्यात अडचण किंवा त्वचा फाटल्यास टीमला फोन करा.", "टीमचा फोन नंबर सहज सापडेल अशा ठिकाणी ठेवा."]),
+            ("💙", "स्वतःचीही काळजी घ्या", ["जबाबदारी कुटुंबातील इतर सदस्यांसोबत वाटून घ्या.", "विश्रांती घ्या, नीट खा आणि दडपण वाटल्यास कोणाशी तरी बोला.", "काळजी घेणाऱ्यांमध्ये ताण सामान्य आहे आणि समुपदेशक मदत करू शकतात."]),
+        ],
+        "cost_cards": [
+            ("🧾", "खर्चाचा अंदाज मागा", ["बिलिंग किंवा समाजसेवा डेस्कला विचारा की रेडिएशनच्या संपूर्ण कोर्सचा खर्च किती येईल आणि त्यात काय समाविष्ट आहे.", "स्कॅन, नियोजन आणि पाठपुरावा भेटींसाठी स्वतंत्र शुल्क आहे का ते विचारा."]),
+            ("🏛️", "सरकारी योजना", ["आयुष्मान भारत (PM-JAY) आणि महाराष्ट्रातील महात्मा ज्योतिबा फुले जन आरोग्य योजना यांसारख्या योजना सूचीबद्ध रुग्णालयांमध्ये कर्करोग उपचार कव्हर करू शकतात.", "कव्हरेज, पात्रता आणि रुग्णालये कालांतराने बदलतात, म्हणून अवलंबून राहण्यापूर्वी रुग्णालयाकडून खात्री करा."]),
+            ("📄", "तयार ठेवायची कागदपत्रे", ["आधार कार्ड, रेशन कार्ड, उत्पन्न प्रमाणपत्र आणि वैद्यकीय अहवाल अनेकदा लागतात.", "तुमच्या योजनेसाठी कोणती कागदपत्रे हवीत ते रुग्णालयाच्या योजना डेस्कला विचारा."]),
+            ("🤲", "इतर मदत", ["अनेक रुग्णालयांमध्ये धर्मादाय निधी, ट्रस्ट किंवा समाजसेवक असतात जे तुम्हाला मार्गदर्शन करू शकतात.", "राज्यातील मदत निधी आणि काही स्वयंसेवी संस्थाही कर्करोग रुग्णांना मदत करतात; अर्ज कसा करायचा ते समाजसेवकाला विचारा."]),
+        ],
+    },
+}
+
+for _lang in ("en", "hi", "mr"):
+    UI_EXTRA[_lang].update(EXTRA_UI[_lang])
+    PAGE_TEXT[_lang].update(EXTRA_PAGES[_lang])
+
+
+# ============================================================
 # SESSION STATE
 # ============================================================
 
@@ -713,6 +899,77 @@ STAGE_NAMES = {
 # SIDEBAR
 # ============================================================
 
+# ============================================================
+# HELPERS USED BY THE SIDEBAR (hospital details, patient guide)
+# ============================================================
+
+def hospital_lines():
+    """Contact rows that have been filled in (see HOSPITAL config at the top)."""
+    rows = []
+    if HOSPITAL["phone"]:
+        rows.append((U["hosp_phone"], HOSPITAL["phone"]))
+    if HOSPITAL["opd_hours"]:
+        rows.append((U["hosp_opd"], HOSPITAL["opd_hours"]))
+    if HOSPITAL["emergency"]:
+        rows.append((U["hosp_emergency"], HOSPITAL["emergency"]))
+    return rows
+
+
+def build_guide_html():
+    """A printable patient guide in the selected language (open it, then Print -> Save as PDF)."""
+    esc = html.escape
+
+    def bullets(items):
+        return "<ul>" + "".join(f"<li>{esc(i)}</li>" for i in items) + "</ul>"
+
+    def cards(items):
+        out = ""
+        for icon, title, body in items:
+            out += f"<h3>{icon} {esc(title)}</h3>"
+            out += bullets(body) if isinstance(body, (list, tuple)) else f"<p>{esc(body)}</p>"
+        return out
+
+    steps = "".join(
+        f"<h3>{i}. {esc(t)}</h3><p>{esc(d)}</p>"
+        for i, (t, d) in enumerate(C["journey_steps"], start=1)
+    )
+
+    hosp = ""
+    if hospital_lines():
+        name = f"<b>{esc(HOSPITAL['name'])}</b><br>" if HOSPITAL["name"] else ""
+        rows = "".join(f"<div>{esc(k)}: <b>{esc(v)}</b></div>" for k, v in hospital_lines())
+        hosp = f'<div class="box"><h3>{esc(U["hosp_title"])}</h3>{name}{rows}</div>'
+
+    review = ""
+    if REVIEW["by"]:
+        review = "<p><i>" + esc(U["reviewed"].format(by=REVIEW["by"], date=REVIEW["date"])) + "</i></p>"
+
+    contact = (
+        f'<div class="box warn"><h3>{esc(C["contact_title"])}</h3>{bullets(C["contact_items"])}'
+        f'<p><b>{esc(C["contact_emergency"])}</b></p></div>'
+    )
+
+    return f"""<!DOCTYPE html>
+<html lang="{st.session_state.language}"><head><meta charset="utf-8">
+<title>{esc(U["guide_title"])}</title>
+<style>
+body {{ font-family: 'Noto Sans Devanagari','Segoe UI',Arial,sans-serif; max-width: 800px; margin: 24px auto; padding: 0 16px; color:#1f3350; line-height:1.55; }}
+h1 {{ color:#0b3d66; }} h2 {{ color:#0f55b8; border-bottom:2px solid #cfe0f1; padding-bottom:4px; margin-top:28px; }}
+h3 {{ color:#0b3d66; margin-bottom:4px; }} .box {{ border:1px solid #bcd3ea; border-radius:10px; padding:10px 16px; margin:14px 0; background:#f4f8fc; }}
+.warn {{ background:#fff4f2; border-color:#f3c6bf; }} .foot {{ font-size:12px; color:#667; margin-top:30px; }}
+@media print {{ h2 {{ page-break-after: avoid; }} }}
+</style></head><body>
+<h1>🎗️ {esc(U["guide_title"])}</h1>{hosp}
+<h2>{esc(U["nav"]["journey"])}</h2>{steps}
+<h2>{esc(U["nav"]["effects"])}</h2><p>{esc(C["effects_sub"])}</p>{cards(C["effects_cards"])}{cards(C["area_cards"])}
+<h2>{esc(U["nav"]["safety"])}</h2>{cards(C["safety_cards"])}
+<h2>{esc(U["tab_diet"])}</h2>{cards(C["diet_cards"])}
+<h2>{esc(U["nav"]["after"])}</h2>{cards(C["after_cards"])}
+{contact}{review}
+<p class="foot">{esc(U["disclaimer"])}</p>
+</body></html>"""
+
+
 with st.sidebar:
     st.markdown(
         f"""<div class="sb-brand"><div class="sb-logo">🎗️</div><div>
@@ -740,6 +997,17 @@ with st.sidebar:
         st.session_state.feedback_given = {}
         st.rerun()
 
+    st.toggle(U["large_text"], key="large_text")
+
+    st.download_button(
+        U["download_guide"],
+        build_guide_html().encode("utf-8"),
+        file_name="radiation_patient_guide.html",
+        mime="text/html",
+        use_container_width=True,
+    )
+    st.caption(U["guide_hint"])
+
     st.markdown(
         f"""<div class="sb-section-title">{U["safety_trust"]}</div>
 <div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">{U["pill1"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
@@ -754,6 +1022,18 @@ with st.sidebar:
 <div class="credit-name">Nikita Chougule</div></div></div></div>""",
         unsafe_allow_html=True,
     )
+
+    if ADMIN_PASSWORD and st.query_params.get("admin") == "1":
+        with st.expander("🔐 Admin"):
+            password = st.text_input("Password", type="password", key="admin_pw")
+            if password and hmac.compare_digest(password, ADMIN_PASSWORD):
+                st.session_state.admin_ok = True
+                st.button("Open dashboard", on_click=go, args=("admin",), use_container_width=True)
+            elif password:
+                st.error("Wrong password")
+
+if st.session_state.get("large_text"):
+    st.markdown("<style>html { font-size: 19px !important; }</style>", unsafe_allow_html=True)
 
 
 # ============================================================
@@ -959,6 +1239,14 @@ def detect_medical_safety_level(question):
     if any(p in text for p in treatment_change_patterns):
         return "personal_medical"
 
+    romanized_patterns = [
+        "radiation band", "ilaj band", "ilaaj band", "upchar band", "treatment band",
+        "dawa band", "dawai band", "aushadh band", "dose badal", "dawa badal",
+        "dawai badal", "aushadh badal",
+    ]
+    if any(p in text for p in romanized_patterns):
+        return "personal_medical"
+
     return "safe"
 
 
@@ -1091,29 +1379,90 @@ def search_knowledge(question, language):
         ):
             return None
 
+        related = []
+        seen = {normalize_text(best_metadata.get("question", ""))}
+        for candidate in candidates[1:]:
+            meta = candidate["metadata"]
+            q_norm = normalize_text(meta.get("question", ""))
+            if (
+                meta.get("language") != language
+                or q_norm in seen
+                or candidate["semantic_score"] < 0.3
+            ):
+                continue
+            seen.add(q_norm)
+            related.append(meta.get("question", ""))
+            if len(related) == 3:
+                break
+
+        best_metadata = dict(best_metadata)
+        best_metadata["related"] = related
         return best_metadata
 
     except Exception:
         return None
 
 
+# Starter list of Marathi/Hindi words typed in English letters -> English search terms.
+# Check the unanswered log in the admin page and keep adding words here.
+ROMAN_MAP = {
+    "kiran": "radiation", "kirane": "radiation", "kirnotsarg": "radiation", "kirandar": "radiation",
+    "upchar": "treatment", "ilaj": "treatment", "ilaaj": "treatment", "upchaar": "treatment",
+    "dushparinam": "side effects", "dushparinaam": "side effects", "dushprabhav": "side effects",
+    "thakan": "fatigue", "thakawa": "fatigue", "thakva": "fatigue", "thakaan": "fatigue",
+    "twacha": "skin", "tvacha": "skin", "tvachecha": "skin", "chamdi": "skin",
+    "jalan": "burning", "jalne": "burning", "jalji": "burning",
+    "khaj": "itching", "khujli": "itching", "khujali": "itching",
+    "lalsar": "redness", "lalsarpana": "redness", "lalima": "redness", "laali": "redness",
+    "dard": "pain", "dukhne": "pain", "vedna": "pain", "vedana": "pain", "dukhaw": "pain",
+    "ulti": "vomiting nausea", "ulat": "vomiting", "matli": "nausea", "malmal": "nausea", "mutli": "nausea",
+    "bhook": "appetite", "bhuk": "appetite", "bhookh": "appetite",
+    "khana": "food diet", "khane": "food diet", "jevan": "food diet", "jevna": "food diet",
+    "aahar": "food diet", "ahaar": "food diet", "aahaar": "food diet",
+    "neend": "sleep", "nind": "sleep", "zop": "sleep", "jhop": "sleep",
+    "baal": "hair", "kes": "hair", "kesh": "hair",
+    "paani": "hydration water", "pani": "hydration water",
+    "vyayam": "exercise", "vyayaam": "exercise",
+    "suraksha": "safety safe", "surakshit": "safety safe",
+    "nantar": "after", "baad": "after", "nantarchi": "after",
+    "pehle": "before", "aadhi": "before", "purvi": "before",
+    "dauran": "during", "dramyan": "during", "darmyan": "during",
+    "kalji": "care", "dekhbhal": "care", "dekhabhal": "care", "kaalji": "care",
+    "sitting": "session", "sujan": "swelling", "sujne": "swelling",
+    "kanser": "cancer", "karkarog": "cancer", "kharcha": "cost", "kharch": "cost",
+    "tondat": "mouth", "mooh": "mouth", "gala": "throat", "ghasa": "throat",
+}
+
+
+def expand_romanized(text):
+    """Add English search terms for Marathi/Hindi typed in English letters."""
+    tokens = re.findall(r"[a-zA-Z]+", text.lower())
+    extras = [ROMAN_MAP[t] for t in tokens if t in ROMAN_MAP]
+    if not extras:
+        return text
+    return text + " " + " ".join(dict.fromkeys(extras))
+
+
 def get_response(prompt):
     """Run guardrails + RAG for one prompt. Returns (response_text, source)."""
-    allowed, _, safety_message = check_guardrails(prompt)
+    query = expand_romanized(prompt)
+
+    allowed, _, safety_message = check_guardrails(query)
     if not allowed:
         return safety_message, None
 
-    question_type = detect_question_type(prompt)
+    question_type = detect_question_type(query)
 
     if question_type == "greeting":
         return T["greeting"], None
     if question_type == "unrelated":
         return T["unrelated"], None
 
-    result = search_knowledge(prompt, st.session_state.language)
+    result = search_knowledge(query, st.session_state.language)
     if result:
         return f"{U['answer']}\n\n{result.get('answer', '')}\n\n", result
 
+    log_unanswered(prompt)
     return T["unknown"], None
 
 
@@ -1136,7 +1485,37 @@ def display_source(source):
             st.write(f"**{U['matched']}:** {source['question']}")
 
 
+def redact(text):
+    """Remove phone-like numbers and e-mail addresses before anything is saved."""
+    text = re.sub(r"[\w.+-]+@[\w-]+\.[\w.-]+", "[email]", text)
+    text = re.sub(r"\+?\d[\d\s\-]{7,}\d", "[number]", text)
+    return text
+
+
+def log_unanswered(question):
+    """Keep a list of questions the assistant could not answer (to improve the FAQ file)."""
+    try:
+        file_exists = UNANSWERED_FILE.exists()
+        with open(UNANSWERED_FILE, "a", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            if not file_exists:
+                writer.writerow(["timestamp", "language", "question"])
+            writer.writerow(
+                [
+                    datetime.now().isoformat(timespec="seconds"),
+                    st.session_state.language,
+                    redact(question),
+                ]
+            )
+    except Exception:
+        pass
+
+
 def save_feedback(question, answer, feedback):
+    if SAVE_QUESTION_TEXT:
+        question, answer = redact(question), redact(answer)
+    else:
+        question, answer = "[not stored]", "[not stored]"
     try:
         file_exists = FEEDBACK_FILE.exists()
         with open(FEEDBACK_FILE, "a", newline="", encoding="utf-8") as file:
@@ -1245,6 +1624,64 @@ def contact_team_box():
     )
 
 
+def hospital_box():
+    """Shows the hospital's own contact details (only if filled in the HOSPITAL config)."""
+    rows = hospital_lines()
+    if not rows:
+        return
+    name = f"<p><b>{html.escape(HOSPITAL['name'])}</b></p>" if HOSPITAL["name"] else ""
+    body = "".join(
+        f"<p><b>{html.escape(k)}:</b> {html.escape(v)}</p>" for k, v in rows
+    )
+    st.markdown(
+        f'<div class="glass-card" style="border-left:6px solid #1a6fb5">'
+        f'<h4>📞 {U["hosp_title"]}</h4>{name}{body}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def speak_button(text, label, stop_label):
+    """Browser read-aloud button (uses the device's own text-to-speech voices)."""
+    clean = re.sub(r"[*_#`>]", "", text).strip()
+    page = """
+<style>
+button{font-family:'Segoe UI',sans-serif;padding:6px 16px;border-radius:999px;border:1px solid #bcd3ea;
+background:#fff;color:#1a4f86;cursor:pointer;font-size:14px}
+button:hover{background:#e8f2fc}
+</style>
+<button id="b"></button>
+<script>
+const text=__TEXT__, lang=__LANG__, label=__LABEL__, stopLabel=__STOP__;
+const b=document.getElementById("b"); let on=false;
+b.textContent="🔊 "+label;
+b.onclick=()=>{
+  const s=window.speechSynthesis; if(!s){return;}
+  if(on){s.cancel(); on=false; b.textContent="🔊 "+label; return;}
+  s.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang=lang;
+  u.onend=()=>{on=false; b.textContent="🔊 "+label;};
+  s.speak(u); on=true; b.textContent="⏹ "+stopLabel;
+};
+</script>"""
+    page = (
+        page.replace("__TEXT__", json.dumps(clean, ensure_ascii=False))
+        .replace("__LANG__", json.dumps(U["lang_code"]))
+        .replace("__LABEL__", json.dumps(label, ensure_ascii=False))
+        .replace("__STOP__", json.dumps(stop_label, ensure_ascii=False))
+    )
+    components.html(page, height=46)
+
+
+def read_csv_rows(path):
+    if not path.exists():
+        return []
+    try:
+        with open(path, newline="", encoding="utf-8") as file:
+            return list(csv.DictReader(file))
+    except Exception:
+        return []
+
+
 # ============================================================
 # PAGES
 # ============================================================
@@ -1265,6 +1702,7 @@ def page_chat():
         st.markdown(f'<div class="panel-title">{U["ask_title"]}</div>', unsafe_allow_html=True)
 
         typed = st.chat_input(T["placeholder"])
+        st.caption(U["privacy"])
         prompt = typed or st.session_state.pop("pending_prompt", None)
 
         if prompt:
@@ -1276,19 +1714,41 @@ def page_chat():
 
         st.write("")
 
+        last_index = len(st.session_state.messages) - 1
+
         for index, message in enumerate(st.session_state.messages):
             avatar = "🎗️" if message["role"] == "assistant" else "🧑"
 
             with st.chat_message(message["role"], avatar=avatar):
                 st.markdown(message["content"])
 
-                if message["role"] == "assistant" and message.get("source"):
+                is_answer = message["role"] == "assistant" and message.get("source")
+
+                if is_answer:
                     display_source(message["source"])
+                    speak_button(message["content"], U["listen"], U["stop"])
 
                 if message["role"] == "assistant" and index > 0:
                     previous = st.session_state.messages[index - 1]
                     if previous["role"] == "user":
                         feedback_buttons(index, previous["content"], message["content"])
+
+                # Follow-up suggestions (latest answer only)
+                if is_answer and index == last_index:
+                    related = message["source"].get("related") or []
+                    if related:
+                        st.caption(U["related"])
+                        for i, question in enumerate(related):
+                            st.button(
+                                question,
+                                key=f"chip_{index}_{i}",
+                                on_click=ask,
+                                args=(question,),
+                                use_container_width=True,
+                            )
+
+    st.write("")
+    hospital_box()
 
 
 def page_journey():
@@ -1309,28 +1769,58 @@ def page_info():
 
 def page_effects():
     page_header("⚠️", U["nav"]["effects"], C["effects_sub"])
-    info_cards(C["effects_cards"])
+
+    tab_general, tab_area = st.tabs([U["tab_general"], U["tab_area"]])
+    with tab_general:
+        info_cards(C["effects_cards"])
+    with tab_area:
+        info_cards(C["area_cards"])
+
+    hospital_box()
     contact_team_box()
 
 
 def page_safety():
     page_header("🛡️", U["nav"]["safety"], C["safety_sub"])
-    info_cards(C["safety_cards"])
+
+    tab_safety, tab_diet = st.tabs([U["tab_safety"], U["tab_diet"]])
+    with tab_safety:
+        info_cards(C["safety_cards"])
+    with tab_diet:
+        info_cards(C["diet_cards"])
+
+    hospital_box()
     contact_team_box()
+
+
+def pick_video():
+    """Prefer a video named like guide_mr.mp4 / guide_hi.mp4 / guide_en.mp4, else any generic one."""
+    if not VIDEO_DIR.exists():
+        return None
+
+    videos = []
+    for extension in ["*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"]:
+        videos.extend(sorted(VIDEO_DIR.glob(extension)))
+    if not videos:
+        return None
+
+    lang = st.session_state.language
+    suffixes = ("_en", "_hi", "_mr")
+
+    for video in videos:
+        if video.stem.lower().endswith(f"_{lang}"):
+            return video
+    for video in videos:
+        if not video.stem.lower().endswith(suffixes):
+            return video
+    return videos[0]
 
 
 def page_video():
     st.markdown(f"### {U['video_title']}")
     st.caption(U["video_caption"])
 
-    video_file = None
-    if VIDEO_DIR.exists():
-        for extension in ["*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"]:
-            matches = sorted(VIDEO_DIR.glob(extension))
-            if matches:
-                video_file = matches[0]
-                break
-
+    video_file = pick_video()
     if video_file:
         st.video(str(video_file))
     else:
@@ -1343,7 +1833,6 @@ def page_faq():
     search_text = st.text_input(T["faq_search"], placeholder=U["faq_placeholder"])
     s = search_text.lower().strip()
 
-    # Group FAQs by stage, in a fixed order
     grouped = {"FAQS_BEFORE": [], "FAQS_DURING": [], "FAQS_AFTER": []}
     for stage_key, questions in FAQ_DATA.items():
         if stage_key not in grouped:
@@ -1378,13 +1867,80 @@ def page_faq():
 
 def page_support():
     page_header("💙", U["nav"]["support"], C["support_sub"])
-    info_cards(C["support_cards"])
+
+    tab_well, tab_care, tab_cost = st.tabs(
+        [U["tab_wellbeing"], U["tab_caregivers"], U["tab_costs"]]
+    )
+    with tab_well:
+        info_cards(C["support_cards"])
+    with tab_care:
+        info_cards(C["caregiver_cards"])
+    with tab_cost:
+        info_cards(C["cost_cards"])
 
 
 def page_after():
     page_header("🌿", U["nav"]["after"], C["after_sub"])
     info_cards(C["after_cards"])
+    hospital_box()
     contact_team_box()
+
+
+def page_admin():
+    if not st.session_state.get("admin_ok"):
+        st.warning("Admin access required.")
+        return
+
+    st.markdown("### 🔐 Admin dashboard")
+
+    feedback = read_csv_rows(FEEDBACK_FILE)
+    unanswered = read_csv_rows(UNANSWERED_FILE)
+
+    up = sum(1 for r in feedback if r.get("feedback") == "up")
+    down = sum(1 for r in feedback if r.get("feedback") == "down")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("👍 Helpful", up)
+    c2.metric("👎 Not helpful", down)
+    c3.metric("Unanswered questions", len(unanswered))
+
+    tab_un, tab_down, tab_all = st.tabs(["Unanswered questions", "Not-helpful answers", "All feedback"])
+
+    with tab_un:
+        counts = Counter(
+            r.get("question", "").strip().lower() for r in unanswered if r.get("question")
+        )
+        if counts:
+            st.caption("Add answers for these to your FAQ file, most asked first.")
+            st.dataframe(
+                [{"question": q, "times asked": n} for q, n in counts.most_common(100)],
+                use_container_width=True,
+            )
+            st.download_button(
+                "⬇️ Download unanswered_log.csv",
+                UNANSWERED_FILE.read_bytes(),
+                file_name="unanswered_log.csv",
+            )
+        else:
+            st.info("No unanswered questions logged yet.")
+
+    with tab_down:
+        rows = [r for r in feedback if r.get("feedback") == "down"]
+        if rows:
+            st.dataframe(rows, use_container_width=True)
+        else:
+            st.info("No 👎 feedback yet.")
+
+    with tab_all:
+        if feedback:
+            st.dataframe(feedback, use_container_width=True)
+        else:
+            st.info("No feedback yet.")
+
+    if st.button("Log out of admin"):
+        st.session_state.admin_ok = False
+        st.session_state.page = "chat"
+        st.rerun()
 
 
 # ============================================================
@@ -1403,11 +1959,18 @@ PAGES = {
     "faq": page_faq,
     "support": page_support,
     "after": page_after,
+    "admin": page_admin,
 }
 
 PAGES.get(st.session_state.page, page_chat)()
 
+footer_html = U["disclaimer"]
+if REVIEW["by"]:
+    footer_html += "<br>" + html.escape(
+        U["reviewed"].format(by=REVIEW["by"], date=REVIEW["date"])
+    )
+
 st.markdown(
-    f'''<div class="footer-note">{U["disclaimer"]}</div>''',
+    f'<div class="footer-note">{footer_html}</div>',
     unsafe_allow_html=True,
 )
