@@ -8,6 +8,7 @@ import os
 import json
 import html
 import hmac
+import io
 from collections import Counter
 
 import streamlit.components.v1 as components
@@ -263,6 +264,8 @@ SAVE_QUESTION_TEXT = True
 # Admin dashboard: set an environment variable ADMIN_PASSWORD, then open
 # the app with  ?admin=1  at the end of the web address.
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+# Public URL used by the waiting-room QR code. Set APP_URL in deployment.
+APP_URL = os.environ.get("APP_URL", "http://localhost:8501")
 
 
 # ============================================================
@@ -396,10 +399,17 @@ UI_EXTRA = {
     "en": {
         "nav": {
             "chat": "Chat Assistant", "journey": "Treatment Journey", "info": "Treatment Info",
-            "effects": "Side Effects", "safety": "Safety", "video": "Video & Photo Guide",
+            "effects": "Side Effects", "safety": "Safety", "diet": "Diet & Nutrition", "video": "Video & Photo Guide",
             "faq": "FAQ", "support": "Support & Wellness", "after": "After Treatment Care",
         },
         "lang_label": "🌐 Language",
+        "voice": "🎙️ Speak your question",
+        "voice_hint": "In Chrome, voice input supports Hindi (hi-IN) and Marathi (mr-IN). Allow microphone access when prompted.",
+        "voice_unsupported": "Voice input is not supported in this browser. Please use Chrome or type your question.",
+        "qr_title": "📱 Waiting-room QR poster",
+        "qr_caption": "Scan this QR code with a phone camera to open the patient education app.",
+        "qr_download": "⬇️ Download QR poster",
+        "diet_sub": "Food and nutrition information to support you during radiation therapy.",
         "clear_chat": "🗑️ Clear Chat",
         "safety_trust": "Safety &amp; Trust",
         "pill1": "Medical safety guardrails",
@@ -429,10 +439,17 @@ UI_EXTRA = {
     "hi": {
         "nav": {
             "chat": "चैट सहायक", "journey": "उपचार यात्रा", "info": "उपचार जानकारी",
-            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "video": "वीडियो और फोटो गाइड",
+            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "diet": "आहार और पोषण", "video": "वीडियो और फोटो गाइड",
             "faq": "सामान्य प्रश्न", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
         },
         "lang_label": "🌐 भाषा",
+        "voice": "🎙️ अपना प्रश्न बोलें",
+        "voice_hint": "Chrome में वॉइस इनपुट हिंदी (hi-IN) और मराठी (mr-IN) को सपोर्ट करता है। पूछे जाने पर माइक्रोफ़ोन की अनुमति दें।",
+        "voice_unsupported": "इस ब्राउज़र में वॉइस इनपुट उपलब्ध नहीं है। कृपया Chrome का उपयोग करें या अपना प्रश्न टाइप करें।",
+        "qr_title": "📱 वेटिंग-रूम QR पोस्टर",
+        "qr_caption": "फोन के कैमरे से QR कोड स्कैन करके रोगी शिक्षा ऐप खोलें।",
+        "qr_download": "⬇️ QR पोस्टर डाउनलोड करें",
+        "diet_sub": "रेडिएशन थेरेपी के दौरान आपकी मदद के लिए भोजन और पोषण की जानकारी।",
         "clear_chat": "🗑️ चैट साफ़ करें",
         "safety_trust": "सुरक्षा और विश्वास",
         "pill1": "चिकित्सा सुरक्षा नियम",
@@ -462,10 +479,17 @@ UI_EXTRA = {
     "mr": {
         "nav": {
             "chat": "चॅट सहाय्यक", "journey": "उपचार प्रवास", "info": "उपचार माहिती",
-            "effects": "दुष्परिणाम", "safety": "सुरक्षा", "video": "व्हिडिओ आणि फोटो मार्गदर्शक",
+            "effects": "दुष्परिणाम", "safety": "सुरक्षा", "diet": "आहार आणि पोषण", "video": "व्हिडिओ आणि फोटो मार्गदर्शक",
             "faq": "सामान्य प्रश्न", "support": "आधार आणि निरोगीपणा", "after": "उपचारानंतरची काळजी",
         },
         "lang_label": "🌐 भाषा",
+        "voice": "🎙️ तुमचा प्रश्न बोला",
+        "voice_hint": "Chrome मध्ये व्हॉइस इनपुट हिंदी (hi-IN) आणि मराठी (mr-IN) ला सपोर्ट करतो. विचारल्यास मायक्रोफोनची परवानगी द्या.",
+        "voice_unsupported": "या ब्राउझरमध्ये व्हॉइस इनपुट उपलब्ध नाही. कृपया Chrome वापरा किंवा तुमचा प्रश्न टाइप करा.",
+        "qr_title": "📱 वेटिंग-रूम QR पोस्टर",
+        "qr_caption": "फोनच्या कॅमेऱ्याने QR कोड स्कॅन करून रुग्ण शिक्षण अॅप उघडा.",
+        "qr_download": "⬇️ QR पोस्टर डाउनलोड करा",
+        "diet_sub": "रेडिएशन थेरपीदरम्यान तुम्हाला मदत करण्यासाठी आहार आणि पोषणाची माहिती.",
         "clear_chat": "🗑️ चॅट साफ करा",
         "safety_trust": "सुरक्षा आणि विश्वास",
         "pill1": "वैद्यकीय सुरक्षा नियम",
@@ -511,7 +535,7 @@ PAGE_TEXT = {
         "info_cards": [
             ("📋", "Before Treatment", "Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information."),
             ("🩺", "During Treatment", "Understand what typically happens during a radiation treatment session and what patients may experience."),
-            ("✅", "After Treatment", "Learn about common post-treatment considerations, general self-care, and when to seek professional guidance."),
+            ("✅", "After Treatment", "Learn about common post-treatment considerations, general care, and when to seek professional guidance."),
             ("☎️", "When to Contact Your Healthcare Team", "Understand when treatment-related symptoms or concerns should be discussed with your healthcare team."),
         ],
         "effects_sub": "Side effects depend on the area treated, the dose and the person. Not everyone has all of them.",
@@ -527,7 +551,6 @@ PAGE_TEXT = {
         "safety_cards": [
             ("☢️", "Radiation safety", ["With external beam radiation, you do not become radioactive.", "Ask your team if any precautions apply to your specific treatment, such as brachytherapy."]),
             ("📅", "Attend every session", ["Missing sessions can affect how well treatment works.", "If you cannot attend, tell your team so they can advise you."]),
-            ("🥗", "Eat and drink well", ["Aim for regular, balanced meals.", "Stay hydrated unless told otherwise.", "Ask for a dietitian referral if eating is difficult."]),
             ("🚭", "Avoid tobacco and alcohol", ["They can worsen side effects and affect recovery.", "Ask your team for support if you want to quit."]),
             ("🧴", "Look after your skin", ["Keep the treated area clean and dry.", "Avoid heat pads, ice packs, tight clothing and sun on the area.", "Do not remove skin markings unless told to."]),
             ("💊", "Medicines", "Keep taking your usual medicines unless your doctor tells you otherwise. Check with your team before starting supplements or herbal remedies."),
@@ -576,7 +599,7 @@ PAGE_TEXT = {
         "info_cards": [
             ("📋", "उपचार से पहले", "रेडिएशन थेरेपी शुरू करने से पहले क्या अपेक्षा करें, इसकी जानकारी, जिसमें सामान्य तैयारी और उपचार-योजना की जानकारी शामिल है।"),
             ("🩺", "उपचार के दौरान", "रेडिएशन उपचार सत्र के दौरान आमतौर पर क्या होता है और मरीज़ क्या अनुभव कर सकते हैं, इसे समझें।"),
-            ("✅", "उपचार के बाद", "उपचार के बाद की सामान्य बातों, सामान्य स्व-देखभाल और पेशेवर सलाह कब लेनी चाहिए, इसके बारे में जानें।"),
+            ("✅", "उपचार के बाद", "उपचार के बाद की सामान्य बातों, सामान्य देखभाल और पेशेवर सलाह कब लेनी चाहिए, इसके बारे में जानें।"),
             ("☎️", "अपनी स्वास्थ्य टीम से कब संपर्क करें", "समझें कि उपचार से जुड़े लक्षणों या चिंताओं पर अपनी स्वास्थ्य टीम से कब चर्चा करनी चाहिए।"),
         ],
         "effects_sub": "दुष्प्रभाव उपचार किए गए क्षेत्र, डोज़ और व्यक्ति पर निर्भर करते हैं। ज़रूरी नहीं कि हर किसी को सभी दुष्प्रभाव हों।",
@@ -592,7 +615,6 @@ PAGE_TEXT = {
         "safety_cards": [
             ("☢️", "रेडिएशन सुरक्षा", ["बाहरी बीम रेडिएशन से आप रेडियोधर्मी नहीं बनते।", "यदि आपके विशेष उपचार, जैसे ब्रैकीथेरेपी, में कोई सावधानी लागू होती है तो अपनी टीम से पूछें।"]),
             ("📅", "हर सत्र में उपस्थित रहें", ["सत्र छूटने से उपचार का असर प्रभावित हो सकता है।", "यदि आप नहीं आ सकते तो अपनी टीम को बताएँ ताकि वे आपको सलाह दे सकें।"]),
-            ("🥗", "अच्छा खाएँ-पिएँ", ["नियमित, संतुलित भोजन लेने का प्रयास करें।", "जब तक मना न किया जाए, पर्याप्त पानी पिएँ।", "खाने में कठिनाई हो तो आहार विशेषज्ञ के पास रेफ़रल माँगें।"]),
             ("🚭", "तंबाकू और शराब से बचें", ["ये दुष्प्रभाव बढ़ा सकते हैं और रिकवरी को प्रभावित कर सकते हैं।", "छोड़ना चाहें तो अपनी टीम से सहायता माँगें।"]),
             ("🧴", "अपनी त्वचा का ध्यान रखें", ["उपचार वाले क्षेत्र को साफ़ और सूखा रखें।", "उस क्षेत्र पर हीट पैड, आइस पैक, तंग कपड़े और धूप से बचें।", "जब तक कहा न जाए, त्वचा पर बने निशान न मिटाएँ।"]),
             ("💊", "दवाइयाँ", "जब तक आपके डॉक्टर मना न करें, अपनी नियमित दवाइयाँ लेते रहें। सप्लीमेंट या हर्बल उपचार शुरू करने से पहले अपनी टीम से पूछें।"),
@@ -641,7 +663,7 @@ PAGE_TEXT = {
         "info_cards": [
             ("📋", "उपचारापूर्वी", "रेडिएशन थेरपी सुरू करण्यापूर्वी काय अपेक्षित आहे हे जाणून घ्या, यात सामान्य तयारी आणि उपचार-नियोजनाची माहिती समाविष्ट आहे."),
             ("🩺", "उपचारादरम्यान", "रेडिएशन उपचार सत्रादरम्यान साधारणपणे काय होते आणि रुग्णांना काय अनुभव येऊ शकतो हे समजून घ्या."),
-            ("✅", "उपचारानंतर", "उपचारानंतरच्या सामान्य बाबी, सामान्य स्वतःची काळजी आणि व्यावसायिक सल्ला कधी घ्यावा याबद्दल जाणून घ्या."),
+            ("✅", "उपचारानंतर", "उपचारानंतरच्या सामान्य बाबी, सामान्य काळजी आणि व्यावसायिक सल्ला कधी घ्यावा याबद्दल जाणून घ्या."),
             ("☎️", "तुमच्या आरोग्य टीमशी केव्हा संपर्क साधावा", "उपचाराशी संबंधित लक्षणे किंवा चिंता तुमच्या आरोग्य टीमशी केव्हा चर्चा कराव्यात हे समजून घ्या."),
         ],
         "effects_sub": "दुष्परिणाम उपचार केलेला भाग, डोस आणि व्यक्ती यावर अवलंबून असतात. प्रत्येकाला सर्व दुष्परिणाम होतातच असे नाही.",
@@ -657,7 +679,6 @@ PAGE_TEXT = {
         "safety_cards": [
             ("☢️", "रेडिएशन सुरक्षा", ["बाह्य बीम रेडिएशनमुळे तुम्ही किरणोत्सारी होत नाही.", "तुमच्या विशिष्ट उपचारासाठी, जसे की ब्रॅकीथेरपी, काही खबरदारी लागू असल्यास टीमला विचारा."]),
             ("📅", "प्रत्येक सत्राला उपस्थित राहा", ["सत्रे चुकल्यास उपचार किती प्रभावी ठरतो यावर परिणाम होऊ शकतो.", "तुम्ही येऊ शकत नसाल तर टीमला सांगा, म्हणजे ते तुम्हाला सल्ला देऊ शकतील."]),
-            ("🥗", "नीट खा आणि प्या", ["नियमित, संतुलित आहार घेण्याचा प्रयत्न करा.", "सांगितले नसल्यास पुरेसे पाणी प्या.", "खाणे कठीण होत असल्यास आहारतज्ज्ञांकडे पाठवण्यास सांगा."]),
             ("🚭", "तंबाखू आणि मद्य टाळा", ["यामुळे दुष्परिणाम वाढू शकतात आणि रिकव्हरीवर परिणाम होऊ शकतो.", "सोडायचे असल्यास तुमच्या टीमकडे मदत मागा."]),
             ("🧴", "त्वचेची काळजी घ्या", ["उपचार केलेला भाग स्वच्छ आणि कोरडा ठेवा.", "त्या भागावर हीट पॅड, आइस पॅक, घट्ट कपडे आणि ऊन टाळा.", "सांगितल्याशिवाय त्वचेवरील खुणा पुसू नका."]),
             ("💊", "औषधे", "तुमचे डॉक्टर सांगत नाहीत तोपर्यंत नेहमीची औषधे घेत राहा. सप्लिमेंट किंवा हर्बल उपाय सुरू करण्यापूर्वी तुमच्या टीमला विचारा."),
@@ -1546,6 +1567,7 @@ NAV_ITEMS = [
     ("info", "📖"),
     ("effects", "⚠️"),
     ("safety", "🛡️"),
+    ("diet", "🥗"),
     ("video", "▶️"),
     ("faq", "❓"),
     ("support", "💙"),
@@ -1665,6 +1687,74 @@ def read_csv_rows(path):
 # PAGES
 # ============================================================
 
+def voice_input():
+    """Speech-to-text input that places the recognized question into Streamlit's chat box."""
+    lang = U["lang_code"]
+    label = U["voice"]
+    hint = U["voice_hint"]
+    unsupported = U["voice_unsupported"]
+    page = f"""
+<style>
+.voice-wrap {{ margin: .2rem 0 .35rem 0; }}
+.voice-btn {{ font-family: 'Segoe UI', sans-serif; padding: 7px 16px; border-radius: 999px;
+  border: 1px solid #bcd3ea; background: #fff; color: #1a4f86; cursor: pointer; font-size: 14px; font-weight: 600; }}
+.voice-btn:hover {{ background: #e8f2fc; }}
+.voice-status {{ color: #66788c; font-size: 12px; margin-top: 5px; }}
+</style>
+<div class="voice-wrap">
+  <button class="voice-btn" id="voiceBtn">{html.escape(label)}</button>
+  <div class="voice-status" id="voiceStatus">{html.escape(hint)}</div>
+</div>
+<script>
+(() => {{
+  const Btn = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('voiceBtn');
+  const status = document.getElementById('voiceStatus');
+  const lang = {json.dumps(lang)};
+  const unsupported = {json.dumps(unsupported, ensure_ascii=False)};
+  if (!Btn) {{
+    btn.disabled = true;
+    status.textContent = unsupported;
+    return;
+  }}
+  const recognition = new Btn();
+  recognition.lang = lang;
+  recognition.interimResults = false;
+  recognition.continuous = false;
+  btn.onclick = () => {{
+    try {{
+      status.textContent = '🎙️ Listening…';
+      recognition.start();
+    }} catch (e) {{}}
+  }};
+  recognition.onresult = (event) => {{
+    const text = event.results[0][0].transcript;
+    const setChatInput = () => {{
+      const parent = window.parent;
+      const textarea = parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]')
+        || parent.document.querySelector('div[data-testid="stChatInput"] textarea');
+      if (!textarea) return false;
+      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+      setter.call(textarea, text);
+      textarea.dispatchEvent(new Event('input', {{ bubbles: true }}));
+      textarea.focus();
+      return true;
+    }};
+    let tries = 0;
+    const timer = setInterval(() => {{
+      tries++;
+      if (setChatInput() || tries > 20) clearInterval(timer);
+    }}, 100);
+    status.textContent = '✓ Question added to the text box. Press send to submit.';
+  }};
+  recognition.onerror = () => {{ status.textContent = unsupported; }};
+  recognition.onend = () => {{ if (status.textContent === '🎙️ Listening…') status.textContent = {json.dumps(hint)}; }};
+}})();
+</script>
+"""
+    components.html(page, height=78)
+
+
 def page_chat():
     # ---- Hero ----
     st.markdown(
@@ -1680,6 +1770,7 @@ def page_chat():
     with st.container(border=True):
         st.markdown(f'<div class="panel-title">{U["ask_title"]}</div>', unsafe_allow_html=True)
 
+        voice_input()
         typed = st.chat_input(T["placeholder"])
         st.caption(U["privacy"])
         prompt = typed or st.session_state.pop("pending_prompt", None)
@@ -1740,15 +1831,15 @@ def page_effects():
 
 def page_safety():
     page_header("🛡️", U["nav"]["safety"], C["safety_sub"])
-
-    tab_safety, tab_diet = st.tabs([U["tab_safety"], U["tab_diet"]])
-    with tab_safety:
-        info_cards(C["safety_cards"])
-    with tab_diet:
-        info_cards(C["diet_cards"])
-
+    info_cards(C["safety_cards"])
     hospital_box()
     contact_team_box()
+
+
+def page_diet():
+    page_header("🥗", U["nav"]["diet"], U["diet_sub"])
+    info_cards(C["diet_cards"])
+    hospital_box()
 
 
 def pick_video():
@@ -1784,9 +1875,40 @@ def pick_photos():
     return sorted(set(photos), key=lambda p: p.name.lower())
 
 
+def make_qr_png(url):
+    """Create a QR image for the configured app URL."""
+    import qrcode
+    qr = qrcode.QRCode(version=1, box_size=8, border=4)
+    qr.add_data(url)
+    qr.make(fit=True)
+    image = qr.make_image(fill_color="#0f55b8", back_color="white").convert("RGB")
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+def waiting_room_qr():
+    qr_bytes = make_qr_png(APP_URL)
+    st.markdown(f"### {U['qr_title']}")
+    st.caption(U["qr_caption"])
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        st.image(qr_bytes, width=260)
+    with c2:
+        st.markdown(f"**App link:** {html.escape(APP_URL)}")
+        st.download_button(
+            U["qr_download"],
+            qr_bytes,
+            file_name="radiation_app_waiting_room_qr.png",
+            mime="image/png",
+        )
+
+
 def page_video():
     st.markdown(f"### {U['video_title']}")
     st.caption(U["video_caption"])
+
+    waiting_room_qr()
 
     video_file = pick_video()
     if video_file:
@@ -1930,6 +2052,7 @@ PAGES = {
     "info": page_info,
     "effects": page_effects,
     "safety": page_safety,
+    "diet": page_diet,
     "video": page_video,
     "faq": page_faq,
     "support": page_support,
