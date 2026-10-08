@@ -95,13 +95,15 @@ st.markdown(
     [class*="st-key-nav_"] button {
         background: #ffffff !important; border: 1.5px solid #b9d0e8 !important; border-radius: 12px !important;
         box-shadow: 0 2px 6px rgba(20,60,110,0.06) !important;
-        color: #24425f !important; font-weight: 700; padding: .4rem .3rem;
-        min-height: 3.4rem; justify-content: center; transition: all .15s ease;
+        color: #24425f !important; font-weight: 700; padding: .3rem .25rem;
+        height: 4.6rem; width: 100%; display: flex; align-items: center; justify-content: center;
+        transition: all .15s ease;
     }
     [class*="st-key-nav_"] button p {
-        color: #24425f !important; font-size: 1rem; line-height: 1.2;
-        text-align: center; white-space: normal;
+        color: #24425f !important; font-size: .88rem; line-height: 1.25;
+        text-align: center; white-space: normal; margin: 0;
     }
+    .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .5rem; }
     [class*="st-key-nav_"] button:hover {
         background: #eaf3fc !important; border-color: #1a6fb5 !important;
     }
@@ -870,32 +872,32 @@ def feedback_buttons(message_index, question, answer):
 # ============================================================
 
 NAV_ITEMS = [
-    ("chat", "💬 Chat Assistant"),
-    ("journey", "🧭 Treatment Journey"),
-    ("info", "📖 Treatment Info"),
-    ("effects", "⚠️ Side Effects"),
-    ("safety", "🛡️ Safety & Self-Care"),
-    ("video", "▶️ Video Guide"),
-    ("faq", "FAQ"),
-    ("support", "💙 Support & Wellness"),
-    ("after", "🌿 After Treatment Care"),
+    ("chat", "💬", "Chat Assistant"),
+    ("journey", "🧭", "Treatment Journey"),
+    ("info", "📖", "Treatment Info"),
+    ("effects", "⚠️", "Side Effects"),
+    ("safety", "🛡️", "Safety & Self-Care"),
+    ("video", "▶️", "Video Guide"),
+    ("faq", "❓", "FAQ"),
+    ("support", "💙", "Support & Wellness"),
+    ("after", "🌿", "After Treatment Care"),
 ]
 
 
 def render_nav():
-    # One single row with all pages; column widths follow label length
-    cols = st.columns(len(NAV_ITEMS))
+    with st.container(key="navrow"):
+        cols = st.columns(len(NAV_ITEMS))
 
-    for col, (key, label) in zip(cols, NAV_ITEMS):
-        with col:
-            st.button(
-                label,
-                key=f"nav_{key}",
-                type="primary" if st.session_state.page == key else "secondary",
-                use_container_width=True,
-                on_click=go,
-                args=(key,),
-            )
+        for col, (key, icon, text) in zip(cols, NAV_ITEMS):
+            with col:
+                st.button(
+                    f"{icon}  \n{text}",
+                    key=f"nav_{key}",
+                    type="primary" if st.session_state.page == key else "secondary",
+                    use_container_width=True,
+                    on_click=go,
+                    args=(key,),
+                )
 
     st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
 
