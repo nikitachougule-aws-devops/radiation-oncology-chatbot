@@ -95,9 +95,9 @@ st.markdown(
     [class*="st-key-nav_"] button {
         background: transparent !important; border: none !important; border-radius: 0 !important;
         border-bottom: 3px solid transparent !important; box-shadow: none !important;
-        color: #24425f !important; font-weight: 600; padding: .55rem .2rem;
+        color: #24425f !important; font-weight: 600; padding: .55rem .1rem;
     }
-    [class*="st-key-nav_"] button p { color: #24425f !important; font-size: .92rem; white-space: nowrap; }
+    [class*="st-key-nav_"] button p { color: #24425f !important; font-size: .78rem; white-space: nowrap; }
     [class*="st-key-nav_"] button:hover { background: rgba(26,111,181,0.07) !important; }
     [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] {
         border-bottom: 3px solid #1a6fb5 !important;
@@ -861,26 +861,25 @@ def feedback_buttons(message_index, question, answer):
 # UI HELPERS
 # ============================================================
 
-NAV_MAIN = [
+NAV_ITEMS = [
     ("chat", "💬 Chat Assistant"),
     ("journey", "🧭 Treatment Journey"),
     ("info", "📖 Treatment Info"),
     ("effects", "⚠️ Side Effects"),
     ("safety", "🛡️ Safety & Self-Care"),
     ("video", "▶️ Video Guide"),
-]
-
-NAV_MORE = [
-    ("faq", "❓ FAQs"),
+    ("faq", "❓ FAQ"),
     ("support", "💙 Support & Wellness"),
-    ("after", "🌿 After Treatment"),
+    ("after", "🌿 After Treatment Care"),
 ]
 
 
 def render_nav():
-    cols = st.columns([1.15, 1.3, 1.1, 1.0, 1.4, 1.0, 0.8])
+    # One single row with all pages; column widths follow label length
+    widths = [len(label) for _, label in NAV_ITEMS]
+    cols = st.columns(widths)
 
-    for col, (key, label) in zip(cols[:6], NAV_MAIN):
+    for col, (key, label) in zip(cols, NAV_ITEMS):
         with col:
             st.button(
                 label,
@@ -890,17 +889,6 @@ def render_nav():
                 on_click=go,
                 args=(key,),
             )
-
-    with cols[6]:
-        with st.popover("More ⌄", use_container_width=True):
-            for key, label in NAV_MORE:
-                st.button(
-                    label,
-                    key=f"nav_more_{key}",
-                    use_container_width=True,
-                    on_click=go,
-                    args=(key,),
-                )
 
     st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
 
