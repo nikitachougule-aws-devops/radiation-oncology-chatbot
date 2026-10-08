@@ -6,7 +6,6 @@ import csv
 import re
 import os
 import json
-import tempfile
 import html
 import hmac
 from collections import Counter
@@ -40,6 +39,13 @@ st.markdown(
     .block-container { padding-top: 4.2rem !important; max-width: 1400px; }
     header[data-testid="stHeader"] { background: transparent; }
     .stApp .main p, .stApp .main li, .stApp .main span, .stApp .main label { color: #1f3350; }
+
+    [class*="st-key-download_patient_guide"] button {
+        background: linear-gradient(120deg, #0f55b8 0%, #1a72d4 100%) !important;
+        border: 1.5px solid #0f55b8 !important; color: #fff !important; border-radius: 10px !important;
+        font-weight: 700;
+    }
+    [class*="st-key-download_patient_guide"] button p { color: #fff !important; }
 
     /* ---------------- SIDEBAR ---------------- */
     section[data-testid="stSidebar"] {
@@ -98,31 +104,19 @@ st.markdown(
     .credit-name { font-size: .95rem; font-weight: 700; color: #fff !important; }
 
     /* ---------------- TOP NAV (tabs) ---------------- */
+    .st-key-navrow { margin-bottom: .15rem; }
+    .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .45rem; margin-bottom: .45rem; }
     [class*="st-key-nav_"] button {
-        background: #ffffff !important; border: 1.5px solid #b9d0e8 !important; border-radius: 12px !important;
+        background: #ffffff !important; border: 1.5px solid #b9d0e8 !important; border-radius: 10px !important;
         box-shadow: 0 2px 6px rgba(20,60,110,0.06) !important;
-        color: #24425f !important; font-weight: 700; padding: .3rem .25rem;
-        height: 4.6rem; width: 100%; display: flex; align-items: center; justify-content: center;
+        color: #24425f !important; font-weight: 700; padding: .2rem .18rem;
+        height: 3.65rem; width: 100%; display: flex; align-items: center; justify-content: center;
         transition: all .15s ease;
     }
     [class*="st-key-nav_"] button p {
-        color: #24425f !important; font-size: .88rem; line-height: 1.25;
+        color: #24425f !important; font-size: .76rem; line-height: 1.15;
         text-align: center; white-space: normal; margin: 0;
     }
-    .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .5rem; }
-    .st-key-navrow .nav-row { margin-bottom: .5rem; }
-    .st-key-navrow .nav-row [data-testid="stColumn"] { min-width: 0 !important; }
-    section[data-testid="stSidebar"] [data-testid="stDownloadButton"] > button {
-        background: linear-gradient(120deg, #0f55b8 0%, #1a72d4 100%) !important;
-        color: #ffffff !important; border: 1.5px solid #0f55b8 !important;
-        border-radius: 10px !important; font-weight: 700 !important;
-        box-shadow: 0 4px 12px rgba(15,85,184,0.24) !important;
-    }
-    section[data-testid="stSidebar"] [data-testid="stDownloadButton"] > button p { color: #ffffff !important; }
-    .qr-poster { background: #fff; border: 1px solid #dbe6f1; border-radius: 16px; padding: 1rem;
-        text-align: center; box-shadow: 0 2px 10px rgba(20,60,110,0.05); }
-    .qr-poster h4 { color: #0b3d66; margin: 0 0 .3rem 0; }
-    .qr-poster p { color: #4d6279; margin: .2rem 0; }
     [class*="st-key-nav_"] button:hover {
         background: #eaf3fc !important; border-color: #1a6fb5 !important;
     }
@@ -220,11 +214,16 @@ st.markdown(
 
     /* ---------------- MOBILE ---------------- */
     @media (max-width: 900px) {
+        .st-key-navrow [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap !important; overflow: visible;
+        }
+        .st-key-navrow [data-testid="stColumn"], .st-key-navrow [data-testid="column"] {
+            min-width: 0 !important; flex: 1 1 18% !important; width: auto !important;
+        }
+        [class*="st-key-nav_"] button { height: 3.55rem; }
+        [class*="st-key-nav_"] button p { font-size: .68rem; }
         .hero h1 { font-size: 1.6rem; }
         .block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
-        .st-key-navrow [data-testid="stHorizontalBlock"] { gap: .35rem; }
-        [class*="st-key-nav_"] button { height: 4.1rem; padding: .25rem .15rem; }
-        [class*="st-key-nav_"] button p { font-size: .72rem; }
     }
     </style>
     """,
@@ -250,7 +249,6 @@ HOSPITAL = {
     "phone": "",        # e.g. "+91-00000-00000"
     "opd_hours": "",    # e.g. "Mon-Sat, 9:00 AM - 4:00 PM"
     "emergency": "",    # after-hours / emergency number
-    "app_url": os.environ.get("APP_URL", ""),  # public URL used for the waiting-room QR poster
 }
 
 REVIEW = {
@@ -281,7 +279,11 @@ UI_STRINGS = {
         "hero_sub": "Your patient education assistant for Radiation Oncology.",
         "hero_sub2": "Ask questions, get clear answers, and learn about your treatment, side effects, safety and more.",
         "placeholder": "Type your question here...",
-        "greeting": "",
+        "greeting": (
+            "👋 Hello! I'm your Radiation Oncology AI Assistant. "
+            "I can help with general questions about radiation treatment, "
+            "preparation, common side effects, and supportive care. What would you like to know?"
+        ),
         "unknown": (
             "I couldn't find a reliable answer to that question in the curated "
             "Radiation Oncology knowledge base.\n\n"
@@ -317,7 +319,11 @@ UI_STRINGS = {
         "hero_sub": "रेडिएशन ऑन्कोलॉजी के लिए आपका रोगी शिक्षा सहायक।",
         "hero_sub2": "प्रश्न पूछें, स्पष्ट उत्तर पाएँ और अपने उपचार, दुष्प्रभाव व सुरक्षा के बारे में जानें।",
         "placeholder": "अपना प्रश्न यहाँ लिखें...",
-        "greeting": "",
+        "greeting": (
+            "👋 नमस्ते! मैं आपका Radiation Oncology AI Assistant हूँ। "
+            "मैं रेडिएशन उपचार, तैयारी, सामान्य दुष्प्रभाव और सहायक देखभाल से जुड़े "
+            "सामान्य सवालों में मदद कर सकता हूँ।"
+        ),
         "unknown": (
             "मुझे Radiation Oncology के क्यूरेटेड ज्ञान आधार में इस प्रश्न का विश्वसनीय "
             "उत्तर नहीं मिला।\n\nकृपया व्यक्तिगत चिकित्सा सलाह के लिए अपनी स्वास्थ्य टीम से बात करें।"
@@ -347,7 +353,11 @@ UI_STRINGS = {
         "hero_sub": "रेडिएशन ऑन्कोलॉजीसाठी तुमचा रुग्ण शिक्षण सहाय्यक.",
         "hero_sub2": "प्रश्न विचारा, स्पष्ट उत्तरे मिळवा आणि तुमचे उपचार, दुष्परिणाम व सुरक्षिततेबद्दल जाणून घ्या.",
         "placeholder": "तुमचा प्रश्न येथे लिहा...",
-        "greeting": "",
+        "greeting": (
+            "👋 नमस्कार! मी तुमचा Radiation Oncology AI Assistant आहे. "
+            "मी रेडिएशन उपचार, तयारी, सामान्य दुष्परिणाम आणि सहाय्यक काळजीबाबत "
+            "सामान्य प्रश्नांमध्ये मदत करू शकतो."
+        ),
         "unknown": (
             "Radiation Oncology च्या क्यूरेटेड ज्ञान आधारामध्ये मला या प्रश्नाचे "
             "विश्वसनीय उत्तर सापडले नाही.\n\n"
@@ -385,9 +395,8 @@ UI_EXTRA = {
     "en": {
         "nav": {
             "chat": "Chat Assistant", "journey": "Treatment Journey", "info": "Treatment Info",
-            "video": "Video and Photo Guide", "faq": "FAQ", "diet": "Diet and Nutrition",
-            "effects": "Side Effects", "safety": "Safety", "support": "Support & Wellness",
-            "after": "After Treatment Care",
+            "effects": "Side Effects", "safety": "Safety", "video": "Video & Photo Guide",
+            "faq": "FAQ", "diet": "Diet and Nutrition", "support": "Support & Wellness", "after": "After Treatment Care",
         },
         "lang_label": "🌐 Language",
         "clear_chat": "🗑️ Clear Chat",
@@ -399,7 +408,7 @@ UI_EXTRA = {
         "dev_by": "AI Assistant Developed by",
         "brand_sub": "Your Patient Education Assistant",
         "badge": "AI Assistant Online",
-        "hero_title": "Radiation Oncology AI Assistant",
+        "hero_title": "🎗️ Radiation Oncology AI Assistant",
         "ask_title": "✨ Ask your question",
         "disclaimer": "💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.",
         "answer": "**Answer**",
@@ -419,9 +428,8 @@ UI_EXTRA = {
     "hi": {
         "nav": {
             "chat": "चैट सहायक", "journey": "उपचार यात्रा", "info": "उपचार जानकारी",
-            "video": "वीडियो और फोटो गाइड", "faq": "सामान्य प्रश्न", "diet": "आहार और पोषण",
-            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "support": "सहायता और कल्याण",
-            "after": "उपचार के बाद की देखभाल",
+            "effects": "दुष्प्रभाव", "safety": "सुरक्षा", "video": "वीडियो और फोटो गाइड",
+            "faq": "सामान्य प्रश्न", "diet": "आहार और पोषण", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
         },
         "lang_label": "🌐 भाषा",
         "clear_chat": "🗑️ चैट साफ़ करें",
@@ -453,8 +461,8 @@ UI_EXTRA = {
     "mr": {
         "nav": {
             "chat": "चॅट सहाय्यक", "journey": "उपचार प्रवास", "info": "उपचार माहिती",
-            "effects": "दुष्परिणाम", "safety": "सुरक्षा आणि स्वतःची काळजी", "video": "व्हिडिओ मार्गदर्शक",
-            "faq": "सामान्य प्रश्न", "support": "आधार आणि निरोगीपणा", "after": "उपचारानंतरची काळजी",
+            "effects": "दुष्परिणाम", "safety": "सुरक्षा", "video": "व्हिडिओ आणि फोटो मार्गदर्शक",
+            "faq": "सामान्य प्रश्न", "diet": "आहार आणि पोषण", "support": "सहाय्य आणि कल्याण", "after": "उपचारानंतरची काळजी",
         },
         "lang_label": "🌐 भाषा",
         "clear_chat": "🗑️ चॅट साफ करा",
@@ -518,6 +526,7 @@ PAGE_TEXT = {
         "safety_cards": [
             ("☢️", "Radiation safety", ["With external beam radiation, you do not become radioactive.", "Ask your team if any precautions apply to your specific treatment, such as brachytherapy."]),
             ("📅", "Attend every session", ["Missing sessions can affect how well treatment works.", "If you cannot attend, tell your team so they can advise you."]),
+            ("🥗", "Eat and drink well", ["Aim for regular, balanced meals.", "Stay hydrated unless told otherwise.", "Ask for a dietitian referral if eating is difficult."]),
             ("🚭", "Avoid tobacco and alcohol", ["They can worsen side effects and affect recovery.", "Ask your team for support if you want to quit."]),
             ("🧴", "Look after your skin", ["Keep the treated area clean and dry.", "Avoid heat pads, ice packs, tight clothing and sun on the area.", "Do not remove skin markings unless told to."]),
             ("💊", "Medicines", "Keep taking your usual medicines unless your doctor tells you otherwise. Check with your team before starting supplements or herbal remedies."),
@@ -582,6 +591,7 @@ PAGE_TEXT = {
         "safety_cards": [
             ("☢️", "रेडिएशन सुरक्षा", ["बाहरी बीम रेडिएशन से आप रेडियोधर्मी नहीं बनते।", "यदि आपके विशेष उपचार, जैसे ब्रैकीथेरेपी, में कोई सावधानी लागू होती है तो अपनी टीम से पूछें।"]),
             ("📅", "हर सत्र में उपस्थित रहें", ["सत्र छूटने से उपचार का असर प्रभावित हो सकता है।", "यदि आप नहीं आ सकते तो अपनी टीम को बताएँ ताकि वे आपको सलाह दे सकें।"]),
+            ("🥗", "अच्छा खाएँ-पिएँ", ["नियमित, संतुलित भोजन लेने का प्रयास करें।", "जब तक मना न किया जाए, पर्याप्त पानी पिएँ।", "खाने में कठिनाई हो तो आहार विशेषज्ञ के पास रेफ़रल माँगें।"]),
             ("🚭", "तंबाकू और शराब से बचें", ["ये दुष्प्रभाव बढ़ा सकते हैं और रिकवरी को प्रभावित कर सकते हैं।", "छोड़ना चाहें तो अपनी टीम से सहायता माँगें।"]),
             ("🧴", "अपनी त्वचा का ध्यान रखें", ["उपचार वाले क्षेत्र को साफ़ और सूखा रखें।", "उस क्षेत्र पर हीट पैड, आइस पैक, तंग कपड़े और धूप से बचें।", "जब तक कहा न जाए, त्वचा पर बने निशान न मिटाएँ।"]),
             ("💊", "दवाइयाँ", "जब तक आपके डॉक्टर मना न करें, अपनी नियमित दवाइयाँ लेते रहें। सप्लीमेंट या हर्बल उपचार शुरू करने से पहले अपनी टीम से पूछें।"),
@@ -646,6 +656,7 @@ PAGE_TEXT = {
         "safety_cards": [
             ("☢️", "रेडिएशन सुरक्षा", ["बाह्य बीम रेडिएशनमुळे तुम्ही किरणोत्सारी होत नाही.", "तुमच्या विशिष्ट उपचारासाठी, जसे की ब्रॅकीथेरपी, काही खबरदारी लागू असल्यास टीमला विचारा."]),
             ("📅", "प्रत्येक सत्राला उपस्थित राहा", ["सत्रे चुकल्यास उपचार किती प्रभावी ठरतो यावर परिणाम होऊ शकतो.", "तुम्ही येऊ शकत नसाल तर टीमला सांगा, म्हणजे ते तुम्हाला सल्ला देऊ शकतील."]),
+            ("🥗", "नीट खा आणि प्या", ["नियमित, संतुलित आहार घेण्याचा प्रयत्न करा.", "सांगितले नसल्यास पुरेसे पाणी प्या.", "खाणे कठीण होत असल्यास आहारतज्ज्ञांकडे पाठवण्यास सांगा."]),
             ("🚭", "तंबाखू आणि मद्य टाळा", ["यामुळे दुष्परिणाम वाढू शकतात आणि रिकव्हरीवर परिणाम होऊ शकतो.", "सोडायचे असल्यास तुमच्या टीमकडे मदत मागा."]),
             ("🧴", "त्वचेची काळजी घ्या", ["उपचार केलेला भाग स्वच्छ आणि कोरडा ठेवा.", "त्या भागावर हीट पॅड, आइस पॅक, घट्ट कपडे आणि ऊन टाळा.", "सांगितल्याशिवाय त्वचेवरील खुणा पुसू नका."]),
             ("💊", "औषधे", "तुमचे डॉक्टर सांगत नाहीत तोपर्यंत नेहमीची औषधे घेत राहा. सप्लिमेंट किंवा हर्बल उपाय सुरू करण्यापूर्वी तुमच्या टीमला विचारा."),
@@ -688,16 +699,12 @@ PAGE_TEXT = {
 EXTRA_UI = {
     "en": {
         "privacy": "🔒 Please don't type your name, phone number or medical report details here.",
-        "listen": "Listen", "stop": "Stop",
+        "listen": "Listen", "stop": "Stop", "related": "Related questions",
         "hosp_title": "Contact your care team", "hosp_phone": "Phone",
         "hosp_opd": "OPD timings", "hosp_emergency": "After-hours / emergency",
         "reviewed": "Content reviewed by {by} on {date}",
         "download_guide": "📄 Download patient guide",
-        "voice_button": "🎙️ Speak your question",
-        "voice_hint": "In Chrome, voice input supports Hindi (hi-IN) and Marathi (mr-IN). Allow microphone access when prompted.",
-        "qr_title": "Waiting-room QR poster",
-        "qr_hint": "Scan this QR code to open the patient education app.",
-        "guide_title": "Radiation Therapy: Patient Guide",
+                "guide_title": "Radiation Therapy: Patient Guide",
         "tab_safety": "Safety", "tab_diet": "Diet & Nutrition",
         "tab_general": "General", "tab_area": "By treatment area",
         "tab_wellbeing": "Wellbeing", "tab_caregivers": "For Caregivers", "tab_costs": "Costs & Schemes",
@@ -705,16 +712,12 @@ EXTRA_UI = {
     },
     "hi": {
         "privacy": "🔒 कृपया यहाँ अपना नाम, फ़ोन नंबर या मेडिकल रिपोर्ट का विवरण न लिखें।",
-        "listen": "सुनें", "stop": "रोकें",
+        "listen": "सुनें", "stop": "रोकें", "related": "संबंधित प्रश्न",
         "hosp_title": "अपनी देखभाल टीम से संपर्क करें", "hosp_phone": "फ़ोन",
         "hosp_opd": "ओपीडी का समय", "hosp_emergency": "समय के बाद / आपातकाल",
         "reviewed": "सामग्री की समीक्षा: {by}, दिनांक {date}",
         "download_guide": "📄 रोगी मार्गदर्शिका डाउनलोड करें",
-        "voice_button": "🎙️ अपना प्रश्न बोलें",
-        "voice_hint": "Chrome में वॉइस इनपुट Hindi (hi-IN) और Marathi (mr-IN) को सपोर्ट करता है। पूछे जाने पर माइक्रोफ़ोन की अनुमति दें।",
-        "qr_title": "वेटिंग-रूम QR पोस्टर",
-        "qr_hint": "इस QR कोड को स्कैन करके रोगी शिक्षा ऐप खोलें।",
-        "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
+                "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार और पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार क्षेत्र के अनुसार",
         "tab_wellbeing": "कल्याण", "tab_caregivers": "देखभाल करने वालों के लिए", "tab_costs": "खर्च और योजनाएँ",
@@ -722,15 +725,11 @@ EXTRA_UI = {
     },
     "mr": {
         "privacy": "🔒 कृपया येथे तुमचे नाव, फोन नंबर किंवा वैद्यकीय अहवालाचा तपशील लिहू नका.",
-        "listen": "ऐका", "stop": "थांबवा",
+        "listen": "ऐका", "stop": "थांबवा", "related": "संबंधित प्रश्न",
         "hosp_title": "तुमच्या देखभाल टीमशी संपर्क साधा", "hosp_phone": "फोन",
         "hosp_opd": "ओपीडी वेळ", "hosp_emergency": "वेळेनंतर / आपत्कालीन",
         "reviewed": "मजकुराचे पुनरावलोकन: {by}, दिनांक {date}",
         "download_guide": "📄 रुग्ण मार्गदर्शिका डाउनलोड करा",
-        "voice_button": "🎙️ तुमचा प्रश्न बोला",
-        "voice_hint": "Chrome मध्ये voice input Hindi (hi-IN) आणि Marathi (mr-IN) ला सपोर्ट करते. विचारल्यास मायक्रोफोनची परवानगी द्या.",
-        "qr_title": "वेटिंग-रूम QR पोस्टर",
-        "qr_hint": "हा QR कोड स्कॅन करून रुग्ण शिक्षण अॅप उघडा.",
         "guide_title": "रेडिएशन थेरपी: रुग्ण मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार आणि पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार भागानुसार",
@@ -964,7 +963,7 @@ h3 {{ color:#0b3d66; margin-bottom:4px; }} .box {{ border:1px solid #bcd3ea; bor
 <h2>{esc(U["nav"]["journey"])}</h2>{steps}
 <h2>{esc(U["nav"]["effects"])}</h2><p>{esc(C["effects_sub"])}</p>{cards(C["effects_cards"])}{cards(C["area_cards"])}
 <h2>{esc(U["nav"]["safety"])}</h2>{cards(C["safety_cards"])}
-<h2>{esc(U["tab_diet"])}</h2>{cards(C["diet_cards"])}
+<h2>{esc(U["nav"]["diet"])}</h2>{cards(C["diet_cards"])}
 <h2>{esc(U["nav"]["after"])}</h2>{cards(C["after_cards"])}
 {contact}{review}
 <p class="foot">{esc(U["disclaimer"])}</p>
@@ -1001,7 +1000,9 @@ with st.sidebar:
         file_name="radiation_patient_guide.html",
         mime="text/html",
         use_container_width=True,
+        key="download_patient_guide",
     )
+
     st.markdown(
         f"""<div class="sb-section-title">{U["safety_trust"]}</div>
 <div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">{U["pill1"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
@@ -1369,7 +1370,25 @@ def search_knowledge(question, language):
         ):
             return None
 
-        return dict(best_metadata)
+        related = []
+        seen = {normalize_text(best_metadata.get("question", ""))}
+        for candidate in candidates[1:]:
+            meta = candidate["metadata"]
+            q_norm = normalize_text(meta.get("question", ""))
+            if (
+                meta.get("language") != language
+                or q_norm in seen
+                or candidate["semantic_score"] < 0.3
+            ):
+                continue
+            seen.add(q_norm)
+            related.append(meta.get("question", ""))
+            if len(related) == 3:
+                break
+
+        best_metadata = dict(best_metadata)
+        best_metadata["related"] = related
+        return best_metadata
 
     except Exception:
         return None
@@ -1442,6 +1461,21 @@ def get_response(prompt):
 # SOURCE + FEEDBACK
 # ============================================================
 
+def display_source(source):
+    if not source:
+        return
+
+    stage = source.get("stage", "Radiation Oncology")
+    stage = U["stages"].get(stage, stage)
+
+    with st.container(border=True):
+        st.markdown(f"**{U['source']}**")
+        st.write(U["source_kb"])
+        st.write(f"**{U['category']}:** {stage}")
+        if source.get("question"):
+            st.write(f"**{U['matched']}:** {source['question']}")
+
+
 def redact(text):
     """Remove phone-like numbers and e-mail addresses before anything is saved."""
     text = re.sub(r"[\w.+-]+@[\w-]+\.[\w.-]+", "[email]", text)
@@ -1492,6 +1526,28 @@ def save_feedback(question, answer, feedback):
         pass
 
 
+def feedback_buttons(message_index, question, answer):
+    if not question:
+        return
+
+    already_given = st.session_state.feedback_given.get(message_index)
+    if already_given:
+        st.caption(U["thanks_up"] if already_given == "up" else U["thanks_down"])
+        return
+
+    col1, col2, _ = st.columns([1, 1, 10])
+    with col1:
+        if st.button("👍", key=f"up_{message_index}"):
+            save_feedback(question, answer, "up")
+            st.session_state.feedback_given[message_index] = "up"
+            st.rerun()
+    with col2:
+        if st.button("👎", key=f"down_{message_index}"):
+            save_feedback(question, answer, "down")
+            st.session_state.feedback_given[message_index] = "down"
+            st.rerun()
+
+
 # ============================================================
 # UI HELPERS
 # ============================================================
@@ -1500,7 +1556,7 @@ NAV_ITEMS = [
     ("chat", "💬"),
     ("journey", "🧭"),
     ("info", "📖"),
-    ("video", "🎥"),
+    ("video", "▶️"),
     ("faq", "❓"),
     ("diet", "🥗"),
     ("effects", "⚠️"),
@@ -1512,20 +1568,19 @@ NAV_ITEMS = [
 
 def render_nav():
     with st.container(key="navrow"):
-        for row_index in range(2):
-            row_items = NAV_ITEMS[row_index * 5:(row_index + 1) * 5]
-            with st.container(key=f"nav_row_{row_index}"):
-                cols = st.columns(5)
-                for col, (key, icon) in zip(cols, row_items):
-                    with col:
-                        st.button(
-                            f"{icon}  \n{U['nav'][key]}",
-                            key=f"nav_{key}",
-                            type="primary" if st.session_state.page == key else "secondary",
-                            use_container_width=True,
-                            on_click=go,
-                            args=(key,),
-                        )
+        for row_items in (NAV_ITEMS[:5], NAV_ITEMS[5:]):
+            cols = st.columns(5)
+            for col, (key, icon) in zip(cols, row_items):
+                with col:
+                    st.button(
+                        f"{icon}  \n{U['nav'][key]}",
+                        key=f"nav_{key}",
+                        type="primary" if st.session_state.page == key else "secondary",
+                        use_container_width=True,
+                        on_click=go,
+                        args=(key,),
+                    )
+
     st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
 
 
@@ -1620,88 +1675,54 @@ def read_csv_rows(path):
 
 
 # ============================================================
-# BROWSER VOICE INPUT
-# ============================================================
-
-@st.cache_resource
-def get_voice_component():
-    component_dir = Path(os.environ.get("STREAMLIT_VOICE_COMPONENT_DIR", Path(tempfile.gettempdir()) / "radiation_voice_component"))
-    component_dir.mkdir(parents=True, exist_ok=True)
-    index = component_dir / "index.html"
-    index.write_text("""<!doctype html>
-<html><head><meta charset="utf-8"><script src="https://unpkg.com/streamlit-component-lib/dist/streamlit-component-lib.js"></script>
-<style>body{margin:0;font-family:Segoe UI,Arial,sans-serif}.wrap{display:flex;gap:8px;align-items:center}.btn{border:1px solid #bcd3ea;background:#fff;color:#1a4f86;border-radius:999px;padding:7px 15px;font-weight:700;cursor:pointer}.btn:hover{background:#e8f2fc}.status{font-size:12px;color:#4d6279}</style></head>
-<body><div class="wrap"><button class="btn" id="start"></button><span class="status" id="status"></span></div>
-<script>
-const Streamlit = window.Streamlit;
-const start = document.getElementById('start'); const status = document.getElementById('status');
-let recognition = null;
-let currentReset = '0';
-function configure(args){
-  const label = args.label || 'Speak your question';
-  const lang = args.lang || 'en-IN';
-  currentReset = String(args.reset || '0');
-  start.textContent = '🎙️ ' + label;
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { start.disabled=true; status.textContent='Speech input is not supported in this browser.'; return; }
-  start.disabled=false;
-  recognition = new SR(); recognition.lang=lang; recognition.interimResults=false; recognition.continuous=false;
-  start.onclick=()=>{ status.textContent='Listening…'; try{recognition.start()}catch(e){} };
-  recognition.onresult=(e)=>{ const text=e.results[0][0].transcript; status.textContent=text; Streamlit.setComponentValue({text:text, reset:currentReset}); };
-  recognition.onerror=()=>{ status.textContent='Microphone or speech recognition error. Please try again.'; };
-  recognition.onend=()=>{};
-}
-Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, (event)=>{ configure(event.detail.args || {}); Streamlit.setFrameHeight(44); });
-Streamlit.setFrameHeight(44);
-Streamlit.setComponentReady();
-</script></body></html>""", encoding="utf-8")
-    return components.declare_component("radiation_voice_input", path=str(component_dir))
-
-
-def voice_input():
-    if "voice_reset" not in st.session_state:
-        st.session_state.voice_reset = 0
-    component = get_voice_component()
-    result = component(
-        label=U["voice_button"].replace("🎙️ ", ""),
-        lang=U["lang_code"],
-        reset=str(st.session_state.voice_reset),
-        key=f"voice_{st.session_state.voice_reset}",
-        default=None,
-    )
-    if isinstance(result, dict):
-        text = (result.get("text") or "").strip()
-        if text:
-            st.session_state.voice_reset += 1
-            return text
-    return ""
-
-
-def qr_poster():
-    """Optional waiting-room QR poster. Set APP_URL or HOSPITAL['app_url'] to the public app URL."""
-    app_url = HOSPITAL.get("app_url", "").strip()
-    if not app_url:
-        return
-    try:
-        import qrcode
-        from io import BytesIO
-        qr = qrcode.QRCode(box_size=8, border=3)
-        qr.add_data(app_url)
-        qr.make(fit=True)
-        image = qr.make_image(fill_color="black", back_color="white").convert("RGB")
-        st.markdown(f'<div class="qr-poster"><h4>📱 {U["qr_title"]}</h4><p>{U["qr_hint"]}</p></div>', unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 1.2, 1])
-        with col2:
-            st.image(image, use_container_width=True)
-            buf = BytesIO(); image.save(buf, format="PNG")
-            st.download_button("⬇️ Download QR poster image", buf.getvalue(), file_name="waiting_room_qr.png", mime="image/png", use_container_width=True)
-    except ImportError:
-        st.info("Install the optional `qrcode` package to generate the waiting-room QR poster.")
-
-
-# ============================================================
 # PAGES
 # ============================================================
+
+def voice_input_box():
+    """Visible browser speech input. Chrome supports English, Hindi and Marathi speech recognition.
+    The component copies the transcript so it can be pasted into the question box.
+    """
+    lang_map = {"en": "en-IN", "hi": "hi-IN", "mr": "mr-IN"}
+    selected = lang_map.get(st.session_state.language, "en-IN")
+    page = f"""
+<div style="font-family:Segoe UI,Arial,sans-serif;border:1px solid #bcd3ea;border-radius:12px;padding:10px 12px;background:#f7fbff;">
+  <div style="font-weight:700;color:#0b3d66;margin-bottom:6px;">🎙️ Voice input</div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <button id="mic" style="border:1px solid #1a6fb5;background:#fff;color:#1a6fb5;border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer;">🎙️ Speak</button>
+    <select id="lang" style="border:1px solid #bcd3ea;border-radius:8px;padding:7px;color:#24425f;">
+      <option value="en-IN" {'selected' if selected=='en-IN' else ''}>English</option>
+      <option value="hi-IN" {'selected' if selected=='hi-IN' else ''}>हिन्दी</option>
+      <option value="mr-IN" {'selected' if selected=='mr-IN' else ''}>मराठी</option>
+    </select>
+    <button id="copy" style="border:1px solid #bcd3ea;background:#fff;color:#24425f;border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer;">📋 Copy question</button>
+  </div>
+  <textarea id="out" placeholder="Your spoken question will appear here…" style="margin-top:8px;width:100%;min-height:64px;border:1px solid #bcd3ea;border-radius:9px;padding:8px;box-sizing:border-box;color:#1f3350;resize:vertical;"></textarea>
+  <div id="status" style="font-size:12px;color:#5c7188;margin-top:5px;">Use Chrome for Marathi or Hindi speech recognition. After copying, paste it into the question box below.</div>
+</div>
+<script>
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const mic=document.getElementById('mic'), out=document.getElementById('out'), status=document.getElementById('status');
+let rec=null, listening=false;
+if(!SR){{mic.disabled=true; mic.textContent='🎙️ Voice not supported'; status.textContent='Voice input needs a browser with Speech Recognition support, such as Chrome.';}}
+else{{
+  rec=new SR(); rec.continuous=false; rec.interimResults=false;
+  mic.onclick=()=>{{
+    if(listening){{rec.stop();return;}}
+    rec.lang=document.getElementById('lang').value; rec.start(); listening=true; mic.textContent='⏹ Stop'; status.textContent='Listening… please speak your question.';
+  }};
+  rec.onresult=(e)=>{{out.value=e.results[0][0].transcript; status.textContent='Voice captured. Click Copy question, then paste it into the question box.';}};
+  rec.onerror=(e)=>{{status.textContent='Could not capture speech: '+e.error+'. Please try again.';}};
+  rec.onend=()=>{{listening=false; mic.textContent='🎙️ Speak';}};
+}}
+document.getElementById('copy').onclick=async()=>{{
+  const text=out.value.trim(); if(!text){{status.textContent='Please speak a question first.';return;}}
+  try{{await navigator.clipboard.writeText(text); status.textContent='Copied. Paste the question into the chat box below.';}}
+  catch(e){{out.focus(); out.select(); status.textContent='Please copy the selected text and paste it into the chat box below.';}}
+}};
+</script>
+"""
+    components.html(page, height=175)
+
 
 def page_chat():
     # ---- Hero ----
@@ -1717,12 +1738,11 @@ def page_chat():
     # ---- Question box first, then conversation ----
     with st.container(border=True):
         st.markdown(f'<div class="panel-title">{U["ask_title"]}</div>', unsafe_allow_html=True)
+        voice_input_box()
 
         typed = st.chat_input(T["placeholder"])
-        voice_prompt = voice_input()
-        st.caption(U["voice_hint"])
         st.caption(U["privacy"])
-        prompt = typed or voice_prompt or st.session_state.pop("pending_prompt", None)
+        prompt = typed or st.session_state.pop("pending_prompt", None)
 
         if prompt:
             response, source = get_response(prompt)
@@ -1736,14 +1756,12 @@ def page_chat():
         last_index = len(st.session_state.messages) - 1
 
         for index, message in enumerate(st.session_state.messages):
-            avatar = None if message["role"] == "assistant" else "🧑"
+            avatar = "🎗️" if message["role"] == "assistant" else "🧑"
 
             with st.chat_message(message["role"], avatar=avatar):
                 st.markdown(message["content"])
 
-                is_answer = message["role"] == "assistant" and message.get("source")
-
-                if is_answer:
+                if message["role"] == "assistant" and message.get("source"):
                     speak_button(message["content"], U["listen"], U["stop"])
 
     st.write("")
@@ -1787,10 +1805,8 @@ def page_safety():
 
 
 def page_diet():
-    page_header("🥗", U["nav"]["diet"], "Practical food, hydration and nutrition guidance during treatment.")
+    page_header("🥗", U["nav"]["diet"], "Food, hydration and nutrition support during radiation treatment.")
     info_cards(C["diet_cards"])
-    hospital_box()
-    contact_team_box()
 
 
 def pick_video():
@@ -1817,8 +1833,8 @@ def pick_video():
 
 
 def page_video():
-    st.markdown(f"### {U['nav']['video']}")
-    st.caption("Videos and photos can help patients become familiar with the treatment room, machine, mask and skin markings.")
+    st.markdown(f"### {U['video_title']}")
+    st.caption(U["video_caption"])
 
     video_file = pick_video()
     if video_file:
@@ -1826,23 +1842,14 @@ def page_video():
     else:
         st.info(U["no_video"])
 
-    photo_dirs = [VIDEO_DIR / "photos", VIDEO_DIR]
-    image_files = []
-    for folder in photo_dirs:
-        if folder.exists():
-            for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
-                image_files.extend(sorted(folder.glob(ext)))
-    # Keep the first occurrence of each file when assets/photos is also under assets.
-    image_files = list(dict.fromkeys(image_files))
-    if image_files:
-        st.markdown("#### 📷 Photo tour")
-        cols = st.columns(3)
-        for i, image_file in enumerate(image_files):
-            with cols[i % 3]:
-                st.image(str(image_file), caption=image_file.stem.replace("_", " ").title(), use_container_width=True)
-    else:
-        st.info("Add department photos to the assets/photos folder to show the treatment machine, mask, skin markings and treatment room.")
-
+    photo_files = []
+    if VIDEO_DIR.exists():
+        for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
+            photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
+    if photo_files:
+        st.markdown("### 📸 Department and treatment photos")
+        for photo in photo_files:
+            st.image(str(photo), use_container_width=True)
 
 
 def page_faq():
@@ -1893,7 +1900,6 @@ def page_support():
         info_cards(C["support_cards"])
     with tab_care:
         info_cards(C["caregiver_cards"])
-    qr_poster()
 
 
 def page_after():
@@ -1972,9 +1978,9 @@ PAGES = {
     "info": page_info,
     "effects": page_effects,
     "safety": page_safety,
+    "diet": page_diet,
     "video": page_video,
     "faq": page_faq,
-    "diet": page_diet,
     "support": page_support,
     "after": page_after,
     "admin": page_admin,
