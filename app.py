@@ -338,12 +338,313 @@ UI_STRINGS = {
 
 
 # ============================================================
-# SESSION STATE
+# TRANSLATED CONTENT (UI labels + page content)
 # ============================================================
 
-DEFAULT_GREETING = (
-    "👋 Hello! I'm your Radiation Oncology AI Assistant. How can I help you today?"
-)
+UI_EXTRA = {
+    "en": {
+        "nav": {
+            "chat": "Chat Assistant", "journey": "Treatment Journey", "info": "Treatment Info",
+            "effects": "Side Effects", "safety": "Safety & Self-Care", "video": "Video Guide",
+            "faq": "FAQ", "support": "Support & Wellness", "after": "After Treatment Care",
+        },
+        "lang_label": "🌐 Language",
+        "clear_chat": "🗑️ Clear Chat",
+        "safety_trust": "Safety &amp; Trust",
+        "pill1": "Medical safety guardrails",
+        "pill2": "Prompt-injection protection",
+        "pill3": "Source-grounded responses",
+        "on": "ON",
+        "dev_by": "AI Assistant Developed by",
+        "brand_sub": "Your Patient Education Assistant",
+        "badge": "AI Assistant Online",
+        "hero_title": "🎗️ Radiation Oncology AI Assistant",
+        "ask_title": "✨ Ask your question",
+        "disclaimer": "💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.",
+        "answer": "**Answer**",
+        "source": "📚 Source",
+        "source_kb": "Curated Radiation Oncology Knowledge Base",
+        "category": "Category",
+        "matched": "Matched FAQ",
+        "thanks_up": "👍 Thanks for your feedback!",
+        "thanks_down": "👎 Thanks for your feedback!",
+        "video_title": "🎥 Radiation Therapy: General Guide",
+        "video_caption": "An educational video explaining the radiation treatment process.",
+        "no_video": "No generic educational video found in the assets folder.",
+        "faq_placeholder": "Example: side effects, pain, skin...",
+        "faq_count": "{n} FAQ(s)",
+        "stages": {"Before Treatment": "Before Treatment", "During Treatment": "During Treatment", "After Treatment": "After Treatment"},
+    },
+    "hi": {
+        "nav": {
+            "chat": "चैट सहायक", "journey": "उपचार यात्रा", "info": "उपचार जानकारी",
+            "effects": "दुष्प्रभाव", "safety": "सुरक्षा और स्व-देखभाल", "video": "वीडियो गाइड",
+            "faq": "सामान्य प्रश्न", "support": "सहायता और कल्याण", "after": "उपचार के बाद की देखभाल",
+        },
+        "lang_label": "🌐 भाषा",
+        "clear_chat": "🗑️ चैट साफ़ करें",
+        "safety_trust": "सुरक्षा और विश्वास",
+        "pill1": "चिकित्सा सुरक्षा नियम",
+        "pill2": "प्रॉम्प्ट-इंजेक्शन सुरक्षा",
+        "pill3": "स्रोत-आधारित उत्तर",
+        "on": "चालू",
+        "dev_by": "AI सहायक विकसित करने वाली",
+        "brand_sub": "आपका रोगी शिक्षा सहायक",
+        "badge": "AI सहायक ऑनलाइन",
+        "hero_title": "🎗️ रेडिएशन ऑन्कोलॉजी AI सहायक",
+        "ask_title": "✨ अपना प्रश्न पूछें",
+        "disclaimer": "💡 यह सहायक क्यूरेटेड Radiation Oncology ज्ञान आधार से सामान्य रोगी शिक्षा जानकारी देता है। यह आपके उपचार करने वाले डॉक्टर या स्वास्थ्य टीम की सलाह का विकल्प नहीं है।",
+        "answer": "**उत्तर**",
+        "source": "📚 स्रोत",
+        "source_kb": "क्यूरेटेड Radiation Oncology ज्ञान आधार",
+        "category": "श्रेणी",
+        "matched": "मिलता-जुलता FAQ",
+        "thanks_up": "👍 आपकी प्रतिक्रिया के लिए धन्यवाद!",
+        "thanks_down": "👎 आपकी प्रतिक्रिया के लिए धन्यवाद!",
+        "video_title": "🎥 रेडिएशन थेरेपी: सामान्य मार्गदर्शिका",
+        "video_caption": "रेडिएशन उपचार प्रक्रिया समझाने वाला एक शैक्षणिक वीडियो।",
+        "no_video": "assets फ़ोल्डर में कोई सामान्य शैक्षणिक वीडियो नहीं मिला।",
+        "faq_placeholder": "उदाहरण: दुष्प्रभाव, दर्द, त्वचा...",
+        "faq_count": "{n} FAQ",
+        "stages": {"Before Treatment": "उपचार से पहले", "During Treatment": "उपचार के दौरान", "After Treatment": "उपचार के बाद"},
+    },
+    "mr": {
+        "nav": {
+            "chat": "चॅट सहाय्यक", "journey": "उपचार प्रवास", "info": "उपचार माहिती",
+            "effects": "दुष्परिणाम", "safety": "सुरक्षा आणि स्वतःची काळजी", "video": "व्हिडिओ मार्गदर्शक",
+            "faq": "सामान्य प्रश्न", "support": "आधार आणि निरोगीपणा", "after": "उपचारानंतरची काळजी",
+        },
+        "lang_label": "🌐 भाषा",
+        "clear_chat": "🗑️ चॅट साफ करा",
+        "safety_trust": "सुरक्षा आणि विश्वास",
+        "pill1": "वैद्यकीय सुरक्षा नियम",
+        "pill2": "प्रॉम्प्ट-इंजेक्शन संरक्षण",
+        "pill3": "स्रोत-आधारित उत्तरे",
+        "on": "चालू",
+        "dev_by": "AI सहाय्यक विकसित करणारी",
+        "brand_sub": "तुमचा रुग्ण शिक्षण सहाय्यक",
+        "badge": "AI सहाय्यक ऑनलाइन",
+        "hero_title": "🎗️ रेडिएशन ऑन्कोलॉजी AI सहाय्यक",
+        "ask_title": "✨ तुमचा प्रश्न विचारा",
+        "disclaimer": "💡 हा सहाय्यक क्यूरेटेड Radiation Oncology ज्ञान आधारातून सामान्य रुग्ण शिक्षण माहिती देतो. हे तुमच्या उपचार करणाऱ्या डॉक्टरांच्या किंवा आरोग्य टीमच्या सल्ल्याला पर्याय नाही.",
+        "answer": "**उत्तर**",
+        "source": "📚 स्रोत",
+        "source_kb": "क्यूरेटेड Radiation Oncology ज्ञान आधार",
+        "category": "श्रेणी",
+        "matched": "जुळणारा FAQ",
+        "thanks_up": "👍 तुमच्या अभिप्रायाबद्दल धन्यवाद!",
+        "thanks_down": "👎 तुमच्या अभिप्रायाबद्दल धन्यवाद!",
+        "video_title": "🎥 रेडिएशन थेरपी: सामान्य मार्गदर्शिका",
+        "video_caption": "रेडिएशन उपचार प्रक्रिया समजावून सांगणारा शैक्षणिक व्हिडिओ.",
+        "no_video": "assets फोल्डरमध्ये सामान्य शैक्षणिक व्हिडिओ सापडला नाही.",
+        "faq_placeholder": "उदाहरण: दुष्परिणाम, वेदना, त्वचा...",
+        "faq_count": "{n} FAQ",
+        "stages": {"Before Treatment": "उपचारापूर्वी", "During Treatment": "उपचारादरम्यान", "After Treatment": "उपचारानंतर"},
+    },
+}
+
+PAGE_TEXT = {
+    # ------------------------------------------------------------------ ENGLISH
+    "en": {
+        "journey_sub": "A general, step-by-step look at radiation therapy. Your own plan may differ.",
+        "journey_steps": [
+            ("Consultation", "You meet your radiation oncologist to discuss your diagnosis, the goal of treatment and what to expect. Bring your reports and questions."),
+            ("Planning scan (simulation)", "A scan, usually a CT, is done in the treatment position. Your team may make a custom mask or cushion and mark your skin so you are positioned the same way each day."),
+            ("Treatment planning", "Your doctor and physicist design a plan that targets the treatment area while limiting dose to nearby healthy tissue. This usually takes several days."),
+            ("Quality checks", "The plan is checked carefully before your first session. Your team may confirm your position with imaging."),
+            ("Daily treatment sessions", "Sessions are usually short and painless. You lie still while the machine delivers radiation, and the team watches you from outside the room."),
+            ("Regular check-ins", "You will be seen regularly during treatment to review side effects and answer questions."),
+            ("Follow-up", "After treatment finishes, follow-up visits track your recovery and any late effects."),
+        ],
+        "info_title": "Treatment Information",
+        "info_cards": [
+            ("📋", "Before Treatment", "Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information."),
+            ("🩺", "During Treatment", "Understand what typically happens during a radiation treatment session and what patients may experience."),
+            ("✅", "After Treatment", "Learn about common post-treatment considerations, general self-care, and when to seek professional guidance."),
+            ("☎️", "When to Contact Your Healthcare Team", "Understand when treatment-related symptoms or concerns should be discussed with your healthcare team."),
+        ],
+        "effects_sub": "Side effects depend on the area treated, the dose and the person. Not everyone has all of them.",
+        "effects_cards": [
+            ("🧴", "Skin changes", ["Redness, dryness, itching or darkening in the treated area are common.", "Wash gently, pat dry, and wear loose soft clothing.", "Protect the area from sun and avoid scrubbing.", "Use only creams your team has approved."]),
+            ("😴", "Tiredness (fatigue)", ["Fatigue often builds up gradually during treatment.", "Rest when you need to and plan important tasks for better hours.", "Gentle activity, such as short walks, can help if your team agrees.", "Fatigue may last for some weeks after treatment."]),
+            ("🍽️", "Appetite and nausea", ["Depends on the area being treated.", "Try small, frequent meals.", "Sip fluids through the day.", "Tell your team if you are losing weight or cannot eat."]),
+            ("💇", "Hair loss", ["Hair loss usually happens only in the treated area.", "It may or may not grow back, depending on the dose.", "Ask your team what to expect for your treatment area."]),
+            ("👄", "Mouth and throat soreness", ["More likely with treatment to the head and neck.", "Keep up good mouth care as advised.", "Soft, bland foods are often easier to swallow.", "Avoid tobacco and alcohol."]),
+            ("💬", "Other effects", "Other effects depend on where you are treated. Your team will explain the ones that apply to you and how to manage them."),
+        ],
+        "safety_sub": "General habits that support you during treatment.",
+        "safety_cards": [
+            ("☢️", "Radiation safety", ["With external beam radiation, you do not become radioactive.", "Ask your team if any precautions apply to your specific treatment, such as brachytherapy."]),
+            ("📅", "Attend every session", ["Missing sessions can affect how well treatment works.", "If you cannot attend, tell your team so they can advise you."]),
+            ("🥗", "Eat and drink well", ["Aim for regular, balanced meals.", "Stay hydrated unless told otherwise.", "Ask for a dietitian referral if eating is difficult."]),
+            ("🚭", "Avoid tobacco and alcohol", ["They can worsen side effects and affect recovery.", "Ask your team for support if you want to quit."]),
+            ("🧴", "Look after your skin", ["Keep the treated area clean and dry.", "Avoid heat pads, ice packs, tight clothing and sun on the area.", "Do not remove skin markings unless told to."]),
+            ("💊", "Medicines", "Keep taking your usual medicines unless your doctor tells you otherwise. Check with your team before starting supplements or herbal remedies."),
+        ],
+        "support_sub": "Looking after your mind and body matters as much as the treatment itself.",
+        "support_cards": [
+            ("💭", "Your feelings", ["It is normal to feel anxious, low or overwhelmed.", "Talking to someone you trust can help.", "Tell your team if these feelings are hard to cope with."]),
+            ("👨‍👩‍👧", "Family and friends", ["Let people help with meals, lifts and errands.", "Bring someone to appointments if you can."]),
+            ("🛌", "Sleep and rest", ["Keep a regular sleep routine.", "Short daytime rests can help with fatigue.", "Tell your team if sleep problems continue."]),
+            ("🚶", "Gentle activity", ["Light movement can lift mood and energy.", "Check with your team about what is right for you."]),
+            ("🤝", "Ask about support services", ["Many hospitals have counsellors, social workers and dietitians.", "Patient support groups can connect you with others who understand."]),
+            ("🧘", "Calming habits", ["Breathing exercises, music or prayer may help you relax.", "Choose what feels right for you."]),
+        ],
+        "after_sub": "What to expect once your radiation sessions are complete.",
+        "after_cards": [
+            ("📅", "Follow-up visits", ["Your team will schedule regular check-ups.", "Bring a list of any symptoms or concerns."]),
+            ("⏳", "Side effects may continue", ["Some side effects can continue or even peak for a short time after the last session.", "Most improve over the following weeks."]),
+            ("🧴", "Skin recovery", ["Continue gentle skin care until your team says otherwise.", "Keep protecting the area from sun."]),
+            ("🔋", "Getting your energy back", ["Fatigue can last for weeks.", "Build activity up gradually."]),
+            ("🔔", "Late effects", ["Some effects appear months or years later, depending on the treated area.", "Ask your team which to watch for."]),
+            ("💙", "Emotional recovery", ["Feelings can surface once treatment ends.", "Support services are still available to you."]),
+        ],
+        "contact_title": "☎️ Contact your healthcare team promptly if you have",
+        "contact_items": [
+            "Fever or chills", "Severe or worsening pain",
+            "Skin that blisters, peels or breaks open in the treated area",
+            "Difficulty swallowing, or trouble eating or drinking",
+            "Vomiting or diarrhoea that does not settle",
+            "Any bleeding, or any symptom that worries you",
+        ],
+        "contact_emergency": "For breathing difficulty, chest pain, heavy bleeding, fainting or seizures, call local emergency services immediately.",
+    },
+    # ------------------------------------------------------------------ HINDI
+    "hi": {
+        "journey_sub": "रेडिएशन थेरेपी पर एक सामान्य, चरण-दर-चरण नज़र। आपकी अपनी योजना अलग हो सकती है।",
+        "journey_steps": [
+            ("परामर्श", "आप अपने रेडिएशन ऑन्कोलॉजिस्ट से मिलते हैं और निदान, उपचार के लक्ष्य और क्या अपेक्षा करनी है, इस पर चर्चा करते हैं। अपनी रिपोर्ट और प्रश्न साथ लाएँ।"),
+            ("प्लानिंग स्कैन (सिमुलेशन)", "उपचार की स्थिति में लेटकर स्कैन किया जाता है, आमतौर पर सीटी स्कैन। आपकी टीम कस्टम मास्क या कुशन बना सकती है और त्वचा पर निशान लगा सकती है, ताकि हर दिन आपकी स्थिति एक जैसी रहे।"),
+            ("उपचार योजना", "आपके डॉक्टर और फिज़िसिस्ट ऐसी योजना बनाते हैं जो उपचार वाले क्षेत्र को लक्षित करे और आसपास के स्वस्थ ऊतकों को कम डोज़ दे। इसमें आमतौर पर कई दिन लगते हैं।"),
+            ("गुणवत्ता जाँच", "पहले सत्र से पहले योजना की सावधानी से जाँच की जाती है। आपकी टीम इमेजिंग से आपकी स्थिति की पुष्टि कर सकती है।"),
+            ("रोज़ के उपचार सत्र", "सत्र आमतौर पर छोटे और दर्द रहित होते हैं। आप स्थिर लेटे रहते हैं जबकि मशीन रेडिएशन देती है, और टीम कमरे के बाहर से आप पर नज़र रखती है।"),
+            ("नियमित जाँच", "उपचार के दौरान दुष्प्रभावों की समीक्षा और आपके प्रश्नों के उत्तर देने के लिए आपको नियमित रूप से देखा जाएगा।"),
+            ("फॉलो-अप", "उपचार समाप्त होने के बाद, फॉलो-अप मुलाकातों में आपकी रिकवरी और देर से होने वाले प्रभावों पर नज़र रखी जाती है।"),
+        ],
+        "info_title": "उपचार जानकारी",
+        "info_cards": [
+            ("📋", "उपचार से पहले", "रेडिएशन थेरेपी शुरू करने से पहले क्या अपेक्षा करें, इसकी जानकारी, जिसमें सामान्य तैयारी और उपचार-योजना की जानकारी शामिल है।"),
+            ("🩺", "उपचार के दौरान", "रेडिएशन उपचार सत्र के दौरान आमतौर पर क्या होता है और मरीज़ क्या अनुभव कर सकते हैं, इसे समझें।"),
+            ("✅", "उपचार के बाद", "उपचार के बाद की सामान्य बातों, सामान्य स्व-देखभाल और पेशेवर सलाह कब लेनी चाहिए, इसके बारे में जानें।"),
+            ("☎️", "अपनी स्वास्थ्य टीम से कब संपर्क करें", "समझें कि उपचार से जुड़े लक्षणों या चिंताओं पर अपनी स्वास्थ्य टीम से कब चर्चा करनी चाहिए।"),
+        ],
+        "effects_sub": "दुष्प्रभाव उपचार किए गए क्षेत्र, डोज़ और व्यक्ति पर निर्भर करते हैं। ज़रूरी नहीं कि हर किसी को सभी दुष्प्रभाव हों।",
+        "effects_cards": [
+            ("🧴", "त्वचा में बदलाव", ["उपचार वाले क्षेत्र में लालिमा, रूखापन, खुजली या त्वचा का काला पड़ना आम है।", "धीरे से धोएँ, थपथपाकर सुखाएँ और ढीले, मुलायम कपड़े पहनें।", "उस क्षेत्र को धूप से बचाएँ और रगड़ने से बचें।", "केवल वही क्रीम लगाएँ जो आपकी टीम ने मंज़ूर की हो।"]),
+            ("😴", "थकान", ["उपचार के दौरान थकान धीरे-धीरे बढ़ती है।", "ज़रूरत हो तो आराम करें और ज़रूरी काम बेहतर समय के लिए रखें।", "यदि आपकी टीम सहमत हो तो हल्की गतिविधि, जैसे छोटी सैर, मदद कर सकती है।", "उपचार के बाद कुछ हफ़्तों तक थकान रह सकती है।"]),
+            ("🍽️", "भूख और मतली", ["यह इस पर निर्भर करता है कि किस क्षेत्र का उपचार हो रहा है।", "थोड़ा-थोड़ा करके बार-बार खाएँ।", "दिन भर तरल पदार्थ पीते रहें।", "यदि आपका वज़न घट रहा है या आप खा नहीं पा रहे हैं तो अपनी टीम को बताएँ।"]),
+            ("💇", "बालों का झड़ना", ["बाल आमतौर पर केवल उपचार वाले क्षेत्र में झड़ते हैं।", "डोज़ के आधार पर बाल दोबारा उग भी सकते हैं और नहीं भी।", "अपनी टीम से पूछें कि आपके उपचार क्षेत्र के लिए क्या अपेक्षा करें।"]),
+            ("👄", "मुँह और गले में दर्द", ["सिर और गर्दन के उपचार में यह अधिक संभव है।", "सलाह के अनुसार मुँह की अच्छी देखभाल करते रहें।", "नरम, सादा भोजन निगलना अक्सर आसान होता है।", "तंबाकू और शराब से बचें।"]),
+            ("💬", "अन्य प्रभाव", "अन्य प्रभाव इस पर निर्भर करते हैं कि आपका उपचार कहाँ हो रहा है। आपकी टीम आपको बताएगी कि कौन से आप पर लागू होते हैं और उन्हें कैसे सँभालें।"),
+        ],
+        "safety_sub": "उपचार के दौरान आपका साथ देने वाली सामान्य आदतें।",
+        "safety_cards": [
+            ("☢️", "रेडिएशन सुरक्षा", ["बाहरी बीम रेडिएशन से आप रेडियोधर्मी नहीं बनते।", "यदि आपके विशेष उपचार, जैसे ब्रैकीथेरेपी, में कोई सावधानी लागू होती है तो अपनी टीम से पूछें।"]),
+            ("📅", "हर सत्र में उपस्थित रहें", ["सत्र छूटने से उपचार का असर प्रभावित हो सकता है।", "यदि आप नहीं आ सकते तो अपनी टीम को बताएँ ताकि वे आपको सलाह दे सकें।"]),
+            ("🥗", "अच्छा खाएँ-पिएँ", ["नियमित, संतुलित भोजन लेने का प्रयास करें।", "जब तक मना न किया जाए, पर्याप्त पानी पिएँ।", "खाने में कठिनाई हो तो आहार विशेषज्ञ के पास रेफ़रल माँगें।"]),
+            ("🚭", "तंबाकू और शराब से बचें", ["ये दुष्प्रभाव बढ़ा सकते हैं और रिकवरी को प्रभावित कर सकते हैं।", "छोड़ना चाहें तो अपनी टीम से सहायता माँगें।"]),
+            ("🧴", "अपनी त्वचा का ध्यान रखें", ["उपचार वाले क्षेत्र को साफ़ और सूखा रखें।", "उस क्षेत्र पर हीट पैड, आइस पैक, तंग कपड़े और धूप से बचें।", "जब तक कहा न जाए, त्वचा पर बने निशान न मिटाएँ।"]),
+            ("💊", "दवाइयाँ", "जब तक आपके डॉक्टर मना न करें, अपनी नियमित दवाइयाँ लेते रहें। सप्लीमेंट या हर्बल उपचार शुरू करने से पहले अपनी टीम से पूछें।"),
+        ],
+        "support_sub": "आपके मन और शरीर की देखभाल भी उपचार जितनी ही महत्वपूर्ण है।",
+        "support_cards": [
+            ("💭", "आपकी भावनाएँ", ["चिंतित, उदास या अभिभूत महसूस करना सामान्य है।", "किसी भरोसेमंद व्यक्ति से बात करने से मदद मिल सकती है।", "यदि इन भावनाओं को सँभालना कठिन हो तो अपनी टीम को बताएँ।"]),
+            ("👨‍👩‍👧", "परिवार और मित्र", ["भोजन, आने-जाने और छोटे कामों में लोगों की मदद लें।", "यदि संभव हो तो किसी को अपने साथ अपॉइंटमेंट पर ले जाएँ।"]),
+            ("🛌", "नींद और आराम", ["नियमित नींद की दिनचर्या रखें।", "दिन में थोड़ा आराम थकान में मदद कर सकता है।", "नींद की समस्या बनी रहे तो अपनी टीम को बताएँ।"]),
+            ("🚶", "हल्की गतिविधि", ["हल्की गतिविधि मूड और ऊर्जा बढ़ा सकती है।", "आपके लिए क्या उचित है, यह अपनी टीम से पूछें।"]),
+            ("🤝", "सहायता सेवाओं के बारे में पूछें", ["कई अस्पतालों में काउंसलर, सामाजिक कार्यकर्ता और आहार विशेषज्ञ होते हैं।", "रोगी सहायता समूह आपको उन लोगों से जोड़ सकते हैं जो आपको समझते हैं।"]),
+            ("🧘", "शांत करने वाली आदतें", ["साँस के व्यायाम, संगीत या प्रार्थना आपको आराम देने में मदद कर सकते हैं।", "वही चुनें जो आपको सही लगे।"]),
+        ],
+        "after_sub": "रेडिएशन सत्र पूरे होने के बाद क्या अपेक्षा करें।",
+        "after_cards": [
+            ("📅", "फॉलो-अप मुलाकातें", ["आपकी टीम नियमित जाँच तय करेगी।", "किसी भी लक्षण या चिंता की सूची साथ लाएँ।"]),
+            ("⏳", "दुष्प्रभाव जारी रह सकते हैं", ["अंतिम सत्र के बाद भी कुछ दुष्प्रभाव थोड़े समय तक जारी रह सकते हैं या बढ़ भी सकते हैं।", "अधिकांश अगले कुछ हफ़्तों में बेहतर हो जाते हैं।"]),
+            ("🧴", "त्वचा की रिकवरी", ["जब तक आपकी टीम न कहे, त्वचा की हल्की देखभाल जारी रखें।", "उस क्षेत्र को धूप से बचाते रहें।"]),
+            ("🔋", "ऊर्जा वापस पाना", ["थकान कई हफ़्ते तक रह सकती है।", "गतिविधि धीरे-धीरे बढ़ाएँ।"]),
+            ("🔔", "देर से होने वाले प्रभाव", ["उपचार क्षेत्र के आधार पर कुछ प्रभाव महीनों या वर्षों बाद दिख सकते हैं।", "अपनी टीम से पूछें कि किन पर नज़र रखनी है।"]),
+            ("💙", "भावनात्मक रिकवरी", ["उपचार समाप्त होने पर भावनाएँ उभर सकती हैं।", "सहायता सेवाएँ अब भी आपके लिए उपलब्ध हैं।"]),
+        ],
+        "contact_title": "☎️ इन लक्षणों पर तुरंत अपनी स्वास्थ्य टीम से संपर्क करें",
+        "contact_items": [
+            "बुखार या कंपकंपी", "तेज़ या बढ़ता हुआ दर्द",
+            "उपचार वाले क्षेत्र में त्वचा पर छाले पड़ना, छिलना या फट जाना",
+            "निगलने में कठिनाई, या खाने-पीने में परेशानी",
+            "उल्टी या दस्त जो ठीक न हों",
+            "कोई भी रक्तस्राव, या कोई भी लक्षण जो आपको चिंतित करे",
+        ],
+        "contact_emergency": "साँस लेने में कठिनाई, सीने में दर्द, भारी रक्तस्राव, बेहोशी या दौरे पड़ने पर तुरंत स्थानीय आपातकालीन सेवाओं को कॉल करें।",
+    },
+    # ------------------------------------------------------------------ MARATHI
+    "mr": {
+        "journey_sub": "रेडिएशन थेरपीवर एक सामान्य, टप्प्याटप्प्याने नजर. तुमची स्वतःची योजना वेगळी असू शकते.",
+        "journey_steps": [
+            ("सल्लामसलत", "तुम्ही तुमच्या रेडिएशन ऑन्कोलॉजिस्टला भेटता आणि निदान, उपचाराचे उद्दिष्ट व काय अपेक्षित आहे यावर चर्चा करता. तुमचे अहवाल आणि प्रश्न सोबत आणा."),
+            ("प्लॅनिंग स्कॅन (सिम्युलेशन)", "उपचाराच्या स्थितीत झोपवून स्कॅन केला जातो, साधारणपणे सीटी स्कॅन. तुमची टीम खास मास्क किंवा उशी तयार करू शकते आणि त्वचेवर खुणा करू शकते, जेणेकरून दररोज तुमची स्थिती सारखीच राहील."),
+            ("उपचार नियोजन", "तुमचे डॉक्टर आणि फिजिसिस्ट असा आराखडा तयार करतात जो उपचाराच्या भागावर लक्ष केंद्रित करतो आणि आसपासच्या निरोगी ऊतींना कमी डोस देतो. यासाठी साधारणपणे काही दिवस लागतात."),
+            ("गुणवत्ता तपासणी", "पहिल्या सत्रापूर्वी आराखड्याची काळजीपूर्वक तपासणी केली जाते. तुमची टीम इमेजिंगद्वारे तुमची स्थिती निश्चित करू शकते."),
+            ("दैनंदिन उपचार सत्रे", "सत्रे साधारणपणे लहान आणि वेदनारहित असतात. मशीन रेडिएशन देत असताना तुम्ही स्थिर झोपता आणि टीम खोलीबाहेरून तुमच्यावर लक्ष ठेवते."),
+            ("नियमित तपासणी", "उपचारादरम्यान दुष्परिणामांचा आढावा घेण्यासाठी आणि तुमच्या प्रश्नांची उत्तरे देण्यासाठी तुम्हाला नियमितपणे तपासले जाईल."),
+            ("पाठपुरावा", "उपचार संपल्यानंतर, पाठपुरावा भेटींमध्ये तुमची रिकव्हरी आणि उशिरा दिसणारे परिणाम तपासले जातात."),
+        ],
+        "info_title": "उपचार माहिती",
+        "info_cards": [
+            ("📋", "उपचारापूर्वी", "रेडिएशन थेरपी सुरू करण्यापूर्वी काय अपेक्षित आहे हे जाणून घ्या, यात सामान्य तयारी आणि उपचार-नियोजनाची माहिती समाविष्ट आहे."),
+            ("🩺", "उपचारादरम्यान", "रेडिएशन उपचार सत्रादरम्यान साधारणपणे काय होते आणि रुग्णांना काय अनुभव येऊ शकतो हे समजून घ्या."),
+            ("✅", "उपचारानंतर", "उपचारानंतरच्या सामान्य बाबी, सामान्य स्वतःची काळजी आणि व्यावसायिक सल्ला कधी घ्यावा याबद्दल जाणून घ्या."),
+            ("☎️", "तुमच्या आरोग्य टीमशी केव्हा संपर्क साधावा", "उपचाराशी संबंधित लक्षणे किंवा चिंता तुमच्या आरोग्य टीमशी केव्हा चर्चा कराव्यात हे समजून घ्या."),
+        ],
+        "effects_sub": "दुष्परिणाम उपचार केलेला भाग, डोस आणि व्यक्ती यावर अवलंबून असतात. प्रत्येकाला सर्व दुष्परिणाम होतातच असे नाही.",
+        "effects_cards": [
+            ("🧴", "त्वचेतील बदल", ["उपचार केलेल्या भागात लालसरपणा, कोरडेपणा, खाज किंवा त्वचा काळवंडणे सामान्य आहे.", "हळुवारपणे धुवा, टिपून कोरडे करा आणि सैल, मऊ कपडे घाला.", "त्या भागाचे उन्हापासून संरक्षण करा आणि घासणे टाळा.", "फक्त तुमच्या टीमने मान्य केलेलीच क्रीम वापरा."]),
+            ("😴", "थकवा", ["उपचारादरम्यान थकवा हळूहळू वाढत जातो.", "गरज असेल तेव्हा विश्रांती घ्या आणि महत्त्वाची कामे चांगल्या वेळेसाठी ठेवा.", "तुमच्या टीमची संमती असल्यास हलकी हालचाल, जसे की थोडे चालणे, मदत करू शकते.", "उपचारानंतर काही आठवडे थकवा राहू शकतो."]),
+            ("🍽️", "भूक आणि मळमळ", ["हे कोणत्या भागावर उपचार होत आहेत यावर अवलंबून असते.", "थोडे थोडे आणि वारंवार खा.", "दिवसभर द्रवपदार्थ घेत राहा.", "वजन कमी होत असल्यास किंवा खाता येत नसल्यास तुमच्या टीमला सांगा."]),
+            ("💇", "केस गळणे", ["केस सहसा फक्त उपचार केलेल्या भागातच गळतात.", "डोसनुसार केस पुन्हा उगवू शकतात किंवा नाही.", "तुमच्या उपचार भागासाठी काय अपेक्षित आहे ते टीमला विचारा."]),
+            ("👄", "तोंड आणि घशात वेदना", ["डोके व मान यांच्या उपचारात हे अधिक संभवते.", "सल्ल्यानुसार तोंडाची चांगली काळजी घेत राहा.", "मऊ, सौम्य अन्न गिळायला सहसा सोपे असते.", "तंबाखू आणि मद्य टाळा."]),
+            ("💬", "इतर परिणाम", "इतर परिणाम तुमच्यावर कुठे उपचार होत आहेत यावर अवलंबून असतात. तुमची टीम तुम्हाला लागू होणारे परिणाम आणि ते कसे हाताळायचे ते सांगेल."),
+        ],
+        "safety_sub": "उपचारादरम्यान तुम्हाला साथ देणाऱ्या सामान्य सवयी.",
+        "safety_cards": [
+            ("☢️", "रेडिएशन सुरक्षा", ["बाह्य बीम रेडिएशनमुळे तुम्ही किरणोत्सारी होत नाही.", "तुमच्या विशिष्ट उपचारासाठी, जसे की ब्रॅकीथेरपी, काही खबरदारी लागू असल्यास टीमला विचारा."]),
+            ("📅", "प्रत्येक सत्राला उपस्थित राहा", ["सत्रे चुकल्यास उपचार किती प्रभावी ठरतो यावर परिणाम होऊ शकतो.", "तुम्ही येऊ शकत नसाल तर टीमला सांगा, म्हणजे ते तुम्हाला सल्ला देऊ शकतील."]),
+            ("🥗", "नीट खा आणि प्या", ["नियमित, संतुलित आहार घेण्याचा प्रयत्न करा.", "सांगितले नसल्यास पुरेसे पाणी प्या.", "खाणे कठीण होत असल्यास आहारतज्ज्ञांकडे पाठवण्यास सांगा."]),
+            ("🚭", "तंबाखू आणि मद्य टाळा", ["यामुळे दुष्परिणाम वाढू शकतात आणि रिकव्हरीवर परिणाम होऊ शकतो.", "सोडायचे असल्यास तुमच्या टीमकडे मदत मागा."]),
+            ("🧴", "त्वचेची काळजी घ्या", ["उपचार केलेला भाग स्वच्छ आणि कोरडा ठेवा.", "त्या भागावर हीट पॅड, आइस पॅक, घट्ट कपडे आणि ऊन टाळा.", "सांगितल्याशिवाय त्वचेवरील खुणा पुसू नका."]),
+            ("💊", "औषधे", "तुमचे डॉक्टर सांगत नाहीत तोपर्यंत नेहमीची औषधे घेत राहा. सप्लिमेंट किंवा हर्बल उपाय सुरू करण्यापूर्वी तुमच्या टीमला विचारा."),
+        ],
+        "support_sub": "तुमच्या मनाची आणि शरीराची काळजी घेणे उपचारांइतकेच महत्त्वाचे आहे.",
+        "support_cards": [
+            ("💭", "तुमच्या भावना", ["चिंता, उदासी किंवा दडपण वाटणे सामान्य आहे.", "विश्वासू व्यक्तीशी बोलल्याने मदत होऊ शकते.", "या भावना सांभाळणे कठीण झाल्यास तुमच्या टीमला सांगा."]),
+            ("👨‍👩‍👧", "कुटुंब आणि मित्र", ["जेवण, ये-जा आणि छोट्या कामांसाठी लोकांची मदत घ्या.", "शक्य असल्यास कोणाला तरी भेटींसाठी सोबत घ्या."]),
+            ("🛌", "झोप आणि विश्रांती", ["झोपेची नियमित सवय ठेवा.", "दिवसा थोडी विश्रांती घेतल्यास थकव्यात मदत होऊ शकते.", "झोपेच्या समस्या कायम राहिल्यास तुमच्या टीमला सांगा."]),
+            ("🚶", "हलकी हालचाल", ["हलकी हालचाल मनःस्थिती आणि ऊर्जा वाढवू शकते.", "तुमच्यासाठी काय योग्य आहे ते टीमला विचारा."]),
+            ("🤝", "सहाय्य सेवांबद्दल विचारा", ["अनेक रुग्णालयांमध्ये समुपदेशक, समाजसेवक आणि आहारतज्ज्ञ असतात.", "रुग्ण सहाय्य गट तुम्हाला तुमची परिस्थिती समजणाऱ्या लोकांशी जोडू शकतात."]),
+            ("🧘", "शांत करणाऱ्या सवयी", ["श्वासाचे व्यायाम, संगीत किंवा प्रार्थना तुम्हाला आराम देऊ शकतात.", "तुम्हाला जे योग्य वाटेल तेच निवडा."]),
+        ],
+        "after_sub": "रेडिएशन सत्रे पूर्ण झाल्यानंतर काय अपेक्षित आहे.",
+        "after_cards": [
+            ("📅", "पाठपुरावा भेटी", ["तुमची टीम नियमित तपासण्या ठरवेल.", "कोणतीही लक्षणे किंवा चिंतांची यादी सोबत आणा."]),
+            ("⏳", "दुष्परिणाम सुरू राहू शकतात", ["शेवटच्या सत्रानंतरही काही दुष्परिणाम थोडा वेळ सुरू राहू शकतात किंवा वाढूही शकतात.", "बहुतेक पुढील काही आठवड्यांत सुधारतात."]),
+            ("🧴", "त्वचेची रिकव्हरी", ["तुमची टीम सांगेपर्यंत त्वचेची हळुवार काळजी सुरू ठेवा.", "त्या भागाचे उन्हापासून संरक्षण करत राहा."]),
+            ("🔋", "ऊर्जा परत मिळवणे", ["थकवा अनेक आठवडे राहू शकतो.", "हालचाल हळूहळू वाढवा."]),
+            ("🔔", "उशिरा दिसणारे परिणाम", ["उपचार भागानुसार काही परिणाम महिन्यांनी किंवा वर्षांनी दिसू शकतात.", "कोणत्यावर लक्ष ठेवायचे ते टीमला विचारा."]),
+            ("💙", "भावनिक रिकव्हरी", ["उपचार संपल्यावर भावना उफाळून येऊ शकतात.", "सहाय्य सेवा तुमच्यासाठी अजूनही उपलब्ध आहेत."]),
+        ],
+        "contact_title": "☎️ खालील लक्षणे असल्यास तुमच्या आरोग्य टीमशी त्वरित संपर्क साधा",
+        "contact_items": [
+            "ताप किंवा थंडी वाजणे", "तीव्र किंवा वाढत जाणाऱ्या वेदना",
+            "उपचार केलेल्या भागातील त्वचेवर फोड येणे, सोलणे किंवा फाटणे",
+            "गिळण्यास त्रास, किंवा खाण्यापिण्यात अडचण",
+            "उलट्या किंवा जुलाब जे थांबत नाहीत",
+            "कोणताही रक्तस्राव, किंवा तुम्हाला काळजी वाटेल असे कोणतेही लक्षण",
+        ],
+        "contact_emergency": "श्वास घेण्यास त्रास, छातीत दुखणे, जास्त रक्तस्राव, बेशुद्ध पडणे किंवा झटके आल्यास तात्काळ स्थानिक आपत्कालीन सेवांना कॉल करा.",
+    },
+}
+
+
+# ============================================================
+# SESSION STATE
+# ============================================================
 
 if "language" not in st.session_state:
     st.session_state.language = "en"
@@ -352,12 +653,16 @@ if "page" not in st.session_state:
     st.session_state.page = "chat"
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": DEFAULT_GREETING}]
+    st.session_state.messages = [
+        {"role": "assistant", "content": UI_STRINGS[st.session_state.language]["greeting"]}
+    ]
 
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
 
 T = UI_STRINGS[st.session_state.language]
+U = UI_EXTRA[st.session_state.language]
+C = PAGE_TEXT[st.session_state.language]
 
 
 def go(page):
@@ -410,14 +715,14 @@ STAGE_NAMES = {
 
 with st.sidebar:
     st.markdown(
-        """<div class="sb-brand"><div class="sb-logo">🎗️</div><div>
+        f"""<div class="sb-brand"><div class="sb-logo">🎗️</div><div>
 <div class="sb-title">Radiation Oncology AI</div>
-<div class="sb-sub">Your Patient Education Assistant</div></div></div>""",
+<div class="sb-sub">{U["brand_sub"]}</div></div></div>""",
         unsafe_allow_html=True,
     )
 
     selected_language = st.selectbox(
-        "🌐 Language",
+        U["lang_label"],
         options=["en", "hi", "mr"],
         format_func=lambda x: LANGUAGES[x],
         index=["en", "hi", "mr"].index(st.session_state.language),
@@ -425,24 +730,27 @@ with st.sidebar:
 
     if selected_language != st.session_state.language:
         st.session_state.language = selected_language
+        # Keep the opening greeting in the newly selected language
+        if st.session_state.messages:
+            st.session_state.messages[0]["content"] = UI_STRINGS[selected_language]["greeting"]
         st.rerun()
 
-    if st.button("🗑️ Clear Chat", use_container_width=True):
-        st.session_state.messages = [{"role": "assistant", "content": DEFAULT_GREETING}]
+    if st.button(U["clear_chat"], use_container_width=True):
+        st.session_state.messages = [{"role": "assistant", "content": T["greeting"]}]
         st.session_state.feedback_given = {}
         st.rerun()
 
     st.markdown(
-        """<div class="sb-section-title">Safety &amp; Trust</div>
-<div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">Medical safety guardrails</span><span class="sb-pill-on">ON</span></div>
-<div class="sb-pill"><span class="sb-pill-icon">🛡️</span><span class="sb-pill-text">Prompt-injection protection</span><span class="sb-pill-on">ON</span></div>
-<div class="sb-pill"><span class="sb-pill-icon">📚</span><span class="sb-pill-text">Source-grounded responses</span><span class="sb-pill-on">ON</span></div>""",
+        f"""<div class="sb-section-title">{U["safety_trust"]}</div>
+<div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">{U["pill1"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
+<div class="sb-pill"><span class="sb-pill-icon">🛡️</span><span class="sb-pill-text">{U["pill2"]}</span><span class="sb-pill-on">{U["on"]}</span></div>
+<div class="sb-pill"><span class="sb-pill-icon">📚</span><span class="sb-pill-text">{U["pill3"]}</span><span class="sb-pill-on">{U["on"]}</span></div>""",
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        """<div class="credit-card"><div class="credit-item"><div class="credit-avatar">NC</div><div>
-<div class="credit-role">AI Assistant Developed by</div>
+        f"""<div class="credit-card"><div class="credit-item"><div class="credit-avatar">NC</div><div>
+<div class="credit-role">{U["dev_by"]}</div>
 <div class="credit-name">Nikita Chougule</div></div></div></div>""",
         unsafe_allow_html=True,
     )
@@ -804,7 +1112,7 @@ def get_response(prompt):
 
     result = search_knowledge(prompt, st.session_state.language)
     if result:
-        return f"**Answer**\n\n{result.get('answer', '')}\n\n", result
+        return f"{U['answer']}\n\n{result.get('answer', '')}\n\n", result
 
     return T["unknown"], None
 
@@ -817,12 +1125,15 @@ def display_source(source):
     if not source:
         return
 
+    stage = source.get("stage", "Radiation Oncology")
+    stage = U["stages"].get(stage, stage)
+
     with st.container(border=True):
-        st.markdown("**📚 Source**")
-        st.write("Curated Radiation Oncology Knowledge Base")
-        st.write(f"**Category:** {source.get('stage', 'Radiation Oncology')}")
+        st.markdown(f"**{U['source']}**")
+        st.write(U["source_kb"])
+        st.write(f"**{U['category']}:** {stage}")
         if source.get("question"):
-            st.write(f"**Matched FAQ:** {source['question']}")
+            st.write(f"**{U['matched']}:** {source['question']}")
 
 
 def save_feedback(question, answer, feedback):
@@ -851,7 +1162,7 @@ def feedback_buttons(message_index, question, answer):
 
     already_given = st.session_state.feedback_given.get(message_index)
     if already_given:
-        st.caption("👍 Thanks for your feedback!" if already_given == "up" else "👎 Thanks for your feedback!")
+        st.caption(U["thanks_up"] if already_given == "up" else U["thanks_down"])
         return
 
     col1, col2, _ = st.columns([1, 1, 10])
@@ -872,15 +1183,15 @@ def feedback_buttons(message_index, question, answer):
 # ============================================================
 
 NAV_ITEMS = [
-    ("chat", "💬", "Chat Assistant"),
-    ("journey", "🧭", "Treatment Journey"),
-    ("info", "📖", "Treatment Info"),
-    ("effects", "⚠️", "Side Effects"),
-    ("safety", "🛡️", "Safety & Self-Care"),
-    ("video", "▶️", "Video Guide"),
-    ("faq", "❓", "FAQ"),
-    ("support", "💙", "Support & Wellness"),
-    ("after", "🌿", "After Treatment Care"),
+    ("chat", "💬"),
+    ("journey", "🧭"),
+    ("info", "📖"),
+    ("effects", "⚠️"),
+    ("safety", "🛡️"),
+    ("video", "▶️"),
+    ("faq", "❓"),
+    ("support", "💙"),
+    ("after", "🌿"),
 ]
 
 
@@ -888,10 +1199,10 @@ def render_nav():
     with st.container(key="navrow"):
         cols = st.columns(len(NAV_ITEMS))
 
-        for col, (key, icon, text) in zip(cols, NAV_ITEMS):
+        for col, (key, icon) in zip(cols, NAV_ITEMS):
             with col:
                 st.button(
-                    f"{icon}  \n{text}",
+                    f"{icon}  \n{U['nav'][key]}",
                     key=f"nav_{key}",
                     type="primary" if st.session_state.page == key else "secondary",
                     use_container_width=True,
@@ -926,15 +1237,10 @@ def info_cards(items, columns=2):
 
 
 def contact_team_box():
+    items = "".join(f"<li>{i}</li>" for i in C["contact_items"])
     st.markdown(
-        """<div class="warn-box"><h4>☎️ Contact your healthcare team promptly if you have</h4><ul>
-<li>Fever or chills</li>
-<li>Severe or worsening pain</li>
-<li>Skin that blisters, peels or breaks open in the treated area</li>
-<li>Difficulty swallowing, or trouble eating or drinking</li>
-<li>Vomiting or diarrhoea that does not settle</li>
-<li>Any bleeding, or any symptom that worries you</li>
-</ul><p><b>For breathing difficulty, chest pain, heavy bleeding, fainting or seizures, call local emergency services immediately.</b></p></div>""",
+        f'<div class="warn-box"><h4>{C["contact_title"]}</h4><ul>{items}</ul>'
+        f'<p><b>{C["contact_emergency"]}</b></p></div>',
         unsafe_allow_html=True,
     )
 
@@ -947,16 +1253,16 @@ def page_chat():
     # ---- Hero ----
     st.markdown(
         f"""<div class="hero">
-<div class="badge"><span class="dot"></span>AI Assistant Online</div>
-<h1>🎗️ Radiation Oncology AI Assistant</h1>
+<div class="badge"><span class="dot"></span>{U["badge"]}</div>
+<h1>{U["hero_title"]}</h1>
 <p>{T["hero_sub"]}</p>
 </div>""",
         unsafe_allow_html=True,
     )
 
-    # ---- Try asking: question box first, then conversation ----
+    # ---- Question box first, then conversation ----
     with st.container(border=True):
-        st.markdown('<div class="panel-title">✨ Try asking</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="panel-title">{U["ask_title"]}</div>', unsafe_allow_html=True)
 
         typed = st.chat_input(T["placeholder"])
         prompt = typed or st.session_state.pop("pending_prompt", None)
@@ -984,23 +1290,11 @@ def page_chat():
                     if previous["role"] == "user":
                         feedback_buttons(index, previous["content"], message["content"])
 
-    st.write("")
-
 
 def page_journey():
-    page_header("🧭", "Treatment Journey", "A general, step-by-step look at radiation therapy. Your own plan may differ.")
+    page_header("🧭", U["nav"]["journey"], C["journey_sub"])
 
-    steps = [
-        ("Consultation", "You meet your radiation oncologist to discuss your diagnosis, the goal of treatment and what to expect. Bring your reports and questions."),
-        ("Planning scan (simulation)", "A scan, usually a CT, is done in the treatment position. Your team may make a custom mask or cushion and mark your skin so you are positioned the same way each day."),
-        ("Treatment planning", "Your doctor and physicist design a plan that targets the treatment area while limiting dose to nearby healthy tissue. This usually takes several days."),
-        ("Quality checks", "The plan is checked carefully before your first session. Your team may confirm your position with imaging."),
-        ("Daily treatment sessions", "Sessions are usually short and painless. You lie still while the machine delivers radiation, and the team watches you from outside the room."),
-        ("Regular check-ins", "You will be seen regularly during treatment to review side effects and answer questions."),
-        ("Follow-up", "After treatment finishes, follow-up visits track your recovery and any late effects."),
-    ]
-
-    for i, (title, desc) in enumerate(steps, start=1):
+    for i, (title, desc) in enumerate(C["journey_steps"], start=1):
         st.markdown(
             f'<div class="glass-card step"><div class="step-num">{i}</div>'
             f'<div><h4>{title}</h4><p>{desc}</p></div></div>',
@@ -1009,54 +1303,25 @@ def page_journey():
 
 
 def page_info():
-    st.markdown("### Treatment Information")
-    info_cards(
-        [
-            ("📋", "Before Treatment", "Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information."),
-            ("🩺", "During Treatment", "Understand what typically happens during a radiation treatment session and what patients may experience."),
-            ("✅", "After Treatment", "Learn about common post-treatment considerations, general self-care, and when to seek professional guidance."),
-            ("☎️", "When to Contact Your Healthcare Team", "Understand when treatment-related symptoms or concerns should be discussed with your healthcare team."),
-        ]
-    )
+    st.markdown(f"### {C['info_title']}")
+    info_cards(C["info_cards"])
 
 
 def page_effects():
-    page_header("⚠️", "Side Effects & Self-Care", "Side effects depend on the area treated, the dose and the person. Not everyone has all of them.")
-
-    info_cards(
-        [
-            ("🧴", "Skin changes", ["Redness, dryness, itching or darkening in the treated area are common.", "Wash gently, pat dry, and wear loose soft clothing.", "Protect the area from sun and avoid scrubbing.", "Use only creams your team has approved."]),
-            ("😴", "Tiredness (fatigue)", ["Fatigue often builds up gradually during treatment.", "Rest when you need to and plan important tasks for better hours.", "Gentle activity, such as short walks, can help if your team agrees.", "Fatigue may last for some weeks after treatment."]),
-            ("🍽️", "Appetite and nausea", ["Depends on the area being treated.", "Try small, frequent meals.", "Sip fluids through the day.", "Tell your team if you are losing weight or cannot eat."]),
-            ("💇", "Hair loss", ["Hair loss usually happens only in the treated area.", "It may or may not grow back, depending on the dose.", "Ask your team what to expect for your treatment area."]),
-            ("👄", "Mouth and throat soreness", ["More likely with treatment to the head and neck.", "Keep up good mouth care as advised.", "Soft, bland foods are often easier to swallow.", "Avoid tobacco and alcohol."]),
-            ("💬", "Other effects", "Other effects depend on where you are treated. Your team will explain the ones that apply to you and how to manage them.")
-        ]
-    )
-
+    page_header("⚠️", U["nav"]["effects"], C["effects_sub"])
+    info_cards(C["effects_cards"])
     contact_team_box()
 
 
 def page_safety():
-    page_header("🛡️", "Safety & Self-Care", "General habits that support you during treatment.")
-
-    info_cards(
-        [
-            ("☢️", "Radiation safety", ["With external beam radiation, you do not become radioactive.", "Ask your team if any precautions apply to your specific treatment, such as brachytherapy."]),
-            ("📅", "Attend every session", ["Missing sessions can affect how well treatment works.", "If you cannot attend, tell your team so they can advise you."]),
-            ("🥗", "Eat and drink well", ["Aim for regular, balanced meals.", "Stay hydrated unless told otherwise.", "Ask for a dietitian referral if eating is difficult."]),
-            ("🚭", "Avoid tobacco and alcohol", ["They can worsen side effects and affect recovery.", "Ask your team for support if you want to quit."]),
-            ("🧴", "Look after your skin", ["Keep the treated area clean and dry.", "Avoid heat pads, ice packs, tight clothing and sun on the area.", "Do not remove skin markings unless told to."]),
-            ("💊", "Medicines", "Keep taking your usual medicines unless your doctor tells you otherwise. Check with your team before starting supplements or herbal remedies."),
-        ]
-    )
-
+    page_header("🛡️", U["nav"]["safety"], C["safety_sub"])
+    info_cards(C["safety_cards"])
     contact_team_box()
 
 
 def page_video():
-    st.markdown("### 🎥 Radiation Therapy: General Guide")
-    st.caption("An educational video explaining the radiation treatment process.")
+    st.markdown(f"### {U['video_title']}")
+    st.caption(U["video_caption"])
 
     video_file = None
     if VIDEO_DIR.exists():
@@ -1069,13 +1334,13 @@ def page_video():
     if video_file:
         st.video(str(video_file))
     else:
-        st.info("No generic educational video found in the assets folder.")
+        st.info(U["no_video"])
 
 
 def page_faq():
     st.markdown(f"### {T['faq_header']}")
 
-    search_text = st.text_input(T["faq_search"], placeholder="Example: side effects, pain, skin...")
+    search_text = st.text_input(T["faq_search"], placeholder=U["faq_placeholder"])
     s = search_text.lower().strip()
 
     # Group FAQs by stage, in a fixed order
@@ -1094,9 +1359,9 @@ def page_faq():
         return
 
     labels = {
-        "FAQS_BEFORE": "Before Treatment",
-        "FAQS_DURING": "During Treatment",
-        "FAQS_AFTER": "After Treatment",
+        "FAQS_BEFORE": U["stages"]["Before Treatment"],
+        "FAQS_DURING": U["stages"]["During Treatment"],
+        "FAQS_AFTER": U["stages"]["After Treatment"],
     }
 
     tabs = st.tabs([f"{labels[k]} ({len(v)})" for k, v in grouped.items()])
@@ -1112,34 +1377,13 @@ def page_faq():
 
 
 def page_support():
-    page_header("💙", "Support & Wellness", "Looking after your mind and body matters as much as the treatment itself.")
-
-    info_cards(
-        [
-            ("💭", "Your feelings", ["It is normal to feel anxious, low or overwhelmed.", "Talking to someone you trust can help.", "Tell your team if these feelings are hard to cope with."]),
-            ("👨‍👩‍👧", "Family and friends", ["Let people help with meals, lifts and errands.", "Bring someone to appointments if you can."]),
-            ("🛌", "Sleep and rest", ["Keep a regular sleep routine.", "Short daytime rests can help with fatigue.", "Tell your team if sleep problems continue."]),
-            ("🚶", "Gentle activity", ["Light movement can lift mood and energy.", "Check with your team about what is right for you."]),
-            ("🤝", "Ask about support services", ["Many hospitals have counsellors, social workers and dietitians.", "Patient support groups can connect you with others who understand."]),
-            ("🧘", "Calming habits", ["Breathing exercises, music or prayer may help you relax.", "Choose what feels right for you."]),
-        ]
-    )
+    page_header("💙", U["nav"]["support"], C["support_sub"])
+    info_cards(C["support_cards"])
 
 
 def page_after():
-    page_header("🌿", "After Treatment", "What to expect once your radiation sessions are complete.")
-
-    info_cards(
-        [
-            ("📅", "Follow-up visits", ["Your team will schedule regular check-ups.", "Bring a list of any symptoms or concerns."]),
-            ("⏳", "Side effects may continue", ["Some side effects can continue or even peak for a short time after the last session.", "Most improve over the following weeks."]),
-            ("🧴", "Skin recovery", ["Continue gentle skin care until your team says otherwise.", "Keep protecting the area from sun."]),
-            ("🔋", "Getting your energy back", ["Fatigue can last for weeks.", "Build activity up gradually."]),
-            ("🔔", "Late effects", ["Some effects appear months or years later, depending on the treated area.", "Ask your team which to watch for."]),
-            ("💙", "Emotional recovery", ["Feelings can surface once treatment ends.", "Support services are still available to you."]),
-        ]
-    )
-
+    page_header("🌿", U["nav"]["after"], C["after_sub"])
+    info_cards(C["after_cards"])
     contact_team_box()
 
 
@@ -1164,6 +1408,6 @@ PAGES = {
 PAGES.get(st.session_state.page, page_chat)()
 
 st.markdown(
-    """<div class="footer-note">💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.</div>""",
+    f'''<div class="footer-note">{U["disclaimer"]}</div>''',
     unsafe_allow_html=True,
 )
