@@ -872,11 +872,8 @@ NAV_MAIN = [
 
 NAV_MORE = [
     ("faq", "❓ FAQs"),
-    ("doctor", "📋 Questions for My Doctor"),
-    ("glossary", "📘 Glossary"),
     ("support", "💙 Support & Wellness"),
     ("after", "🌿 After Treatment"),
-    ("resources", "🔗 Trusted Resources"),
 ]
 
 
@@ -906,16 +903,6 @@ def render_nav():
                 )
 
     st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
-
-
-def feature_card(icon, tone, title, desc, target):
-    with st.container(border=True):
-        st.markdown(
-            f'<div class="fcard"><div class="ficon {tone}">{icon}</div>'
-            f'<div><div class="ftitle">{title}</div><div class="fdesc">{desc}</div></div></div>',
-            unsafe_allow_html=True,
-        )
-        st.button("→", key=f"open_{target}", on_click=go, args=(target,), use_container_width=True)
 
 
 def page_header(icon, title, subtitle):
@@ -966,7 +953,6 @@ def page_chat():
 <div class="badge"><span class="dot"></span>AI Assistant Online</div>
 <h1>🎗️ Radiation Oncology AI Assistant</h1>
 <p>{T["hero_sub"]}</p>
-<p class="hero-sub2">{T["hero_sub2"]}</p>
 </div>""",
         unsafe_allow_html=True,
     )
@@ -1010,11 +996,9 @@ def page_chat():
             ("📍 Treatment Journey", "journey"),
             ("❤️ Side Effects", "effects"),
             ("🛡️ Safety Guide", "safety"),
-            ("📘 Glossary", "glossary"),
             ("💚 Support & Wellness", "support"),
-            ("🔗 Trusted Resources", "resources"),
         ]
-        cols = st.columns(6)
+        cols = st.columns(4)
         for col, (label, target) in zip(cols, quick):
             with col:
                 st.button(label, key=f"quick_{target}", on_click=go, args=(target,), use_container_width=True)
@@ -1134,89 +1118,6 @@ def page_faq():
             st.markdown(answer)
 
 
-def page_doctor():
-    page_header("📋", "Questions for My Doctor", "Tick the questions you want to ask, and take this list to your appointment.")
-
-    groups = {
-        "About my treatment": [
-            "What is the goal of my radiation treatment?",
-            "What type of radiation will I receive?",
-            "How many sessions will I need, and how long is each one?",
-            "Will I also have other treatments, such as surgery or chemotherapy?",
-        ],
-        "About side effects": [
-            "Which side effects should I expect for my treatment area?",
-            "What can I do to prevent or ease them?",
-            "Which symptoms mean I should call you straight away?",
-            "Who can I contact after hours?",
-        ],
-        "About daily life": [
-            "Can I keep working and doing my usual activities?",
-            "Do I need to change my diet?",
-            "Which skin products can I use?",
-            "Are there any medicines or supplements I should avoid?",
-        ],
-        "About afterwards": [
-            "What follow-up visits will I need?",
-            "What late effects should I watch for?",
-            "When can I expect to feel back to normal?",
-        ],
-    }
-
-    selected = []
-    cols = st.columns(2)
-    for i, (group, questions) in enumerate(groups.items()):
-        with cols[i % 2]:
-            with st.container(border=True):
-                st.markdown(f"**{group}**")
-                for j, q in enumerate(questions):
-                    if st.checkbox(q, key=f"dq_{i}_{j}"):
-                        selected.append(q)
-
-    custom = st.text_area("✏️ Add your own questions or notes", key="dq_custom")
-
-    if selected or custom.strip():
-        export = "My questions for my doctor\n\n" + "\n".join(f"- {q}" for q in selected)
-        if custom.strip():
-            export += f"\n\nMy notes:\n{custom.strip()}"
-        st.download_button("⬇️ Download my list", export, file_name="questions_for_my_doctor.txt")
-
-
-def page_glossary():
-    page_header("📘", "Radiation Oncology Glossary", "Common medical terms in simple language.")
-
-    terms = {
-        "Radiation therapy": "Treatment that uses high-energy radiation to destroy cancer cells or stop them growing.",
-        "Radiation oncologist": "A doctor who specialises in treating cancer with radiation.",
-        "Simulation": "A planning session where scans are taken with you in your treatment position.",
-        "Fraction": "A single radiation treatment session. Treatment is often split into many fractions.",
-        "Dose (Gray, Gy)": "The amount of radiation delivered. The Gray is the unit used to measure it.",
-        "Linear accelerator (linac)": "The machine that delivers external beam radiation.",
-        "IMRT": "Intensity-modulated radiation therapy. A technique that shapes the radiation beams to fit the treatment area closely.",
-        "IGRT": "Image-guided radiation therapy. Imaging is used to confirm your position before or during treatment.",
-        "Brachytherapy": "Radiation delivered from a source placed inside or very close to the area being treated.",
-        "Immobilisation device": "A mask, mould or cushion that helps you stay in the same position for every session.",
-        "Acute side effects": "Side effects that happen during treatment or soon after.",
-        "Late side effects": "Side effects that appear months or years after treatment.",
-    }
-
-    search = st.text_input("🔍 Search terms", key="gloss_search")
-    shown = {
-        k: v for k, v in terms.items()
-        if search.lower() in k.lower() or search.lower() in v.lower()
-    }
-
-    if not shown:
-        st.info("No matching terms found.")
-        return
-
-    for term, meaning in shown.items():
-        st.markdown(
-            f'<div class="glass-card"><h4>{term}</h4><p>{meaning}</p></div>',
-            unsafe_allow_html=True,
-        )
-
-
 def page_support():
     page_header("💙", "Support & Wellness", "Looking after your mind and body matters as much as the treatment itself.")
 
@@ -1249,25 +1150,6 @@ def page_after():
     contact_team_box()
 
 
-def page_resources():
-    page_header("🔗", "Trusted Resources", "Reliable sources for further reading. Ask your own hospital for locally relevant materials too.")
-
-    links = [
-        ("National Cancer Institute (NCI): Radiation Therapy", "https://www.cancer.gov/about-cancer/treatment/types/radiation-therapy"),
-        ("RTAnswers (ASTRO): patient information on radiation therapy", "https://www.rtanswers.org"),
-        ("American Cancer Society: Radiation Therapy", "https://www.cancer.org/cancer/managing-cancer/treatment-types/radiation.html"),
-        ("World Health Organization: Cancer", "https://www.who.int/health-topics/cancer"),
-        ("Tata Memorial Centre", "https://tmc.gov.in"),
-    ]
-
-    for label, url in links:
-        with st.container(border=True):
-            st.markdown(f"**{label}**")
-            st.link_button("Open site ↗", url)
-
-    st.caption("Links open external websites. Please confirm current addresses, as websites change.")
-
-
 # ============================================================
 # ROUTER
 # ============================================================
@@ -1282,11 +1164,8 @@ PAGES = {
     "safety": page_safety,
     "video": page_video,
     "faq": page_faq,
-    "doctor": page_doctor,
-    "glossary": page_glossary,
     "support": page_support,
     "after": page_after,
-    "resources": page_resources,
 }
 
 PAGES.get(st.session_state.page, page_chat)()
