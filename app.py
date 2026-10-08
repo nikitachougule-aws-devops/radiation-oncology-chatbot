@@ -31,7 +31,8 @@ st.markdown(
     html, body, [class*="css"] { font-family: 'Segoe UI', 'Inter', sans-serif; }
 
     .stApp { background: linear-gradient(180deg, #f6f9fd 0%, #eef4fa 100%); }
-    .block-container { padding-top: 1rem !important; max-width: 1400px; }
+    .block-container { padding-top: 4.2rem !important; max-width: 1400px; }
+    header[data-testid="stHeader"] { background: transparent; }
     .stApp .main p, .stApp .main li, .stApp .main span, .stApp .main label { color: #1f3350; }
 
     /* ---------------- SIDEBAR ---------------- */
@@ -959,17 +960,6 @@ def contact_team_box():
 # ============================================================
 
 def page_chat():
-    # ---- Process input first so history below is always up to date ----
-    typed = st.chat_input(T["placeholder"])
-    prompt = typed or st.session_state.pop("pending_prompt", None)
-
-    if prompt:
-        response, source = get_response(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.messages.append(
-            {"role": "assistant", "content": response, "source": source}
-        )
-
     # ---- Hero ----
     st.markdown(
         f"""<div class="hero">
@@ -992,20 +982,19 @@ def page_chat():
     with c4:
         feature_card("📘", "blue", "Radiation Oncology Glossary", "Understand medical terms in simple language", "glossary")
 
-    # ---- Try asking + conversation ----
+    # ---- Try asking: question box first, then conversation ----
     with st.container(border=True):
         st.markdown('<div class="panel-title">✨ Try asking</div>', unsafe_allow_html=True)
 
-        suggestions = [
-            "What is IMRT?",
-            "What should I expect during treatment?",
-            "How can I manage fatigue?",
-            "Is radiation therapy safe?",
-        ]
-        chip_cols = st.columns([1, 2, 1.7, 1.5, 3])
-        for i, text in enumerate(suggestions):
-            with chip_cols[i]:
-                st.button(text, key=f"chip_{i}", on_click=ask, args=(text,), use_container_width=True)
+        typed = st.chat_input(T["placeholder"])
+        prompt = typed or st.session_state.pop("pending_prompt", None)
+
+        if prompt:
+            response, source = get_response(prompt)
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.session_state.messages.append(
+                {"role": "assistant", "content": response, "source": source}
+            )
 
         st.write("")
 
@@ -1023,6 +1012,7 @@ def page_chat():
                     if previous["role"] == "user":
                         feedback_buttons(index, previous["content"], message["content"])
 
+        # The only disclaimer shown on the chat page
         st.caption(
             "💡 This assistant provides general patient education information from a curated "
             "Radiation Oncology knowledge base. It does not replace advice from a treating "
@@ -1319,8 +1309,9 @@ PAGES = {
 
 PAGES.get(st.session_state.page, page_chat)()
 
-st.markdown(
-    """<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
+if st.session_state.page != "chat":
+    st.markdown(
+        """<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
 It does not replace advice from a treating doctor or healthcare team.</div>""",
-    unsafe_allow_html=True,
-)
+        unsafe_allow_html=True,
+    )
