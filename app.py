@@ -95,9 +95,13 @@ st.markdown(
     [class*="st-key-nav_"] button {
         background: transparent !important; border: none !important; border-radius: 0 !important;
         border-bottom: 3px solid transparent !important; box-shadow: none !important;
-        color: #24425f !important; font-weight: 600; padding: .55rem .1rem;
+        color: #24425f !important; font-weight: 700; padding: .4rem .2rem;
+        min-height: 3.4rem; justify-content: center;
     }
-    [class*="st-key-nav_"] button p { color: #24425f !important; font-size: .78rem; white-space: nowrap; }
+    [class*="st-key-nav_"] button p {
+        color: #24425f !important; font-size: 1rem; line-height: 1.2;
+        text-align: center; white-space: normal;
+    }
     [class*="st-key-nav_"] button:hover { background: rgba(26,111,181,0.07) !important; }
     [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] {
         border-bottom: 3px solid #1a6fb5 !important;
@@ -876,8 +880,7 @@ NAV_ITEMS = [
 
 def render_nav():
     # One single row with all pages; column widths follow label length
-    widths = [max(len(label), 12) for _, label in NAV_ITEMS]
-    cols = st.columns(widths)
+    cols = st.columns(len(NAV_ITEMS))
 
     for col, (key, label) in zip(cols, NAV_ITEMS):
         with col:
