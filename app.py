@@ -93,22 +93,26 @@ st.markdown(
 
     /* ---------------- TOP NAV (tabs) ---------------- */
     [class*="st-key-nav_"] button {
-        background: transparent !important; border: none !important; border-radius: 0 !important;
-        border-bottom: 3px solid transparent !important; box-shadow: none !important;
-        color: #24425f !important; font-weight: 700; padding: .4rem .2rem;
-        min-height: 3.4rem; justify-content: center;
+        background: #ffffff !important; border: 1.5px solid #b9d0e8 !important; border-radius: 12px !important;
+        box-shadow: 0 2px 6px rgba(20,60,110,0.06) !important;
+        color: #24425f !important; font-weight: 700; padding: .4rem .3rem;
+        min-height: 3.4rem; justify-content: center; transition: all .15s ease;
     }
     [class*="st-key-nav_"] button p {
         color: #24425f !important; font-size: 1rem; line-height: 1.2;
         text-align: center; white-space: normal;
     }
-    [class*="st-key-nav_"] button:hover { background: rgba(26,111,181,0.07) !important; }
-    [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] {
-        border-bottom: 3px solid #1a6fb5 !important;
+    [class*="st-key-nav_"] button:hover {
+        background: #eaf3fc !important; border-color: #1a6fb5 !important;
     }
-    [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] p { color: #1a6fb5 !important; }
+    [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] {
+        background: linear-gradient(120deg, #0f55b8 0%, #1a72d4 100%) !important;
+        border-color: #0f55b8 !important;
+        box-shadow: 0 4px 12px rgba(15,85,184,0.30) !important;
+    }
+    [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] p { color: #ffffff !important; }
     div[data-testid="stPopover"] > button { background: #e8f0f9; border: none; border-radius: 10px; font-weight: 600; }
-    .nav-rule { border-bottom: 1px solid #d5e2ef; margin: -.5rem 0 1rem 0; }
+    .nav-rule { margin: 0 0 .6rem 0; }
 
     /* ---------------- HERO ---------------- */
     .hero {
