@@ -28,359 +28,165 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    html, body, [class*="css"] {
-        font-family: 'Segoe UI', sans-serif;
-    }
+    html, body, [class*="css"] { font-family: 'Segoe UI', 'Inter', sans-serif; }
 
-    .main {
-        background: linear-gradient(180deg, #f4f8fc 0%, #eaf1f8 100%);
-    }
+    .stApp { background: linear-gradient(180deg, #f6f9fd 0%, #eef4fa 100%); }
+    .block-container { padding-top: 1rem !important; max-width: 1400px; }
+    .stApp .main p, .stApp .main li, .stApp .main span, .stApp .main label { color: #1f3350; }
 
-    .hero {
-        background: linear-gradient(120deg, #0b3d66 0%, #1a6fb5 60%, #2f9bd6 100%);
-        padding: 1.3rem 2rem;
-        border-radius: 20px;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 10px 30px rgba(15, 76, 129, 0.20);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.5rem;
-        overflow: hidden;
-    }
-
-    .hero-text {
-        flex: 1 1 auto;
-        min-width: 260px;
-    }
-
-    .hero-photo {
-        flex: 0 0 auto;
-        width: 220px;
-        height: 150px;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 2px solid rgba(255,255,255,0.35);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    }
-
-    .hero-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .hero h1 {
-        color: white;
-        font-size: 2.1rem;
-        font-weight: 800;
-        margin: 0;
-    }
-
-    .hero p {
-        color: #d7e9f8;
-        font-size: 1.05rem;
-        margin-top: 0.5rem;
-    }
-
-    .badge {
-        display: inline-block;
-        background: rgba(255,255,255,0.15);
-        border: 1px solid rgba(255,255,255,0.4);
-        color: white;
-        padding: 0.25rem 0.8rem;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        margin-bottom: 0.8rem;
-    }
-
-    .glass-card {
-        background: rgba(255,255,255,0.80);
-        border: 1px solid #d9e5ef;
-        border-radius: 16px;
-        padding: 1.2rem;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    }
-
-    .glass-card h4 {
-        color: #0b3d66;
-        margin-bottom: 0.4rem;
-    }
-
-    .glass-card p {
-        color: #445;
-        font-size: 0.92rem;
-    }
-
-    .footer-note {
-        text-align: center;
-        color: #7a8ba0;
-        font-size: 0.8rem;
-        margin-top: 2rem;
-    }
-
-    /* ---------- SIDEBAR ---------- */
+    /* ---------------- SIDEBAR ---------------- */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d4a7a 0%, #0b3d66 45%, #071f36 100%);
+        background: linear-gradient(180deg, #0d4a9a 0%, #0a3a7c 45%, #072a5c 100%);
         border-right: 1px solid rgba(255,255,255,0.08);
     }
+    section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3, section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] label { color: #eaf1f8; }
 
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] span,
-    section[data-testid="stSidebar"] label {
-        color: #eaf1f8;
-    }
-
-    /* Selectbox: dark glass look with readable white text */
     section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
-        background: rgba(255,255,255,0.10) !important;
-        border: 1px solid rgba(255,255,255,0.25) !important;
-        border-radius: 12px !important;
-        color: #ffffff !important;
+        background: #ffffff !important; border-radius: 10px !important; border: 1px solid #cfe0f1 !important;
     }
-
-    section[data-testid="stSidebar"] div[data-baseweb="select"] * {
-        color: #ffffff !important;
-    }
-
-    section[data-testid="stSidebar"] div[data-baseweb="select"] svg {
-        fill: #ffffff !important;
-    }
-
+    section[data-testid="stSidebar"] div[data-baseweb="select"] * { color: #12365e !important; }
     section[data-testid="stSidebar"] div[data-testid="stSelectbox"] label p {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #9fc3e0 !important;
+        font-size: 0.78rem; letter-spacing: 0.06em; color: #cfe3f7 !important;
     }
 
-    /* Clear chat button */
     section[data-testid="stSidebar"] .stButton > button {
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.25);
-        border-radius: 12px;
-        color: #ffffff !important;
-        font-weight: 600;
-        transition: all 0.2s ease;
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 10px; color: #ffffff !important; font-weight: 600; transition: all .2s ease;
     }
-
-    section[data-testid="stSidebar"] .stButton > button p {
-        color: #ffffff !important;
-    }
-
+    section[data-testid="stSidebar"] .stButton > button p { color: #ffffff !important; }
     section[data-testid="stSidebar"] .stButton > button:hover {
-        background: rgba(47,155,214,0.30);
-        border-color: #2f9bd6;
-        transform: translateY(-1px);
+        background: rgba(47,155,214,0.30); border-color: #5fb8ec; transform: translateY(-1px);
     }
 
-    /* Brand header */
     .sb-brand {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.9rem;
-        border-radius: 16px;
-        background: linear-gradient(135deg, rgba(47,155,214,0.35) 0%, rgba(106,92,245,0.25) 100%);
-        border: 1px solid rgba(255,255,255,0.18);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-        margin-bottom: 0.9rem;
+        padding: 0.9rem 1rem; border-radius: 14px;
+        background: linear-gradient(135deg, rgba(47,155,214,0.35) 0%, rgba(30,80,200,0.35) 100%);
+        border: 1px solid rgba(255,255,255,0.18); margin-bottom: 0.9rem;
+        display: flex; align-items: center; gap: .75rem;
     }
+    .sb-logo { font-size: 2rem; line-height: 1; }
+    .sb-title { font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.15; }
+    .sb-sub { font-size: .8rem; color: #d7e9f8; margin-top: .15rem; }
 
-    .sb-logo {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
+    .sb-section-title { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+        color: #b9d4ee; margin: 1.1rem 0 .5rem .2rem; }
+    .sb-pill { display: flex; align-items: center; gap: .6rem; padding: .6rem .75rem; margin-bottom: .5rem;
+        border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.28);
+        font-size: .84rem; color: #eaf1f8; }
+    .sb-pill-icon { width: 1.3rem; text-align: center; }
+    .sb-pill-text { flex: 1; line-height: 1.2; }
+    .sb-pill-on { font-size: .62rem; font-weight: 800; letter-spacing: .06em; color: #fff;
+        background: #1fa971; padding: .15rem .55rem; border-radius: 999px; }
+
+    .credit-card { background: linear-gradient(135deg, rgba(47,155,214,0.30), rgba(106,92,245,0.25));
+        border: 1px solid rgba(255,255,255,0.22); border-radius: 14px; padding: .8rem .9rem; margin-top: 1rem; }
+    .credit-item { display: flex; align-items: center; gap: .7rem; }
+    .credit-avatar { min-width: 40px; width: 40px; height: 40px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; font-weight: 700; font-size: .85rem;
+        color: #fff !important; background: linear-gradient(135deg, #6a5cf5 0%, #2f9bd6 100%);
+        border: 2px solid rgba(255,255,255,0.4); }
+    .credit-role { font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; color: #cfe3f7 !important; }
+    .credit-name { font-size: .95rem; font-weight: 700; color: #fff !important; }
+
+    /* ---------------- TOP NAV (tabs) ---------------- */
+    [class*="st-key-nav_"] button {
+        background: transparent !important; border: none !important; border-radius: 0 !important;
+        border-bottom: 3px solid transparent !important; box-shadow: none !important;
+        color: #24425f !important; font-weight: 600; padding: .55rem .2rem;
     }
-
-    .sb-title {
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: #ffffff;
-        line-height: 1.2;
+    [class*="st-key-nav_"] button p { color: #24425f !important; font-size: .92rem; white-space: nowrap; }
+    [class*="st-key-nav_"] button:hover { background: rgba(26,111,181,0.07) !important; }
+    [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] {
+        border-bottom: 3px solid #1a6fb5 !important;
     }
+    [class*="st-key-nav_"] button[data-testid="stBaseButton-primary"] p { color: #1a6fb5 !important; }
+    div[data-testid="stPopover"] > button { background: #e8f0f9; border: none; border-radius: 10px; font-weight: 600; }
+    .nav-rule { border-bottom: 1px solid #d5e2ef; margin: -.5rem 0 1rem 0; }
 
-    .sb-status {
-        font-size: 0.72rem;
-        color: #b8e8d4;
-        margin-top: 0.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
+    /* ---------------- HERO ---------------- */
+    .hero {
+        position: relative; overflow: hidden;
+        background: linear-gradient(110deg, #0a3a8f 0%, #0f55b8 55%, #1a72d4 100%);
+        padding: 1.7rem 2rem; border-radius: 16px; margin-bottom: 1.1rem;
+        box-shadow: 0 10px 28px rgba(15,76,160,0.25);
     }
+    .hero::after { content: ""; position: absolute; right: -60px; top: -80px; width: 340px; height: 340px;
+        border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.16), rgba(255,255,255,0) 70%); }
+    .hero h1 { color: #fff !important; font-size: 2.4rem; font-weight: 800; margin: .3rem 0 .6rem 0; letter-spacing: -.01em; }
+    .hero p { color: #e4f0fb !important; font-size: 1rem; margin: .15rem 0; }
+    .hero p.hero-sub2 { font-size: .92rem; margin-top: .6rem; }
+    .badge { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.4); color: #fff !important; padding: .25rem .8rem;
+        border-radius: 999px; font-size: .78rem; }
+    .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #3be3a5; box-shadow: 0 0 8px #3be3a5; }
 
-    .sb-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #3be3a5;
-        box-shadow: 0 0 8px #3be3a5;
-        display: inline-block;
-        flex-shrink: 0;
+    /* ---------------- CARDS ---------------- */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background: #ffffff; border-radius: 14px !important; border-color: #dbe6f1 !important;
+        box-shadow: 0 2px 10px rgba(20,60,110,0.05);
     }
+    .fcard { display: flex; gap: .9rem; align-items: flex-start; }
+    .ficon { min-width: 52px; width: 52px; height: 52px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; font-size: 1.5rem; }
+    .ficon.green { background: #e4f5ee; } .ficon.pink { background: #fde8ee; }
+    .ficon.purple { background: #e9e8fb; } .ficon.blue { background: #e1ecfb; }
+    .ficon.orange { background: #fdeede; }
+    .ftitle { font-weight: 700; color: #0b2a4a; font-size: 1rem; margin-bottom: .2rem; }
+    .fdesc { color: #4d6279; font-size: .86rem; line-height: 1.35; }
 
-    /* Stat tiles */
-    .sb-stats {
-        display: flex;
-        gap: 0.6rem;
-        margin-bottom: 1rem;
-    }
+    [class*="st-key-open_"] button { border: none !important; background: transparent !important;
+        color: #1a6fb5 !important; justify-content: flex-end; padding: 0 .2rem; min-height: 1.6rem; }
+    [class*="st-key-open_"] button p { color: #1a6fb5 !important; font-weight: 700; font-size: 1rem; }
 
-    .sb-stat {
-        flex: 1;
-        text-align: center;
-        padding: 0.65rem 0.4rem;
-        border-radius: 14px;
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.14);
-    }
+    /* Try-asking panel */
+    .panel-title { font-weight: 700; color: #0b2a4a; font-size: 1rem; margin-bottom: .5rem; }
+    [class*="st-key-chip_"] button { border-radius: 999px !important; background: #fff !important;
+        border: 1px solid #bcd3ea !important; padding: .15rem .9rem; min-height: 2.1rem; }
+    [class*="st-key-chip_"] button p { color: #1a4f86 !important; font-size: .82rem; }
+    [class*="st-key-chip_"] button:hover { background: #e8f2fc !important; border-color: #1a6fb5 !important; }
 
-    .sb-stat-num {
-        font-size: 1.35rem;
-        font-weight: 800;
-        color: #ffffff;
-        line-height: 1.1;
-    }
+    /* Chat input */
+    div[data-testid="stChatInput"] { border-radius: 999px; border: 1px solid #bcd3ea; background: #fff; }
+    div[data-testid="stChatInput"] textarea { color: #1f3350 !important; }
 
-    .sb-stat-label {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #9fc3e0;
-        margin-top: 0.15rem;
-    }
+    /* Popular topics */
+    .sec-title { font-weight: 700; color: #0b2a4a; font-size: 1.05rem; margin-bottom: .6rem; }
+    [class*="st-key-topic_"] button { width: 100%; justify-content: space-between; background: transparent !important;
+        border: none !important; border-bottom: 1px solid #e3ecf5 !important; border-radius: 0 !important;
+        padding: .55rem .3rem; text-align: left; }
+    [class*="st-key-topic_"] button p { color: #1f3350 !important; font-size: .92rem; }
+    [class*="st-key-topic_"] button:hover { background: #f1f7fd !important; }
 
-    /* Safety section */
-    .sb-section-title {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #9fc3e0;
-        margin: 1.1rem 0 0.5rem 0.2rem;
-    }
+    /* Quick access tiles */
+    [class*="st-key-quick_"] button { height: 74px; background: #fff !important; border: 1px solid #dbe6f1 !important;
+        border-radius: 12px !important; }
+    [class*="st-key-quick_"] button p { color: #1f3350 !important; font-size: .82rem; font-weight: 600; }
+    [class*="st-key-quick_"] button:hover { border-color: #1a6fb5 !important; background: #f1f7fd !important; }
 
-    .sb-pill {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.55rem 0.75rem;
-        margin-bottom: 0.45rem;
-        border-radius: 12px;
-        background: rgba(59,227,165,0.08);
-        border: 1px solid rgba(59,227,165,0.28);
-        font-size: 0.82rem;
-        color: #eaf1f8;
-    }
+    [class*="st-key-startchat"] button { border: 1.5px solid #1a6fb5 !important; background: #fff !important;
+        border-radius: 999px !important; }
+    [class*="st-key-startchat"] button p { color: #1a6fb5 !important; font-weight: 700; }
+    .trust-row { color: #4d6279; font-size: .8rem; margin-top: .6rem; }
 
-    .sb-pill-icon {
-        font-size: 1rem;
-        width: 1.2rem;
-        text-align: center;
-    }
-
-    .sb-pill-text {
-        flex: 1;
-        line-height: 1.2;
-    }
-
-    .sb-pill-on {
-        font-size: 0.6rem;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        color: #07331f;
-        background: #3be3a5;
-        padding: 0.12rem 0.45rem;
-        border-radius: 999px;
-    }
-
-    .credit-card {
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.16);
-        border-radius: 14px;
-        padding: 0.85rem 0.9rem;
-        margin-top: 0.7rem;
-    }
-
-    .credit-item {
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-        padding: 0.35rem 0;
-    }
-
-    .credit-divider {
-        height: 1px;
-        background: rgba(255,255,255,0.14);
-        margin: 0.35rem 0;
-    }
-
-    .credit-avatar {
-        min-width: 38px;
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.8rem;
-        color: #ffffff !important;
-        border: 2px solid rgba(255,255,255,0.35);
-        flex-shrink: 0;
-    }
-
-    .credit-avatar.dev {
-        background: linear-gradient(135deg, #6a5cf5 0%, #2f9bd6 100%);
-    }
-
-    .credit-avatar.kb {
-        background: linear-gradient(135deg, #17b897 0%, #0b3d66 100%);
-    }
-
-    .credit-role {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #9fc3e0 !important;
-        margin-bottom: 0.1rem;
-    }
-
-    .credit-name {
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: #ffffff !important;
-        line-height: 1.2;
-    }
-
-    .credit-sub {
-        font-size: 0.72rem;
-        color: #c9dcee !important;
-        font-style: italic;
-        margin-top: 0.05rem;
-    }
-
-    /* ===== Clean hero + chat-only home requested ===== */
-    .hero { padding: 1.05rem 1.55rem !important; border-radius: 16px !important; margin-bottom: 1rem !important; }
-    .hero h1, .hero p, .hero .badge { color: #ffffff !important; }
-    .hero h1 { font-size: 1.85rem !important; }
-    .hero p { font-size: .9rem !important; }
-    .badge { color:#ffffff !important; }
-    .home-cleanup { display:none !important; }
-    .try-panel, .section-heading, .section-subtitle, .topic-card, .access-card, .help-card,
-    .lower-card, .quick-box, .need-help, .feature-card, .chat-disclaimer, .footer-note { display:none !important; }
-    .stChatInput { margin-top: .15rem !important; }
-    .chat-title-clean { color:#123e67; font-weight:800; font-size:1rem; margin:.35rem 0 .45rem; }
-
+    /* Content pages */
+    .page-head { background: #fff; border: 1px solid #dbe6f1; border-radius: 14px; padding: 1.1rem 1.4rem;
+        margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center; }
+    .page-head h2 { margin: 0; color: #0b2a4a; font-size: 1.5rem; }
+    .page-head p { margin: .2rem 0 0 0; color: #4d6279; }
+    .glass-card { background: #fff; border: 1px solid #dbe6f1; border-radius: 14px; padding: 1.1rem 1.2rem;
+        margin-bottom: .9rem; box-shadow: 0 2px 10px rgba(20,60,110,0.05); }
+    .glass-card h4 { color: #0b3d66; margin: 0 0 .4rem 0; }
+    .glass-card p, .glass-card li { color: #3b5068; font-size: .92rem; line-height: 1.5; }
+    .glass-card ul { margin: .3rem 0 0 1.1rem; padding: 0; }
+    .step { display: flex; gap: 1rem; margin-bottom: .9rem; }
+    .step-num { min-width: 36px; width: 36px; height: 36px; border-radius: 50%; background: #1a6fb5; color: #fff;
+        font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .warn-box { background: #fff4f2; border: 1px solid #f3c6bf; border-radius: 14px; padding: 1rem 1.2rem; }
+    .warn-box h4 { color: #a3321f; margin: 0 0 .4rem 0; }
+    .warn-box li { color: #6b2a20; }
+    .footer-note { text-align: center; color: #7a8ba0; font-size: .78rem; margin: 2rem 0 .5rem 0; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -392,7 +198,6 @@ st.markdown(
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
-
 FAQ_FILE = BASE_DIR / "radiation_faq.txt"
 VIDEO_DIR = BASE_DIR / "assets"
 FEEDBACK_FILE = BASE_DIR / "feedback_log.csv"
@@ -408,11 +213,10 @@ LANGUAGES = {
     "mr": "मराठी (Marathi)",
 }
 
-
 UI_STRINGS = {
     "en": {
         "hero_sub": "Your patient education assistant for Radiation Oncology.",
-        "chat_intro": "Ask about radiation treatment, preparation, common side effects, or supportive care.",
+        "hero_sub2": "Ask questions, get clear answers, and learn about your treatment, side effects, safety and more.",
         "placeholder": "Type your question here...",
         "greeting": (
             "👋 Hello! I'm your Radiation Oncology AI Assistant. "
@@ -449,16 +253,10 @@ UI_STRINGS = {
         "faq_header": "Patient FAQs",
         "faq_search": "🔍 Search FAQs",
         "no_faq": "No matching questions found.",
-        "treatment": "Treatment Information",
-        "video": "Video Guide",
-        "source": "📚 Source",
-        "approved_kb": "Curated Radiation Oncology Knowledge Base",
-        "matched_question": "Matched FAQ",
-        "category": "Category",
     },
     "hi": {
         "hero_sub": "रेडिएशन ऑन्कोलॉजी के लिए आपका रोगी शिक्षा सहायक।",
-        "chat_intro": "रेडिएशन उपचार, तैयारी, सामान्य दुष्प्रभाव या सहायक देखभाल के बारे में पूछें।",
+        "hero_sub2": "प्रश्न पूछें, स्पष्ट उत्तर पाएँ और अपने उपचार, दुष्प्रभाव व सुरक्षा के बारे में जानें।",
         "placeholder": "अपना प्रश्न यहाँ लिखें...",
         "greeting": (
             "👋 नमस्ते! मैं आपका Radiation Oncology AI Assistant हूँ। "
@@ -489,16 +287,10 @@ UI_STRINGS = {
         "faq_header": "रोगी के सामान्य प्रश्न",
         "faq_search": "🔍 FAQ खोजें",
         "no_faq": "कोई मिलती-जुलती जानकारी नहीं मिली।",
-        "treatment": "उपचार जानकारी",
-        "video": "वीडियो मार्गदर्शक",
-        "source": "📚 स्रोत",
-        "approved_kb": "क्यूरेटेड Radiation Oncology ज्ञान आधार",
-        "matched_question": "मिलता-जुलता FAQ",
-        "category": "श्रेणी",
     },
     "mr": {
         "hero_sub": "रेडिएशन ऑन्कोलॉजीसाठी तुमचा रुग्ण शिक्षण सहाय्यक.",
-        "chat_intro": "रेडिएशन उपचार, तयारी, सामान्य दुष्परिणाम किंवा सहाय्यक काळजीबद्दल प्रश्न विचारा.",
+        "hero_sub2": "प्रश्न विचारा, स्पष्ट उत्तरे मिळवा आणि तुमचे उपचार, दुष्परिणाम व सुरक्षिततेबद्दल जाणून घ्या.",
         "placeholder": "तुमचा प्रश्न येथे लिहा...",
         "greeting": (
             "👋 नमस्कार! मी तुमचा Radiation Oncology AI Assistant आहे. "
@@ -530,12 +322,6 @@ UI_STRINGS = {
         "faq_header": "रुग्णांचे वारंवार विचारले जाणारे प्रश्न",
         "faq_search": "🔍 FAQ शोधा",
         "no_faq": "जुळणारी माहिती सापडली नाही.",
-        "treatment": "उपचार माहिती",
-        "video": "व्हिडिओ मार्गदर्शक",
-        "source": "📚 स्रोत",
-        "approved_kb": "क्यूरेटेड Radiation Oncology ज्ञान आधार",
-        "matched_question": "जुळणारा FAQ",
-        "category": "श्रेणी",
     },
 }
 
@@ -544,24 +330,34 @@ UI_STRINGS = {
 # SESSION STATE
 # ============================================================
 
+DEFAULT_GREETING = (
+    "👋 Hello! I'm your Radiation Oncology AI Assistant. How can I help you today?"
+)
+
 if "language" not in st.session_state:
     st.session_state.language = "en"
 
+if "page" not in st.session_state:
+    st.session_state.page = "chat"
+
 if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {
-            "role": "assistant",
-            "content": (
-                "👋 Hello! I'm your Radiation Oncology AI Assistant. "
-                "How can I help you today?"
-            ),
-        }
-    ]
+    st.session_state.messages = [{"role": "assistant", "content": DEFAULT_GREETING}]
 
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
 
 T = UI_STRINGS[st.session_state.language]
+
+
+def go(page):
+    """Navigate to a page (used as a button callback)."""
+    st.session_state.page = page
+
+
+def ask(prompt):
+    """Send a suggested question to the chat (used as a button callback)."""
+    st.session_state.pending_prompt = prompt
+    st.session_state.page = "chat"
 
 
 # ============================================================
@@ -572,20 +368,17 @@ T = UI_STRINGS[st.session_state.language]
 def load_faq_data():
     if not FAQ_FILE.exists():
         return {}
-
     try:
         text = FAQ_FILE.read_text(encoding="utf-8")
         tree = ast.parse(text)
         data = {}
-
         for node in tree.body:
             if isinstance(node, ast.Assign):
                 for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        name = target.id
-                        if name in ["FAQS_BEFORE", "FAQS_DURING", "FAQS_AFTER"]:
-                            data[name] = ast.literal_eval(node.value)
-
+                    if isinstance(target, ast.Name) and target.id in [
+                        "FAQS_BEFORE", "FAQS_DURING", "FAQS_AFTER"
+                    ]:
+                        data[target.id] = ast.literal_eval(node.value)
         return data
     except Exception:
         return {}
@@ -593,13 +386,11 @@ def load_faq_data():
 
 FAQ_DATA = load_faq_data()
 
-
-def get_total_faqs():
-    return sum(len(items) for items in FAQ_DATA.values())
-
-
-TOTAL_FAQS = get_total_faqs()
-FAQ_KB_LOADED = TOTAL_FAQS > 0
+STAGE_NAMES = {
+    "FAQS_BEFORE": "Before Treatment",
+    "FAQS_DURING": "During Treatment",
+    "FAQS_AFTER": "After Treatment",
+}
 
 
 # ============================================================
@@ -608,14 +399,9 @@ FAQ_KB_LOADED = TOTAL_FAQS > 0
 
 with st.sidebar:
     st.markdown(
-        """
-        <div class="sb-brand">
-            <div class="sb-logo">🎗️</div>
-            <div>
-                <div class="sb-title">Radiation Oncology AI</div>
-            </div>
-        </div>
-        """,
+        """<div class="sb-brand"><div class="sb-logo">🎗️</div><div>
+<div class="sb-title">Radiation Oncology AI</div>
+<div class="sb-sub">Your Patient Education Assistant</div></div></div>""",
         unsafe_allow_html=True,
     )
 
@@ -631,89 +417,35 @@ with st.sidebar:
         st.rerun()
 
     if st.button("🗑️ Clear Chat", use_container_width=True):
-        st.session_state.messages = [
-            {
-                "role": "assistant",
-                "content": (
-                    "👋 Hello! I'm your Radiation Oncology AI Assistant. "
-                    "How can I help you today?"
-                ),
-            }
-        ]
+        st.session_state.messages = [{"role": "assistant", "content": DEFAULT_GREETING}]
         st.session_state.feedback_given = {}
         st.rerun()
 
     st.markdown(
-        """
-        <div class="sb-section-title">Safety &amp; Trust</div>
-        <div class="sb-pill">
-            <span class="sb-pill-icon">🔒</span>
-            <span class="sb-pill-text">Medical safety guardrails</span>
-            <span class="sb-pill-on">ON</span>
-        </div>
-        <div class="sb-pill">
-            <span class="sb-pill-icon">🛡️</span>
-            <span class="sb-pill-text">Prompt-injection protection</span>
-            <span class="sb-pill-on">ON</span>
-        </div>
-        <div class="sb-pill">
-            <span class="sb-pill-icon">📚</span>
-            <span class="sb-pill-text">Source-grounded responses</span>
-            <span class="sb-pill-on">ON</span>
-        </div>
-        """,
+        """<div class="sb-section-title">Safety &amp; Trust</div>
+<div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">Medical safety guardrails</span><span class="sb-pill-on">ON</span></div>
+<div class="sb-pill"><span class="sb-pill-icon">🛡️</span><span class="sb-pill-text">Prompt-injection protection</span><span class="sb-pill-on">ON</span></div>
+<div class="sb-pill"><span class="sb-pill-icon">📚</span><span class="sb-pill-text">Source-grounded responses</span><span class="sb-pill-on">ON</span></div>""",
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        """
-        <div class="credit-card">
-            <div class="credit-item">
-                <div class="credit-avatar dev">NC</div>
-                <div>
-                    <div class="credit-role">AI Assistant Developed by</div>
-                    <div class="credit-name">Nikita Chougule</div>
-                </div>
-            </div>
-        </div>
-        """,
+        """<div class="credit-card"><div class="credit-item"><div class="credit-avatar">NC</div><div>
+<div class="credit-role">AI Assistant Developed by</div>
+<div class="credit-name">Nikita Chougule</div></div></div></div>""",
         unsafe_allow_html=True,
     )
 
 
 # ============================================================
-# HERO IMAGE
-# ============================================================
-
-st.markdown(
-    f"""<div class="hero">
-    <div class="hero-text">
-        <div class="badge">● AI Assistant Online</div>
-        <h1>🎗️ Radiation Oncology AI Assistant</h1>
-        <p>{T["hero_sub"]}</p>
-    </div>
-</div>""",
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
-# CREATE RAG DOCUMENTS
+# RAG
 # ============================================================
 
 def create_rag_documents():
-    documents = []
-    ids = []
-    metadatas = []
-
-    stage_names = {
-        "FAQS_BEFORE": "Before Treatment",
-        "FAQS_DURING": "During Treatment",
-        "FAQS_AFTER": "After Treatment",
-    }
+    documents, ids, metadatas = [], [], []
 
     for stage_key, questions in FAQ_DATA.items():
-        stage_name = stage_names.get(stage_key, "Radiation Oncology")
+        stage_name = STAGE_NAMES.get(stage_key, "Radiation Oncology")
 
         for index, item in enumerate(questions):
             for language in ["en", "hi", "mr"]:
@@ -721,17 +453,13 @@ def create_rag_documents():
                     continue
 
                 question, answer = item[language]
-
-                document = (
+                documents.append(
                     f"Category: Radiation Oncology\n"
                     f"Stage: {stage_name}\n"
                     f"Question: {question}\n"
                     f"Answer: {answer}"
                 )
-
-                documents.append(document)
                 ids.append(f"{stage_key}_{index}_{language}")
-
                 metadatas.append(
                     {
                         "type": "faq",
@@ -745,18 +473,12 @@ def create_rag_documents():
     return documents, ids, metadatas
 
 
-# ============================================================
-# LOAD RAG
-# ============================================================
-
 @st.cache_resource
 def load_rag():
     model = SentenceTransformer(
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
-
     client = chromadb.Client()
-
     collection = client.get_or_create_collection(
         name="radiation_oncology_generic_knowledge"
     )
@@ -764,11 +486,7 @@ def load_rag():
     documents, ids, metadatas = create_rag_documents()
 
     if documents:
-        embeddings = model.encode(
-            documents,
-            normalize_embeddings=True,
-        ).tolist()
-
+        embeddings = model.encode(documents, normalize_embeddings=True).tolist()
         collection.upsert(
             ids=ids,
             documents=documents,
@@ -780,7 +498,7 @@ def load_rag():
 
 
 # ============================================================
-# NORMALIZE TEXT
+# TEXT HELPERS
 # ============================================================
 
 def normalize_text(text):
@@ -788,10 +506,6 @@ def normalize_text(text):
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
-
-# ============================================================
-# GREETINGS
-# ============================================================
 
 GREETING_PHRASES = {
     "hi", "hii", "hiii", "hello", "helo", "hlo", "hey", "heya",
@@ -809,10 +523,6 @@ def is_greeting(text):
     return normalized in GREETING_PHRASES
 
 
-# ============================================================
-# MEANINGFUL WORDS
-# ============================================================
-
 def get_meaningful_words(text):
     stop_words = {
         "what", "is", "the", "a", "an", "are", "was", "were",
@@ -821,19 +531,9 @@ def get_meaningful_words(text):
         "during", "today", "please", "tell", "about", "and",
         "or", "this", "that", "there", "your", "you",
     }
-
     words = normalize_text(text).split()
+    return {w for w in words if len(w) > 2 and w not in stop_words}
 
-    return {
-        word
-        for word in words
-        if len(word) > 2 and word not in stop_words
-    }
-
-
-# ============================================================
-# QUESTION TYPE
-# ============================================================
 
 def detect_question_type(question):
     text = normalize_text(question)
@@ -850,6 +550,7 @@ def detect_question_type(question):
             "nausea", "vomiting", "sleep", "appetite", "diet",
             "food", "exercise", "care", "symptom", "symptoms",
             "simulation", "session", "therapy", "hydration",
+            "imrt", "igrt", "brachytherapy", "safe", "safety",
         ]
     ):
         return "medical"
@@ -869,7 +570,7 @@ def detect_question_type(question):
 
 
 # ============================================================
-# MEDICAL SAFETY
+# GUARDRAILS
 # ============================================================
 
 def detect_medical_safety_level(question):
@@ -883,10 +584,8 @@ def detect_medical_safety_level(question):
         "severe allergic reaction", "swelling of face",
         "swelling of throat", "seizure", "convulsion", "stroke symptoms",
     ]
-
-    for pattern in urgent_patterns:
-        if pattern in text:
-            return "urgent"
+    if any(p in text for p in urgent_patterns):
+        return "urgent"
 
     diagnosis_patterns = [
         "diagnose me", "can you diagnose", "can you diagnose my",
@@ -905,10 +604,8 @@ def detect_medical_safety_level(question):
         "माझे निदान करा", "मला कोणता आजार आहे", "मला कोणता कर्करोग आहे",
         "मला कॅन्सर आहे का", "माझा निदान काय आहे",
     ]
-
-    for pattern in diagnosis_patterns:
-        if pattern in text:
-            return "personal_medical"
+    if any(p in text for p in diagnosis_patterns):
+        return "personal_medical"
 
     medicine_patterns = [
         "prescribe medicine", "prescribe medication", "give me medicine",
@@ -924,10 +621,8 @@ def detect_medical_safety_level(question):
         "मुझे कौन सी दवा लेनी चाहिए", "माझे औषध बदला",
         "औषध बंद करू का", "औषधाचा डोस",
     ]
-
-    for pattern in medicine_patterns:
-        if pattern in text:
-            return "personal_medical"
+    if any(p in text for p in medicine_patterns):
+        return "personal_medical"
 
     treatment_change_patterns = [
         "change my treatment", "change my treatment plan",
@@ -942,17 +637,11 @@ def detect_medical_safety_level(question):
         "इलाज बंद कर दूं", "माझा उपचार बदला", "रेडिएशन बंद करू का",
         "उपचार बंद करू का",
     ]
-
-    for pattern in treatment_change_patterns:
-        if pattern in text:
-            return "personal_medical"
+    if any(p in text for p in treatment_change_patterns):
+        return "personal_medical"
 
     return "safe"
 
-
-# ============================================================
-# PROMPT INJECTION
-# ============================================================
 
 PROMPT_INJECTION_PATTERNS = [
     "ignore previous instructions", "ignore all instructions",
@@ -979,12 +668,10 @@ def check_guardrails(question):
         if pattern in text:
             return False, "injection", T["injection"]
 
-    safety_level = detect_medical_safety_level(question)
-
-    if safety_level == "urgent":
+    level = detect_medical_safety_level(question)
+    if level == "urgent":
         return False, "urgent", T["urgent"]
-
-    if safety_level == "personal_medical":
+    if level == "personal_medical":
         return False, "personal_medical", T["medical"]
 
     return True, "safe", None
@@ -997,16 +684,12 @@ def check_guardrails(question):
 def search_knowledge(question, language):
     try:
         question_type = detect_question_type(question)
-
         if question_type == "unrelated":
             return None
 
         model, collection = load_rag()
 
-        query_embedding = model.encode(
-            [question],
-            normalize_embeddings=True,
-        ).tolist()
+        query_embedding = model.encode([question], normalize_embeddings=True).tolist()
 
         results = collection.query(
             query_embeddings=query_embedding,
@@ -1035,30 +718,23 @@ def search_knowledge(question, language):
             kb_words = get_meaningful_words(kb_question + " " + kb_answer)
             semantic_score = max(0, 1 - distance)
 
-            common_words = question_words & kb_words
-            keyword_score = len(common_words)
-
-            question_common_words = (
+            keyword_score = len(question_words & kb_words)
+            question_keyword_score = len(
                 question_words & get_meaningful_words(kb_question)
             )
-            question_keyword_score = len(question_common_words)
 
             type_bonus = 5 if question_type == "medical" else 0
-            language_bonus = (
-                2 if metadata.get("language") == language else 0
-            )
+            language_bonus = 2 if metadata.get("language") == language else 0
 
-            # Small exact-topic bonus for important generic topics.
-            if question_type == "medical":
-                if any(
-                    topic in kb_question_clean
-                    for topic in [
-                        "radiation", "radiotherapy", "treatment",
-                        "side effect", "skin", "fatigue",
-                        "simulation", "session",
-                    ]
-                ):
-                    type_bonus += 2
+            if question_type == "medical" and any(
+                topic in kb_question_clean
+                for topic in [
+                    "radiation", "radiotherapy", "treatment",
+                    "side effect", "skin", "fatigue",
+                    "simulation", "session",
+                ]
+            ):
+                type_bonus += 2
 
             final_score = (
                 semantic_score * 10
@@ -1079,25 +755,20 @@ def search_knowledge(question, language):
             )
 
         candidates.sort(key=lambda item: item["score"], reverse=True)
-
         if not candidates:
             return None
 
         best = candidates[0]
         best_metadata = best["metadata"]
 
-        best_semantic = best["semantic_score"]
-        best_keywords = best["keyword_score"]
-        best_question_keywords = best["question_keyword_score"]
-
         if best_metadata.get("type") == "faq":
-            if best_semantic < 0.32 and best_question_keywords == 0:
+            if best["semantic_score"] < 0.32 and best["question_keyword_score"] == 0:
                 return None
 
         if (
-            best_semantic < 0.25
-            and best_keywords == 0
-            and best_question_keywords == 0
+            best["semantic_score"] < 0.25
+            and best["keyword_score"] == 0
+            and best["question_keyword_score"] == 0
         ):
             return None
 
@@ -1107,53 +778,49 @@ def search_knowledge(question, language):
         return None
 
 
+def get_response(prompt):
+    """Run guardrails + RAG for one prompt. Returns (response_text, source)."""
+    allowed, _, safety_message = check_guardrails(prompt)
+    if not allowed:
+        return safety_message, None
+
+    question_type = detect_question_type(prompt)
+
+    if question_type == "greeting":
+        return T["greeting"], None
+    if question_type == "unrelated":
+        return T["unrelated"], None
+
+    result = search_knowledge(prompt, st.session_state.language)
+    if result:
+        return f"**Answer**\n\n{result.get('answer', '')}\n\n", result
+
+    return T["unknown"], None
+
+
 # ============================================================
-# SOURCE DISPLAY
+# SOURCE + FEEDBACK
 # ============================================================
 
 def display_source(source):
     if not source:
         return
 
-    category = source.get("stage", "Radiation Oncology")
-    matched_question = source.get("question", "")
-
     with st.container(border=True):
-        st.markdown("### 📚 Source")
-        st.write("**Curated Radiation Oncology Knowledge Base**")
-        st.write(f"**Category:** {category}")
+        st.markdown("**📚 Source**")
+        st.write("Curated Radiation Oncology Knowledge Base")
+        st.write(f"**Category:** {source.get('stage', 'Radiation Oncology')}")
+        if source.get("question"):
+            st.write(f"**Matched FAQ:** {source['question']}")
 
-        if matched_question:
-            st.write(f"**Matched FAQ:** {matched_question}")
-
-
-# ============================================================
-# FEEDBACK
-# ============================================================
 
 def save_feedback(question, answer, feedback):
     try:
         file_exists = FEEDBACK_FILE.exists()
-
-        with open(
-            FEEDBACK_FILE,
-            "a",
-            newline="",
-            encoding="utf-8",
-        ) as file:
+        with open(FEEDBACK_FILE, "a", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
-
             if not file_exists:
-                writer.writerow(
-                    [
-                        "timestamp",
-                        "language",
-                        "question",
-                        "answer",
-                        "feedback",
-                    ]
-                )
-
+                writer.writerow(["timestamp", "language", "question", "answer", "feedback"])
             writer.writerow(
                 [
                     datetime.now().isoformat(timespec="seconds"),
@@ -1172,23 +839,16 @@ def feedback_buttons(message_index, question, answer):
         return
 
     already_given = st.session_state.feedback_given.get(message_index)
-
     if already_given:
-        st.caption(
-            "👍 Thanks for your feedback!"
-            if already_given == "up"
-            else "👎 Thanks for your feedback!"
-        )
+        st.caption("👍 Thanks for your feedback!" if already_given == "up" else "👎 Thanks for your feedback!")
         return
 
     col1, col2, _ = st.columns([1, 1, 10])
-
     with col1:
         if st.button("👍", key=f"up_{message_index}"):
             save_feedback(question, answer, "up")
             st.session_state.feedback_given[message_index] = "up"
             st.rerun()
-
     with col2:
         if st.button("👎", key=f"down_{message_index}"):
             save_feedback(question, answer, "down")
@@ -1197,221 +857,302 @@ def feedback_buttons(message_index, question, answer):
 
 
 # ============================================================
-# TABS
+# UI HELPERS
 # ============================================================
 
-tab_chat, tab_info, tab_faq, tab_video = st.tabs(
-    [
-        "💬 Chat Assistant",
-        "📖 Treatment Info",
-        "📚 FAQs",
-        "🎥 Video Guide",
-    ]
-)
+NAV_MAIN = [
+    ("chat", "💬 Chat Assistant"),
+    ("journey", "🧭 Treatment Journey"),
+    ("info", "📖 Treatment Info"),
+    ("effects", "⚠️ Side Effects"),
+    ("safety", "🛡️ Safety & Self-Care"),
+    ("video", "▶️ Video Guide"),
+]
+
+NAV_MORE = [
+    ("faq", "❓ FAQs"),
+    ("doctor", "📋 Questions for My Doctor"),
+    ("glossary", "📘 Glossary"),
+    ("support", "💙 Support & Wellness"),
+    ("after", "🌿 After Treatment"),
+    ("resources", "🔗 Trusted Resources"),
+]
 
 
-# ============================================================
-# CHAT
-# ============================================================
+def render_nav():
+    cols = st.columns([1.15, 1.3, 1.1, 1.0, 1.4, 1.0, 0.8])
 
-with tab_chat:
-    st.markdown("<div class='chat-title-clean'>Ask your Radiation Oncology question</div>", unsafe_allow_html=True)
+    for col, (key, label) in zip(cols[:6], NAV_MAIN):
+        with col:
+            st.button(
+                label,
+                key=f"nav_{key}",
+                type="primary" if st.session_state.page == key else "secondary",
+                use_container_width=True,
+                on_click=go,
+                args=(key,),
+            )
 
-    for index, message in enumerate(st.session_state.messages):
-        avatar = "🎗️" if message["role"] == "assistant" else "🧑"
-
-        with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
-
-            if message["role"] == "assistant" and message.get("source"):
-                display_source(message["source"])
-
-            if message["role"] == "assistant" and index > 0:
-                previous_message = st.session_state.messages[index - 1]
-
-                if previous_message["role"] == "user":
-                    feedback_buttons(
-                        index,
-                        previous_message["content"],
-                        message["content"],
-                    )
-
-    prompt = st.chat_input(T["placeholder"])
-
-    if prompt:
-        st.session_state.messages.append(
-            {"role": "user", "content": prompt}
-        )
-
-        with st.chat_message("user", avatar="🧑"):
-            st.markdown(prompt)
-
-        allowed, safety_type, safety_message = check_guardrails(prompt)
-        source = None
-
-        if not allowed:
-            response = safety_message
-
-        else:
-            question_type = detect_question_type(prompt)
-
-            if question_type == "greeting":
-                response = T["greeting"]
-
-            elif question_type == "unrelated":
-                response = T["unrelated"]
-
-            else:
-                result = search_knowledge(
-                    prompt,
-                    st.session_state.language,
+    with cols[6]:
+        with st.popover("More ⌄", use_container_width=True):
+            for key, label in NAV_MORE:
+                st.button(
+                    label,
+                    key=f"nav_more_{key}",
+                    use_container_width=True,
+                    on_click=go,
+                    args=(key,),
                 )
 
-                if result:
-                    source = result
-                    answer = result.get("answer", "")
+    st.markdown('<div class="nav-rule"></div>', unsafe_allow_html=True)
 
-                    response = (
-                        f"**Answer**\n\n"
-                        f"{answer}\n\n"
-                    )
 
-                else:
-                    response = T["unknown"]
+def feature_card(icon, tone, title, desc, target):
+    with st.container(border=True):
+        st.markdown(
+            f'<div class="fcard"><div class="ficon {tone}">{icon}</div>'
+            f'<div><div class="ftitle">{title}</div><div class="fdesc">{desc}</div></div></div>',
+            unsafe_allow_html=True,
+        )
+        st.button("→", key=f"open_{target}", on_click=go, args=(target,), use_container_width=True)
 
+
+def page_header(icon, title, subtitle):
+    st.markdown(
+        f'<div class="page-head"><div style="font-size:2.2rem">{icon}</div>'
+        f"<div><h2>{title}</h2><p>{subtitle}</p></div></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def info_cards(items, columns=2):
+    """items: list of (icon, title, [bullets] or str)."""
+    cols = st.columns(columns)
+    for i, (icon, title, body) in enumerate(items):
+        if isinstance(body, (list, tuple)):
+            body_html = "<ul>" + "".join(f"<li>{b}</li>" for b in body) + "</ul>"
+        else:
+            body_html = f"<p>{body}</p>"
+        with cols[i % columns]:
+            st.markdown(
+                f'<div class="glass-card"><h4>{icon} {title}</h4>{body_html}</div>',
+                unsafe_allow_html=True,
+            )
+
+
+def contact_team_box():
+    st.markdown(
+        """<div class="warn-box"><h4>☎️ Contact your healthcare team promptly if you have</h4><ul>
+<li>Fever or chills</li>
+<li>Severe or worsening pain</li>
+<li>Skin that blisters, peels or breaks open in the treated area</li>
+<li>Difficulty swallowing, or trouble eating or drinking</li>
+<li>Vomiting or diarrhoea that does not settle</li>
+<li>Any bleeding, or any symptom that worries you</li>
+</ul><p><b>For breathing difficulty, chest pain, heavy bleeding, fainting or seizures, call local emergency services immediately.</b></p></div>""",
+        unsafe_allow_html=True,
+    )
+
+
+# ============================================================
+# PAGES
+# ============================================================
+
+def page_chat():
+    # ---- Process input first so history below is always up to date ----
+    typed = st.chat_input(T["placeholder"])
+    prompt = typed or st.session_state.pop("pending_prompt", None)
+
+    if prompt:
+        response, source = get_response(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": response,
-                "source": source,
-            }
+            {"role": "assistant", "content": response, "source": source}
         )
 
-        with st.chat_message("assistant", avatar="🎗️"):
-            st.markdown(response)
-
-            if source:
-                display_source(source)
-
-
-# ============================================================
-# TREATMENT INFORMATION
-# ============================================================
-
-with tab_info:
-    st.markdown(f"### {T['treatment']}")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown(
-            """<div class="glass-card">
-    <h4>📋 Before Treatment</h4>
-    <p>Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information.</p>
+    # ---- Hero ----
+    st.markdown(
+        f"""<div class="hero">
+<div class="badge"><span class="dot"></span>AI Assistant Online</div>
+<h1>🎗️ Radiation Oncology AI Assistant</h1>
+<p>{T["hero_sub"]}</p>
+<p class="hero-sub2">{T["hero_sub2"]}</p>
 </div>""",
-            unsafe_allow_html=True,
-        )
-
-        st.write("")
-
-        st.markdown(
-            """<div class="glass-card">
-    <h4>🩺 During Treatment</h4>
-    <p>Understand what typically happens during a radiation treatment session and what patients may experience.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
-    with col2:
-        st.markdown(
-            """<div class="glass-card">
-    <h4>✅ After Treatment</h4>
-    <p>Learn about common post-treatment considerations, general self-care, and when to seek professional guidance.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
-        st.write("")
-
-        st.markdown(
-            """<div class="glass-card">
-    <h4>☎️ When to Contact Your Healthcare Team</h4>
-    <p>Understand when treatment-related symptoms or concerns should be discussed with your healthcare team.</p>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
-
-# ============================================================
-# FAQ TAB
-# ============================================================
-
-with tab_faq:
-    st.markdown(f"### {T['faq_header']}")
-
-    search_text = st.text_input(
-        T["faq_search"],
-        placeholder="Example: side effects, pain, skin...",
+        unsafe_allow_html=True,
     )
 
-    all_faqs = []
+    # ---- Four feature cards ----
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        feature_card("📍", "green", "Treatment Journey", "Step-by-step guide from consultation to follow-up", "journey")
+    with c2:
+        feature_card("❤️", "pink", "Side Effects & Self-Care", "Common side effects and general self-care tips", "effects")
+    with c3:
+        feature_card("📋", "purple", "Questions for My Doctor", "Prepare for your appointments with a checklist", "doctor")
+    with c4:
+        feature_card("📘", "blue", "Radiation Oncology Glossary", "Understand medical terms in simple language", "glossary")
 
-    stage_names = {
-        "FAQS_BEFORE": "Before Treatment",
-        "FAQS_DURING": "During Treatment",
-        "FAQS_AFTER": "After Treatment",
-    }
+    # ---- Try asking + conversation ----
+    with st.container(border=True):
+        st.markdown('<div class="panel-title">✨ Try asking</div>', unsafe_allow_html=True)
 
-    for stage_key, questions in FAQ_DATA.items():
-        stage_name = stage_names.get(stage_key, "Radiation Oncology")
-
-        for item in questions:
-            if st.session_state.language in item:
-                question, answer = item[st.session_state.language]
-                all_faqs.append((stage_name, question, answer))
-
-    if search_text:
-        search_lower = search_text.lower()
-
-        filtered_faqs = [
-            item
-            for item in all_faqs
-            if search_lower in item[1].lower()
-            or search_lower in item[2].lower()
+        suggestions = [
+            "What is IMRT?",
+            "What should I expect during treatment?",
+            "How can I manage fatigue?",
+            "Is radiation therapy safe?",
         ]
-    else:
-        filtered_faqs = all_faqs
+        chip_cols = st.columns([1, 2, 1.7, 1.5, 3])
+        for i, text in enumerate(suggestions):
+            with chip_cols[i]:
+                st.button(text, key=f"chip_{i}", on_click=ask, args=(text,), use_container_width=True)
 
-    if not filtered_faqs:
-        st.info(T["no_faq"])
-    else:
-        st.caption(f"{len(filtered_faqs)} FAQ(s)")
+        st.write("")
 
-        for stage, question, answer in filtered_faqs:
-            with st.expander(f"❓ {question} · {stage}"):
-                st.markdown(answer)
+        for index, message in enumerate(st.session_state.messages):
+            avatar = "🎗️" if message["role"] == "assistant" else "🧑"
+
+            with st.chat_message(message["role"], avatar=avatar):
+                st.markdown(message["content"])
+
+                if message["role"] == "assistant" and message.get("source"):
+                    display_source(message["source"])
+
+                if message["role"] == "assistant" and index > 0:
+                    previous = st.session_state.messages[index - 1]
+                    if previous["role"] == "user":
+                        feedback_buttons(index, previous["content"], message["content"])
+
+        st.caption(
+            "💡 This assistant provides general patient education information from a curated "
+            "Radiation Oncology knowledge base. It does not replace advice from a treating "
+            "doctor or healthcare team."
+        )
+
+    st.write("")
+
+    # ---- Lower row: Popular topics / Quick access / Need help ----
+    col_topics, col_quick, col_help = st.columns([1.05, 1.25, 1.0])
+
+    with col_topics:
+        with st.container(border=True):
+            st.markdown('<div class="sec-title">🔥 Popular Topics</div>', unsafe_allow_html=True)
+            topics = [
+                ("Radiation therapy types", "What are the types of radiation therapy?"),
+                ("Treatment preparation", "How do I prepare for radiation treatment?"),
+                ("Managing side effects", "How can I manage side effects of radiation?"),
+                ("Life after treatment", "What happens after radiation treatment?"),
+                ("Safety precautions", "What safety precautions should I follow during radiation treatment?"),
+            ]
+            for i, (label, question) in enumerate(topics):
+                st.button(f"{label}   ›", key=f"topic_{i}", on_click=ask, args=(question,), use_container_width=True)
+
+    with col_quick:
+        with st.container(border=True):
+            st.markdown('<div class="sec-title">⭐ Quick Access</div>', unsafe_allow_html=True)
+            quick = [
+                ("📍 Treatment Journey", "journey"),
+                ("❤️ Side Effects", "effects"),
+                ("🛡️ Safety Guide", "safety"),
+                ("📘 Glossary", "glossary"),
+                ("💚 Support & Wellness", "support"),
+                ("🔗 Trusted Resources", "resources"),
+            ]
+            for row in range(2):
+                cols = st.columns(3)
+                for col, (label, target) in zip(cols, quick[row * 3: row * 3 + 3]):
+                    with col:
+                        st.button(label, key=f"quick_{target}", on_click=go, args=(target,), use_container_width=True)
+
+    with col_help:
+        with st.container(border=True):
+            st.markdown(
+                '<div class="sec-title">🎧 Need Help?</div>'
+                '<div class="fdesc" style="margin-bottom:.8rem">Your questions matter. We\'re here to support you '
+                "with reliable and easy-to-understand information.</div>",
+                unsafe_allow_html=True,
+            )
+            st.button("💬 Start Chat", key="startchat", on_click=ask, args=("Hello",), use_container_width=True)
+            st.markdown(
+                '<div class="trust-row">🛡️ Trusted • Accurate • Patient Focused</div>',
+                unsafe_allow_html=True,
+            )
 
 
-# ============================================================
-# VIDEO TAB
-# ============================================================
+def page_journey():
+    page_header("🧭", "Treatment Journey", "A general, step-by-step look at radiation therapy. Your own plan may differ.")
 
-with tab_video:
-    st.markdown("### 🎥 Radiation Therapy: General Guide")
-
-    st.caption(
-        "An educational video explaining the radiation treatment process. "
-        "Use only generic, non-hospital-specific educational content here."
-    )
-
-    video_extensions = [
-        "*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"
+    steps = [
+        ("Consultation", "You meet your radiation oncologist to discuss your diagnosis, the goal of treatment and what to expect. Bring your reports and questions."),
+        ("Planning scan (simulation)", "A scan, usually a CT, is done in the treatment position. Your team may make a custom mask or cushion and mark your skin so you are positioned the same way each day."),
+        ("Treatment planning", "Your doctor and physicist design a plan that targets the treatment area while limiting dose to nearby healthy tissue. This usually takes several days."),
+        ("Quality checks", "The plan is checked carefully before your first session. Your team may confirm your position with imaging."),
+        ("Daily treatment sessions", "Sessions are usually short and painless. You lie still while the machine delivers radiation, and the team watches you from outside the room."),
+        ("Regular check-ins", "You will be seen regularly during treatment to review side effects and answer questions."),
+        ("Follow-up", "After treatment finishes, follow-up visits track your recovery and any late effects."),
     ]
 
-    video_file = None
+    for i, (title, desc) in enumerate(steps, start=1):
+        st.markdown(
+            f'<div class="glass-card step"><div class="step-num">{i}</div>'
+            f'<div><h4>{title}</h4><p>{desc}</p></div></div>',
+            unsafe_allow_html=True,
+        )
 
+
+def page_info():
+    st.markdown("### Treatment Information")
+    info_cards(
+        [
+            ("📋", "Before Treatment", "Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information."),
+            ("🩺", "During Treatment", "Understand what typically happens during a radiation treatment session and what patients may experience."),
+            ("✅", "After Treatment", "Learn about common post-treatment considerations, general self-care, and when to seek professional guidance."),
+            ("☎️", "When to Contact Your Healthcare Team", "Understand when treatment-related symptoms or concerns should be discussed with your healthcare team."),
+        ]
+    )
+
+
+def page_effects():
+    page_header("⚠️", "Side Effects & Self-Care", "Side effects depend on the area treated, the dose and the person. Not everyone has all of them.")
+
+    info_cards(
+        [
+            ("🧴", "Skin changes", ["Redness, dryness, itching or darkening in the treated area are common.", "Wash gently, pat dry, and wear loose soft clothing.", "Protect the area from sun and avoid scrubbing.", "Use only creams your team has approved."]),
+            ("😴", "Tiredness (fatigue)", ["Fatigue often builds up gradually during treatment.", "Rest when you need to and plan important tasks for better hours.", "Gentle activity, such as short walks, can help if your team agrees.", "Fatigue may last for some weeks after treatment."]),
+            ("🍽️", "Appetite and nausea", ["Depends on the area being treated.", "Try small, frequent meals.", "Sip fluids through the day.", "Tell your team if you are losing weight or cannot eat."]),
+            ("💇", "Hair loss", ["Hair loss usually happens only in the treated area.", "It may or may not grow back, depending on the dose.", "Ask your team what to expect for your treatment area."]),
+            ("👄", "Mouth and throat soreness", ["More likely with treatment to the head and neck.", "Keep up good mouth care as advised.", "Soft, bland foods are often easier to swallow.", "Avoid tobacco and alcohol."]),
+            ("💬", "Other effects", "Other effects depend on where you are treated. Your team will explain the ones that apply to you and how to manage them.")
+        ]
+    )
+
+    contact_team_box()
+
+
+def page_safety():
+    page_header("🛡️", "Safety & Self-Care", "General habits that support you during treatment.")
+
+    info_cards(
+        [
+            ("☢️", "Radiation safety", ["With external beam radiation, you do not become radioactive.", "Ask your team if any precautions apply to your specific treatment, such as brachytherapy."]),
+            ("📅", "Attend every session", ["Missing sessions can affect how well treatment works.", "If you cannot attend, tell your team so they can advise you."]),
+            ("🥗", "Eat and drink well", ["Aim for regular, balanced meals.", "Stay hydrated unless told otherwise.", "Ask for a dietitian referral if eating is difficult."]),
+            ("🚭", "Avoid tobacco and alcohol", ["They can worsen side effects and affect recovery.", "Ask your team for support if you want to quit."]),
+            ("🧴", "Look after your skin", ["Keep the treated area clean and dry.", "Avoid heat pads, ice packs, tight clothing and sun on the area.", "Do not remove skin markings unless told to."]),
+            ("💊", "Medicines", "Keep taking your usual medicines unless your doctor tells you otherwise. Check with your team before starting supplements or herbal remedies."),
+        ]
+    )
+
+    contact_team_box()
+
+
+def page_video():
+    st.markdown("### 🎥 Radiation Therapy: General Guide")
+    st.caption("An educational video explaining the radiation treatment process.")
+
+    video_file = None
     if VIDEO_DIR.exists():
-        for extension in video_extensions:
+        for extension in ["*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"]:
             matches = sorted(VIDEO_DIR.glob(extension))
             if matches:
                 video_file = matches[0]
@@ -1420,19 +1161,197 @@ with tab_video:
     if video_file:
         st.video(str(video_file))
     else:
-        st.info(
-            "No generic educational video found in the assets folder."
+        st.info("No generic educational video found in the assets folder.")
+
+
+def page_faq():
+    st.markdown(f"### {T['faq_header']}")
+
+    search_text = st.text_input(T["faq_search"], placeholder="Example: side effects, pain, skin...")
+
+    all_faqs = []
+    for stage_key, questions in FAQ_DATA.items():
+        stage_name = STAGE_NAMES.get(stage_key, "Radiation Oncology")
+        for item in questions:
+            if st.session_state.language in item:
+                question, answer = item[st.session_state.language]
+                all_faqs.append((stage_name, question, answer))
+
+    if search_text:
+        s = search_text.lower()
+        filtered = [f for f in all_faqs if s in f[1].lower() or s in f[2].lower()]
+    else:
+        filtered = all_faqs
+
+    if not filtered:
+        st.info(T["no_faq"])
+        return
+
+    st.caption(f"{len(filtered)} FAQ(s)")
+    for stage, question, answer in filtered:
+        with st.expander(f"❓ {question} · {stage}"):
+            st.markdown(answer)
+
+
+def page_doctor():
+    page_header("📋", "Questions for My Doctor", "Tick the questions you want to ask, and take this list to your appointment.")
+
+    groups = {
+        "About my treatment": [
+            "What is the goal of my radiation treatment?",
+            "What type of radiation will I receive?",
+            "How many sessions will I need, and how long is each one?",
+            "Will I also have other treatments, such as surgery or chemotherapy?",
+        ],
+        "About side effects": [
+            "Which side effects should I expect for my treatment area?",
+            "What can I do to prevent or ease them?",
+            "Which symptoms mean I should call you straight away?",
+            "Who can I contact after hours?",
+        ],
+        "About daily life": [
+            "Can I keep working and doing my usual activities?",
+            "Do I need to change my diet?",
+            "Which skin products can I use?",
+            "Are there any medicines or supplements I should avoid?",
+        ],
+        "About afterwards": [
+            "What follow-up visits will I need?",
+            "What late effects should I watch for?",
+            "When can I expect to feel back to normal?",
+        ],
+    }
+
+    selected = []
+    cols = st.columns(2)
+    for i, (group, questions) in enumerate(groups.items()):
+        with cols[i % 2]:
+            with st.container(border=True):
+                st.markdown(f"**{group}**")
+                for j, q in enumerate(questions):
+                    if st.checkbox(q, key=f"dq_{i}_{j}"):
+                        selected.append(q)
+
+    custom = st.text_area("✏️ Add your own questions or notes", key="dq_custom")
+
+    if selected or custom.strip():
+        export = "My questions for my doctor\n\n" + "\n".join(f"- {q}" for q in selected)
+        if custom.strip():
+            export += f"\n\nMy notes:\n{custom.strip()}"
+        st.download_button("⬇️ Download my list", export, file_name="questions_for_my_doctor.txt")
+
+
+def page_glossary():
+    page_header("📘", "Radiation Oncology Glossary", "Common medical terms in simple language.")
+
+    terms = {
+        "Radiation therapy": "Treatment that uses high-energy radiation to destroy cancer cells or stop them growing.",
+        "Radiation oncologist": "A doctor who specialises in treating cancer with radiation.",
+        "Simulation": "A planning session where scans are taken with you in your treatment position.",
+        "Fraction": "A single radiation treatment session. Treatment is often split into many fractions.",
+        "Dose (Gray, Gy)": "The amount of radiation delivered. The Gray is the unit used to measure it.",
+        "Linear accelerator (linac)": "The machine that delivers external beam radiation.",
+        "IMRT": "Intensity-modulated radiation therapy. A technique that shapes the radiation beams to fit the treatment area closely.",
+        "IGRT": "Image-guided radiation therapy. Imaging is used to confirm your position before or during treatment.",
+        "Brachytherapy": "Radiation delivered from a source placed inside or very close to the area being treated.",
+        "Immobilisation device": "A mask, mould or cushion that helps you stay in the same position for every session.",
+        "Acute side effects": "Side effects that happen during treatment or soon after.",
+        "Late side effects": "Side effects that appear months or years after treatment.",
+    }
+
+    search = st.text_input("🔍 Search terms", key="gloss_search")
+    shown = {
+        k: v for k, v in terms.items()
+        if search.lower() in k.lower() or search.lower() in v.lower()
+    }
+
+    if not shown:
+        st.info("No matching terms found.")
+        return
+
+    for term, meaning in shown.items():
+        st.markdown(
+            f'<div class="glass-card"><h4>{term}</h4><p>{meaning}</p></div>',
+            unsafe_allow_html=True,
         )
 
 
+def page_support():
+    page_header("💙", "Support & Wellness", "Looking after your mind and body matters as much as the treatment itself.")
+
+    info_cards(
+        [
+            ("💭", "Your feelings", ["It is normal to feel anxious, low or overwhelmed.", "Talking to someone you trust can help.", "Tell your team if these feelings are hard to cope with."]),
+            ("👨‍👩‍👧", "Family and friends", ["Let people help with meals, lifts and errands.", "Bring someone to appointments if you can."]),
+            ("🛌", "Sleep and rest", ["Keep a regular sleep routine.", "Short daytime rests can help with fatigue.", "Tell your team if sleep problems continue."]),
+            ("🚶", "Gentle activity", ["Light movement can lift mood and energy.", "Check with your team about what is right for you."]),
+            ("🤝", "Ask about support services", ["Many hospitals have counsellors, social workers and dietitians.", "Patient support groups can connect you with others who understand."]),
+            ("🧘", "Calming habits", ["Breathing exercises, music or prayer may help you relax.", "Choose what feels right for you."]),
+        ]
+    )
+
+
+def page_after():
+    page_header("🌿", "After Treatment", "What to expect once your radiation sessions are complete.")
+
+    info_cards(
+        [
+            ("📅", "Follow-up visits", ["Your team will schedule regular check-ups.", "Bring a list of any symptoms or concerns."]),
+            ("⏳", "Side effects may continue", ["Some side effects can continue or even peak for a short time after the last session.", "Most improve over the following weeks."]),
+            ("🧴", "Skin recovery", ["Continue gentle skin care until your team says otherwise.", "Keep protecting the area from sun."]),
+            ("🔋", "Getting your energy back", ["Fatigue can last for weeks.", "Build activity up gradually."]),
+            ("🔔", "Late effects", ["Some effects appear months or years later, depending on the treated area.", "Ask your team which to watch for."]),
+            ("💙", "Emotional recovery", ["Feelings can surface once treatment ends.", "Support services are still available to you."]),
+        ]
+    )
+
+    contact_team_box()
+
+
+def page_resources():
+    page_header("🔗", "Trusted Resources", "Reliable sources for further reading. Ask your own hospital for locally relevant materials too.")
+
+    links = [
+        ("National Cancer Institute (NCI): Radiation Therapy", "https://www.cancer.gov/about-cancer/treatment/types/radiation-therapy"),
+        ("RTAnswers (ASTRO): patient information on radiation therapy", "https://www.rtanswers.org"),
+        ("American Cancer Society: Radiation Therapy", "https://www.cancer.org/cancer/managing-cancer/treatment-types/radiation.html"),
+        ("World Health Organization: Cancer", "https://www.who.int/health-topics/cancer"),
+        ("Tata Memorial Centre", "https://tmc.gov.in"),
+    ]
+
+    for label, url in links:
+        with st.container(border=True):
+            st.markdown(f"**{label}**")
+            st.link_button("Open site ↗", url)
+
+    st.caption("Links open external websites. Please confirm current addresses, as websites change.")
+
+
 # ============================================================
-# FOOTER
+# ROUTER
 # ============================================================
 
+render_nav()
+
+PAGES = {
+    "chat": page_chat,
+    "journey": page_journey,
+    "info": page_info,
+    "effects": page_effects,
+    "safety": page_safety,
+    "video": page_video,
+    "faq": page_faq,
+    "doctor": page_doctor,
+    "glossary": page_glossary,
+    "support": page_support,
+    "after": page_after,
+    "resources": page_resources,
+}
+
+PAGES.get(st.session_state.page, page_chat)()
+
 st.markdown(
-    """<div class="footer-note">
-This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
-It does not replace advice from a treating doctor or healthcare team.
-</div>""",
+    """<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
+It does not replace advice from a treating doctor or healthcare team.</div>""",
     unsafe_allow_html=True,
 )
