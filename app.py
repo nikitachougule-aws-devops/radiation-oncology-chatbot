@@ -1031,52 +1031,21 @@ def page_chat():
 
     st.write("")
 
-    # ---- Lower row: Popular topics / Quick access / Need help ----
-    col_topics, col_quick, col_help = st.columns([1.05, 1.25, 1.0])
-
-    with col_topics:
-        with st.container(border=True):
-            st.markdown('<div class="sec-title">🔥 Popular Topics</div>', unsafe_allow_html=True)
-            topics = [
-                ("Radiation therapy types", "What are the types of radiation therapy?"),
-                ("Treatment preparation", "How do I prepare for radiation treatment?"),
-                ("Managing side effects", "How can I manage side effects of radiation?"),
-                ("Life after treatment", "What happens after radiation treatment?"),
-                ("Safety precautions", "What safety precautions should I follow during radiation treatment?"),
-            ]
-            for i, (label, question) in enumerate(topics):
-                st.button(f"{label}   ›", key=f"topic_{i}", on_click=ask, args=(question,), use_container_width=True)
-
-    with col_quick:
-        with st.container(border=True):
-            st.markdown('<div class="sec-title">⭐ Quick Access</div>', unsafe_allow_html=True)
-            quick = [
-                ("📍 Treatment Journey", "journey"),
-                ("❤️ Side Effects", "effects"),
-                ("🛡️ Safety Guide", "safety"),
-                ("📘 Glossary", "glossary"),
-                ("💚 Support & Wellness", "support"),
-                ("🔗 Trusted Resources", "resources"),
-            ]
-            for row in range(2):
-                cols = st.columns(3)
-                for col, (label, target) in zip(cols, quick[row * 3: row * 3 + 3]):
-                    with col:
-                        st.button(label, key=f"quick_{target}", on_click=go, args=(target,), use_container_width=True)
-
-    with col_help:
-        with st.container(border=True):
-            st.markdown(
-                '<div class="sec-title">🎧 Need Help?</div>'
-                '<div class="fdesc" style="margin-bottom:.8rem">Your questions matter. We\'re here to support you '
-                "with reliable and easy-to-understand information.</div>",
-                unsafe_allow_html=True,
-            )
-            st.button("💬 Start Chat", key="startchat", on_click=ask, args=("Hello",), use_container_width=True)
-            st.markdown(
-                '<div class="trust-row">🛡️ Trusted • Accurate • Patient Focused</div>',
-                unsafe_allow_html=True,
-            )
+    # ---- Quick access ----
+    with st.container(border=True):
+        st.markdown('<div class="sec-title">⭐ Quick Access</div>', unsafe_allow_html=True)
+        quick = [
+            ("📍 Treatment Journey", "journey"),
+            ("❤️ Side Effects", "effects"),
+            ("🛡️ Safety Guide", "safety"),
+            ("📘 Glossary", "glossary"),
+            ("💚 Support & Wellness", "support"),
+            ("🔗 Trusted Resources", "resources"),
+        ]
+        cols = st.columns(6)
+        for col, (label, target) in zip(cols, quick):
+            with col:
+                st.button(label, key=f"quick_{target}", on_click=go, args=(target,), use_container_width=True)
 
 
 def page_journey():
