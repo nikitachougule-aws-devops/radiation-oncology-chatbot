@@ -876,7 +876,7 @@ NAV_ITEMS = [
 
 def render_nav():
     # One single row with all pages; column widths follow label length
-    widths = [len(label) for _, label in NAV_ITEMS]
+    widths = [max(len(label), 12) for _, label in NAV_ITEMS]
     cols = st.columns(widths)
 
     for col, (key, label) in zip(cols, NAV_ITEMS):
@@ -976,20 +976,6 @@ def page_chat():
                         feedback_buttons(index, previous["content"], message["content"])
 
     st.write("")
-
-    # ---- Quick access ----
-    with st.container(border=True):
-        st.markdown('<div class="sec-title">⭐ Quick Access</div>', unsafe_allow_html=True)
-        quick = [
-            ("📍 Treatment Journey", "journey"),
-            ("❤️ Side Effects", "effects"),
-            ("🛡️ Safety Guide", "safety"),
-            ("💚 Support & Wellness", "support"),
-        ]
-        cols = st.columns(4)
-        for col, (label, target) in zip(cols, quick):
-            with col:
-                st.button(label, key=f"quick_{target}", on_click=go, args=(target,), use_container_width=True)
 
 
 def page_journey():
@@ -1102,7 +1088,7 @@ def page_faq():
 
     st.caption(f"{len(filtered)} FAQ(s)")
     for stage, question, answer in filtered:
-        with st.expander(f"❓ {question} · {stage}"):
+        with st.expander(f"{question} · {stage}"):
             st.markdown(answer)
 
 
