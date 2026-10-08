@@ -971,17 +971,6 @@ def page_chat():
         unsafe_allow_html=True,
     )
 
-    # ---- Four feature cards ----
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        feature_card("📍", "green", "Treatment Journey", "Step-by-step guide from consultation to follow-up", "journey")
-    with c2:
-        feature_card("❤️", "pink", "Side Effects & Self-Care", "Common side effects and general self-care tips", "effects")
-    with c3:
-        feature_card("📋", "purple", "Questions for My Doctor", "Prepare for your appointments with a checklist", "doctor")
-    with c4:
-        feature_card("📘", "blue", "Radiation Oncology Glossary", "Understand medical terms in simple language", "glossary")
-
     # ---- Try asking: question box first, then conversation ----
     with st.container(border=True):
         st.markdown('<div class="panel-title">✨ Try asking</div>', unsafe_allow_html=True)
@@ -1011,13 +1000,6 @@ def page_chat():
                     previous = st.session_state.messages[index - 1]
                     if previous["role"] == "user":
                         feedback_buttons(index, previous["content"], message["content"])
-
-        # The only disclaimer shown on the chat page
-        st.caption(
-            "💡 This assistant provides general patient education information from a curated "
-            "Radiation Oncology knowledge base. It does not replace advice from a treating "
-            "doctor or healthcare team."
-        )
 
     st.write("")
 
@@ -1309,9 +1291,7 @@ PAGES = {
 
 PAGES.get(st.session_state.page, page_chat)()
 
-if st.session_state.page != "chat":
-    st.markdown(
-        """<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
-It does not replace advice from a treating doctor or healthcare team.</div>""",
-        unsafe_allow_html=True,
-    )
+st.markdown(
+    """<div class="footer-note">💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.</div>""",
+    unsafe_allow_html=True,
+)
