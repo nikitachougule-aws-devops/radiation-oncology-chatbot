@@ -38,7 +38,7 @@ st.markdown(
 
     .hero {
         background: linear-gradient(120deg, #0b3d66 0%, #1a6fb5 60%, #2f9bd6 100%);
-        padding: 1rem 1.6rem;
+        padding: .85rem 1.35rem;
         border-radius: 20px;
         margin-bottom: 1.5rem;
         box-shadow: 0 10px 30px rgba(15, 76, 129, 0.20);
@@ -73,7 +73,7 @@ st.markdown(
 
     .hero h1 {
         color: white;
-        font-size: 1.85rem;
+        font-size: 1.72rem;
         font-weight: 800;
         margin: 0;
     }
@@ -369,15 +369,24 @@ st.markdown(
         margin-top: 0.05rem;
     }
 
-    .section-heading { color:#123e67; font-size:1.22rem; font-weight:800; margin:.9rem 0 .7rem; }
-    .section-subtitle { color:#71849a; font-size:.86rem; margin-top:-.45rem; margin-bottom:.9rem; }
-    .topic-card,.access-card,.help-card { background:#fff; border:1px solid #dbe6ef; border-radius:16px; padding:1rem 1.05rem; min-height:138px; box-shadow:0 4px 14px rgba(24,66,104,.07); margin-bottom:.8rem; }
-    .topic-icon,.access-icon,.help-icon { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:#eaf3ff; font-size:1.15rem; margin-bottom:.55rem; }
-    .topic-title,.access-title,.help-title { color:#123e67; font-size:.96rem; font-weight:800; margin-bottom:.25rem; }
-    .topic-text,.access-text,.help-text { color:#6b7e92; font-size:.78rem; line-height:1.45; }
-    .home-banner { background:linear-gradient(135deg,#eef6ff 0%,#f7fbff 100%); border:1px solid #d5e5f5; border-radius:17px; padding:.95rem 1.1rem; margin:.5rem 0 1rem; }
+    .section-heading { color:#123e67; font-size:1.18rem; font-weight:800; margin:1.05rem 0 .55rem; letter-spacing:-.01em; }
+    .section-subtitle { color:#71849a; font-size:.82rem; margin-top:-.32rem; margin-bottom:.75rem; }
+    .topic-card,.access-card,.help-card { background:#ffffff; border:1px solid #d9e5ef; border-radius:15px; padding:1rem 1.05rem; min-height:136px; box-shadow:0 5px 18px rgba(24,66,104,.065); margin-bottom:.65rem; }
+    .topic-card:hover,.access-card:hover,.help-card:hover { transform:translateY(-2px); border-color:#b9d2e8; box-shadow:0 8px 22px rgba(24,66,104,.10); }
+    .access-card { min-height:128px; background:linear-gradient(180deg,#ffffff 0%,#fafdff 100%); }
+    .help-card { min-height:118px; background:#f8fbfe; }
+    .topic-icon,.access-icon,.help-icon { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:#eaf3ff; border:1px solid #d7e8f8; font-size:1.12rem; margin-bottom:.55rem; }
+    .access-icon { background:#f0f5ff; }
+    .help-icon { background:#eef8f5; }
+    .topic-title,.access-title,.help-title { color:#123e67; font-size:.94rem; font-weight:800; margin-bottom:.25rem; }
+    .topic-text,.access-text,.help-text { color:#6b7e92; font-size:.77rem; line-height:1.45; }
+    .home-banner { background:linear-gradient(135deg,#edf5ff 0%,#f8fbff 100%); border:1px solid #d4e4f4; border-radius:16px; padding:.9rem 1.05rem; margin:.45rem 0 .8rem; box-shadow:0 3px 12px rgba(24,66,104,.04); }
     .home-banner-title { color:#123e67; font-weight:800; font-size:.92rem; }
-    .home-banner-text { color:#6d8094; font-size:.78rem; margin-top:.2rem; }
+    .home-banner-text { color:#6d8094; font-size:.77rem; margin-top:.18rem; line-height:1.45; }
+    .ask-panel { background:#ffffff; border:1px solid #d6e4ef; border-radius:16px; padding:.95rem 1rem; margin-top:.8rem; box-shadow:0 4px 14px rgba(24,66,104,.055); }
+    .ask-title { color:#123e67; font-size:1rem; font-weight:800; }
+    .ask-subtitle { color:#71849a; font-size:.78rem; margin-top:.15rem; }
+
 
     div[data-testid="stRadio"] > label { display:none !important; }
     div[data-testid="stRadio"] > div { gap:.45rem !important; flex-wrap:nowrap !important; overflow-x:auto !important; padding:.15rem .1rem .45rem !important; scrollbar-width:thin; }
@@ -695,7 +704,6 @@ st.markdown(
     <div class="hero-text">
         <div class="badge">● AI Assistant Online</div>
         <h1>🎗️ Radiation Oncology AI Assistant</h1>
-        <p>{T["hero_sub"]}</p>
     </div>
 </div>""",
     unsafe_allow_html=True,
@@ -1236,8 +1244,8 @@ st.markdown('<div class="nav-divider"></div>', unsafe_allow_html=True)
 if selected_page == "💬 Chat Assistant":
     st.markdown(
         '''<div class="home-banner">
-            <div class="home-banner-title">👋 Welcome to your Radiation Oncology AI Assistant</div>
-            <div class="home-banner-text">Explore common topics, access helpful guides, or type a question below. Information is general patient education and does not replace your healthcare team.</div>
+            <div class="home-banner-title">👋 Welcome</div>
+            <div class="home-banner-text">Explore popular topics, quick-access resources, or ask the assistant a question.</div>
         </div>''',
         unsafe_allow_html=True,
     )
@@ -1306,8 +1314,10 @@ if selected_page == "💬 Chat Assistant":
                 unsafe_allow_html=True,
             )
 
-    st.markdown('<div class="section-heading" style="margin-top:0.4rem;">Ask the Assistant</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Type your question below. The assistant will use the curated Radiation Oncology knowledge base when an answer is available.</div>', unsafe_allow_html=True)
+    st.markdown("""<div class="ask-panel">
+        <div class="ask-title">💬 Ask the Assistant</div>
+        <div class="ask-subtitle">Ask a general Radiation Oncology education question using the curated knowledge base.</div>
+    </div>""", unsafe_allow_html=True)
 
     for index, message in enumerate(st.session_state.messages):
         avatar = "🎗️" if message["role"] == "assistant" else "🧑"
