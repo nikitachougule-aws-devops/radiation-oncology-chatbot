@@ -1067,29 +1067,39 @@ def page_faq():
     st.markdown(f"### {T['faq_header']}")
 
     search_text = st.text_input(T["faq_search"], placeholder="Example: side effects, pain, skin...")
+    s = search_text.lower().strip()
 
-    all_faqs = []
+    # Group FAQs by stage, in a fixed order
+    grouped = {"FAQS_BEFORE": [], "FAQS_DURING": [], "FAQS_AFTER": []}
     for stage_key, questions in FAQ_DATA.items():
-        stage_name = STAGE_NAMES.get(stage_key, "Radiation Oncology")
+        if stage_key not in grouped:
+            continue
         for item in questions:
             if st.session_state.language in item:
                 question, answer = item[st.session_state.language]
-                all_faqs.append((stage_name, question, answer))
+                if not s or s in question.lower() or s in answer.lower():
+                    grouped[stage_key].append((question, answer))
 
-    if search_text:
-        s = search_text.lower()
-        filtered = [f for f in all_faqs if s in f[1].lower() or s in f[2].lower()]
-    else:
-        filtered = all_faqs
-
-    if not filtered:
+    if not any(grouped.values()):
         st.info(T["no_faq"])
         return
 
-    st.caption(f"{len(filtered)} FAQ(s)")
-    for stage, question, answer in filtered:
-        with st.expander(f"{question} · {stage}"):
-            st.markdown(answer)
+    labels = {
+        "FAQS_BEFORE": "Before Treatment",
+        "FAQS_DURING": "During Treatment",
+        "FAQS_AFTER": "After Treatment",
+    }
+
+    tabs = st.tabs([f"{labels[k]} ({len(v)})" for k, v in grouped.items()])
+
+    for tab, (key, faqs) in zip(tabs, grouped.items()):
+        with tab:
+            if not faqs:
+                st.info(T["no_faq"])
+                continue
+            for question, answer in faqs:
+                with st.expander(question):
+                    st.markdown(answer)
 
 
 def page_support():
