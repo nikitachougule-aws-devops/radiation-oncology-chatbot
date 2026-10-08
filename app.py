@@ -369,45 +369,17 @@ st.markdown(
         margin-top: 0.05rem;
     }
 
-    /* ===== Reference dashboard UI ===== */
-    .main .block-container { max-width: 1240px; padding: 1.0rem 1.35rem 2.2rem; }
-    [data-testid="stSidebar"] { background: linear-gradient(180deg,#063b78 0%,#082e62 100%); }
-    [data-testid="stSidebar"] > div:first-child { padding-top: 1.1rem; }
-    .ref-nav { display:flex; gap:6px; align-items:center; padding: 0 0 7px; border-bottom:3px solid #1769e8; margin-bottom:18px; }
-    .ref-nav-item { flex:1; min-width:0; }
-    .ref-nav-item button { width:100%; border:0 !important; background:transparent !important; color:#123e67 !important; font-weight:700 !important; font-size:0.78rem !important; padding:0.58rem 0.35rem !important; border-radius:9px 9px 0 0 !important; }
-    .ref-nav-item button:hover { background:#eef5ff !important; }
-    .ref-nav-active button { color:#075fd1 !important; background:#eef5ff !important; }
-    .more-wrap button { background:#eef4ff !important; border:1px solid #dce8fa !important; }
-    .hero { background:linear-gradient(120deg,#0b3f78 0%,#075fbd 58%,#1e70d1 100%); padding:1.0rem 1.55rem; border-radius:16px; margin-bottom:1.05rem; box-shadow:0 10px 28px rgba(15,76,129,.18); }
-    .hero-title { font-size:1.75rem !important; }
-    .hero p { display:none; }
-    .hero-sub { margin-top:0.25rem !important; font-size:0.82rem !important; }
-    .feature-card { background:#fff; border:1px solid #dce8f4; border-radius:12px; padding:0.9rem 1rem; min-height:116px; box-shadow:0 4px 13px rgba(24,66,104,.06); }
-    .feature-title { color:#123e67; font-weight:800; font-size:.86rem; }
-    .feature-desc { color:#657b91; font-size:.74rem; line-height:1.4; margin-top:.35rem; }
-    .feature-icon { float:left; width:42px; height:42px; border-radius:50%; background:#eef5ff; display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-right:.65rem; }
-    .try-panel { background:#eef5ff; border:1px solid #dbe7fb; border-radius:13px; padding:0.9rem 1rem; margin:1rem 0; }
-    .try-title { color:#123e67; font-weight:800; font-size:.9rem; margin-bottom:.65rem; }
-    .try-panel button { border-radius:18px !important; border:1px solid #c7dafa !important; background:#fff !important; color:#075fcf !important; font-size:.73rem !important; }
-    .chat-shell { background:#eef5ff; border:1px solid #dbe7fb; border-radius:14px; padding:.2rem .7rem .7rem; }
-    .chat-disclaimer { color:#6b86aa; font-size:.69rem; margin:.45rem .2rem .1rem; }
-    .lower-card { border:1px solid #d8e5f2; border-radius:12px; background:#fff; overflow:hidden; box-shadow:0 4px 12px rgba(24,66,104,.045); }
-    .lower-head { padding:.72rem .85rem; background:linear-gradient(90deg,#eef5ff,#f8fbff); color:#123e67; font-weight:800; font-size:.9rem; }
-    .lower-list { padding:.15rem .85rem .5rem; }
-    .lower-row { padding:.48rem 0; border-bottom:1px solid #e6eef6; color:#123e67; font-size:.76rem; display:flex; justify-content:space-between; }
-    .lower-row:last-child { border-bottom:0; }
-    .quick-box { border:1px solid #dbe7f4; border-radius:10px; background:#f7fbff; min-height:76px; text-align:center; padding:.55rem .35rem; color:#123e67; font-size:.68rem; font-weight:700; }
-    .quick-icon { font-size:1.15rem; display:block; margin-bottom:.22rem; }
-    .need-help { background:#eefaf7; border:1px solid #ccefe5; border-radius:12px; min-height:250px; padding:1rem 1.05rem; }
-    .need-icon { font-size:1.65rem; }
-    .need-title { color:#123e67; font-size:.95rem; font-weight:800; }
-    .need-text { color:#536f85; font-size:.75rem; line-height:1.55; margin:.55rem 0 .85rem; }
-    .trust-line { color:#13846a; font-size:.68rem; margin-top:.6rem; }
-    .footer-note { text-align:center; color:#71849a; font-size:.67rem; margin:1rem 0 .2rem; }
-    .glass-card { background:#fff; border:1px solid #dce7f1; border-radius:14px; padding:1rem; box-shadow:0 4px 14px rgba(24,66,104,.06); min-height:125px; }
-    .more-menu { background:#fff; border:1px solid #d6e3f0; border-radius:12px; padding:.55rem; box-shadow:0 12px 30px rgba(15,55,95,.14); }
-    @media (max-width: 900px) { .ref-nav { overflow-x:auto; } .ref-nav-item { min-width:135px; } }
+    /* ===== Clean hero + chat-only home requested ===== */
+    .hero { padding: 1.05rem 1.55rem !important; border-radius: 16px !important; margin-bottom: 1rem !important; }
+    .hero h1, .hero p, .hero .badge { color: #ffffff !important; }
+    .hero h1 { font-size: 1.85rem !important; }
+    .hero p { font-size: .9rem !important; }
+    .badge { color:#ffffff !important; }
+    .home-cleanup { display:none !important; }
+    .try-panel, .section-heading, .section-subtitle, .topic-card, .access-card, .help-card,
+    .lower-card, .quick-box, .need-help, .feature-card, .chat-disclaimer, .footer-note { display:none !important; }
+    .stChatInput { margin-top: .15rem !important; }
+    .chat-title-clean { color:#123e67; font-weight:800; font-size:1rem; margin:.35rem 0 .45rem; }
 
     </style>
     """,
@@ -630,33 +602,392 @@ TOTAL_FAQS = get_total_faqs()
 FAQ_KB_LOADED = TOTAL_FAQS > 0
 
 
-
-
 # ============================================================
-# SIDEBAR — REFERENCE DESIGN
+# SIDEBAR
 # ============================================================
+
 with st.sidebar:
-    st.markdown("""
-    <div class="sb-brand">
-      <div class="sb-logo">🎗️</div>
-      <div><div class="sb-title">Radiation Oncology AI</div><div class="credit-sub">Your Patient Education Assistant</div></div>
-    </div>
-    """, unsafe_allow_html=True)
-    selected_language = st.selectbox("🌐 Language", options=["en","hi","mr"], format_func=lambda x: LANGUAGES[x], index=["en","hi","mr"].index(st.session_state.language))
+    st.markdown(
+        """
+        <div class="sb-brand">
+            <div class="sb-logo">🎗️</div>
+            <div>
+                <div class="sb-title">Radiation Oncology AI</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    selected_language = st.selectbox(
+        "🌐 Language",
+        options=["en", "hi", "mr"],
+        format_func=lambda x: LANGUAGES[x],
+        index=["en", "hi", "mr"].index(st.session_state.language),
+    )
+
     if selected_language != st.session_state.language:
         st.session_state.language = selected_language
         st.rerun()
+
     if st.button("🗑️ Clear Chat", use_container_width=True):
-        st.session_state.messages = [{"role":"assistant","content":"👋 Hello! I'm your Radiation Oncology AI Assistant. How can I help you today?"}]
+        st.session_state.messages = [
+            {
+                "role": "assistant",
+                "content": (
+                    "👋 Hello! I'm your Radiation Oncology AI Assistant. "
+                    "How can I help you today?"
+                ),
+            }
+        ]
         st.session_state.feedback_given = {}
         st.rerun()
-    st.markdown("""
-    <div class="sb-section-title">Safety &amp; Trust</div>
-    <div class="sb-pill"><span class="sb-pill-icon">🔒</span><span class="sb-pill-text">Medical safety guardrails</span><span class="sb-pill-on">ON</span></div>
-    <div class="sb-pill"><span class="sb-pill-icon">🛡️</span><span class="sb-pill-text">Prompt-injection protection</span><span class="sb-pill-on">ON</span></div>
-    <div class="sb-pill"><span class="sb-pill-icon">📚</span><span class="sb-pill-text">Source-grounded responses</span><span class="sb-pill-on">ON</span></div>
-    <div class="credit-card"><div class="credit-item"><div class="credit-avatar dev">NC</div><div><div class="credit-role">AI Assistant Developed by</div><div class="credit-name">Nikita Chougule</div></div></div></div>
-    """, unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="sb-section-title">Safety &amp; Trust</div>
+        <div class="sb-pill">
+            <span class="sb-pill-icon">🔒</span>
+            <span class="sb-pill-text">Medical safety guardrails</span>
+            <span class="sb-pill-on">ON</span>
+        </div>
+        <div class="sb-pill">
+            <span class="sb-pill-icon">🛡️</span>
+            <span class="sb-pill-text">Prompt-injection protection</span>
+            <span class="sb-pill-on">ON</span>
+        </div>
+        <div class="sb-pill">
+            <span class="sb-pill-icon">📚</span>
+            <span class="sb-pill-text">Source-grounded responses</span>
+            <span class="sb-pill-on">ON</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="credit-card">
+            <div class="credit-item">
+                <div class="credit-avatar dev">NC</div>
+                <div>
+                    <div class="credit-role">AI Assistant Developed by</div>
+                    <div class="credit-name">Nikita Chougule</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+# ============================================================
+# HERO IMAGE
+# ============================================================
+
+st.markdown(
+    f"""<div class="hero">
+    <div class="hero-text">
+        <div class="badge">● AI Assistant Online</div>
+        <h1>🎗️ Radiation Oncology AI Assistant</h1>
+        <p>{T["hero_sub"]}</p>
+    </div>
+</div>""",
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# CREATE RAG DOCUMENTS
+# ============================================================
+
+def create_rag_documents():
+    documents = []
+    ids = []
+    metadatas = []
+
+    stage_names = {
+        "FAQS_BEFORE": "Before Treatment",
+        "FAQS_DURING": "During Treatment",
+        "FAQS_AFTER": "After Treatment",
+    }
+
+    for stage_key, questions in FAQ_DATA.items():
+        stage_name = stage_names.get(stage_key, "Radiation Oncology")
+
+        for index, item in enumerate(questions):
+            for language in ["en", "hi", "mr"]:
+                if language not in item:
+                    continue
+
+                question, answer = item[language]
+
+                document = (
+                    f"Category: Radiation Oncology\n"
+                    f"Stage: {stage_name}\n"
+                    f"Question: {question}\n"
+                    f"Answer: {answer}"
+                )
+
+                documents.append(document)
+                ids.append(f"{stage_key}_{index}_{language}")
+
+                metadatas.append(
+                    {
+                        "type": "faq",
+                        "stage": stage_name,
+                        "language": language,
+                        "question": question,
+                        "answer": answer,
+                    }
+                )
+
+    return documents, ids, metadatas
+
+
+# ============================================================
+# LOAD RAG
+# ============================================================
+
+@st.cache_resource
+def load_rag():
+    model = SentenceTransformer(
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    )
+
+    client = chromadb.Client()
+
+    collection = client.get_or_create_collection(
+        name="radiation_oncology_generic_knowledge"
+    )
+
+    documents, ids, metadatas = create_rag_documents()
+
+    if documents:
+        embeddings = model.encode(
+            documents,
+            normalize_embeddings=True,
+        ).tolist()
+
+        collection.upsert(
+            ids=ids,
+            documents=documents,
+            embeddings=embeddings,
+            metadatas=metadatas,
+        )
+
+    return model, collection
+
+
+# ============================================================
+# NORMALIZE TEXT
+# ============================================================
+
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
+# ============================================================
+# GREETINGS
+# ============================================================
+
+GREETING_PHRASES = {
+    "hi", "hii", "hiii", "hello", "helo", "hlo", "hey", "heya",
+    "yo", "hi there", "hello there", "hey there",
+    "good morning", "good afternoon", "good evening", "good day",
+    "namaste", "namaskar",
+    "how are you", "how are you doing", "whats up", "what's up",
+    "greetings",
+}
+
+
+def is_greeting(text):
+    normalized = normalize_text(text)
+    normalized = re.sub(r"[^\w\s]", "", normalized).strip()
+    return normalized in GREETING_PHRASES
+
+
+# ============================================================
+# MEANINGFUL WORDS
+# ============================================================
+
+def get_meaningful_words(text):
+    stop_words = {
+        "what", "is", "the", "a", "an", "are", "was", "were",
+        "where", "who", "when", "how", "can", "i", "me", "my",
+        "to", "for", "of", "in", "on", "do", "does", "will",
+        "during", "today", "please", "tell", "about", "and",
+        "or", "this", "that", "there", "your", "you",
+    }
+
+    words = normalize_text(text).split()
+
+    return {
+        word
+        for word in words
+        if len(word) > 2 and word not in stop_words
+    }
+
+
+# ============================================================
+# QUESTION TYPE
+# ============================================================
+
+def detect_question_type(question):
+    text = normalize_text(question)
+
+    if is_greeting(question):
+        return "greeting"
+
+    if any(
+        word in text
+        for word in [
+            "radiation", "radiotherapy", "treatment",
+            "side effect", "side effects", "skin", "hair",
+            "fatigue", "pain", "burning", "redness", "itching",
+            "nausea", "vomiting", "sleep", "appetite", "diet",
+            "food", "exercise", "care", "symptom", "symptoms",
+            "simulation", "session", "therapy", "hydration",
+        ]
+    ):
+        return "medical"
+
+    if any(
+        word in text
+        for word in [
+            "weather", "temperature", "rain", "cricket",
+            "football", "movie", "movies", "music", "stock",
+            "stocks", "bitcoin", "recipe", "restaurant",
+            "politics", "news", "travel", "flight", "hotel",
+        ]
+    ):
+        return "unrelated"
+
+    return "unknown"
+
+
+# ============================================================
+# MEDICAL SAFETY
+# ============================================================
+
+def detect_medical_safety_level(question):
+    text = normalize_text(question)
+
+    urgent_patterns = [
+        "difficulty breathing", "cannot breathe", "can not breathe",
+        "trouble breathing", "chest pain", "severe chest pain",
+        "unconscious", "passed out", "fainted", "heavy bleeding",
+        "severe bleeding", "vomiting blood", "blood vomiting",
+        "severe allergic reaction", "swelling of face",
+        "swelling of throat", "seizure", "convulsion", "stroke symptoms",
+    ]
+
+    for pattern in urgent_patterns:
+        if pattern in text:
+            return "urgent"
+
+    diagnosis_patterns = [
+        "diagnose me", "can you diagnose", "can you diagnose my",
+        "could you diagnose", "please diagnose", "diagnosis",
+        "my diagnosis", "tell me my diagnosis", "what is my diagnosis",
+        "what is my cancer", "what cancer do i have", "do i have cancer",
+        "could i have cancer", "can i have cancer", "is this cancer",
+        "do my symptoms mean cancer", "do my symptoms mean i have cancer",
+        "can you tell if i have cancer", "what disease do i have",
+        "what illness do i have", "what is wrong with me",
+        "interpret my scan", "interpret my ct", "interpret my mri",
+        "interpret my pet scan", "read my scan", "read my mri",
+        "read my ct", "read my pet scan",
+        "मेरा निदान करो", "मुझे कौन सी बीमारी है", "मुझे कौन सा कैंसर है",
+        "क्या मुझे कैंसर है", "मेरा कैंसर क्या है", "मेरा निदान क्या है",
+        "माझे निदान करा", "मला कोणता आजार आहे", "मला कोणता कर्करोग आहे",
+        "मला कॅन्सर आहे का", "माझा निदान काय आहे",
+    ]
+
+    for pattern in diagnosis_patterns:
+        if pattern in text:
+            return "personal_medical"
+
+    medicine_patterns = [
+        "prescribe medicine", "prescribe medication", "give me medicine",
+        "what medicine should i take", "what medication should i take",
+        "what tablet should i take", "what dose should i take",
+        "what dosage should i take", "how much medicine should i take",
+        "should i stop my medicine", "should i stop my medication",
+        "stop my medicine", "stop my medication", "change my medicine",
+        "change my medication", "increase my medicine", "decrease my medicine",
+        "increase my medication", "decrease my medication",
+        "double my dose", "skip my dose",
+        "मेरी दवा बदलो", "मेरी दवा बंद कर दूं", "दवा की खुराक",
+        "मुझे कौन सी दवा लेनी चाहिए", "माझे औषध बदला",
+        "औषध बंद करू का", "औषधाचा डोस",
+    ]
+
+    for pattern in medicine_patterns:
+        if pattern in text:
+            return "personal_medical"
+
+    treatment_change_patterns = [
+        "change my treatment", "change my treatment plan",
+        "should i change my treatment", "change my radiation",
+        "change my radiation treatment", "stop radiation",
+        "stop my radiation", "skip radiation", "skip my radiation",
+        "delay my radiation", "increase radiation", "decrease radiation",
+        "change radiation dose", "change my radiation dose",
+        "should i continue radiation", "should i stop treatment",
+        "should i continue treatment", "can i stop treatment",
+        "can i skip treatment", "मेरा इलाज बदलो", "रेडिएशन बंद कर दूं",
+        "इलाज बंद कर दूं", "माझा उपचार बदला", "रेडिएशन बंद करू का",
+        "उपचार बंद करू का",
+    ]
+
+    for pattern in treatment_change_patterns:
+        if pattern in text:
+            return "personal_medical"
+
+    return "safe"
+
+
+# ============================================================
+# PROMPT INJECTION
+# ============================================================
+
+PROMPT_INJECTION_PATTERNS = [
+    "ignore previous instructions", "ignore all instructions",
+    "ignore your instructions", "ignore the instructions",
+    "forget your instructions", "forget your rules",
+    "show system prompt", "show your system prompt",
+    "reveal system prompt", "reveal your prompt",
+    "show developer message", "reveal developer message",
+    "show hidden instructions", "reveal hidden instructions",
+    "jailbreak", "bypass your rules", "bypass safety",
+    "disable safety", "remove safety", "act as an unrestricted ai",
+    "act as dan", "do anything now",
+    "निर्देशों को अनदेखा", "पिछले निर्देशों को अनदेखा",
+    "सिस्टम प्रॉम्प्ट दिखाओ", "अपने निर्देश दिखाओ",
+    "सूचनांकडे दुर्लक्ष", "मागील सूचना दुर्लक्षित",
+    "सिस्टम प्रॉम्प्ट दाखवा", "तुमच्या सूचना दाखवा",
+]
+
+
+def check_guardrails(question):
+    text = question.lower().strip()
+
+    for pattern in PROMPT_INJECTION_PATTERNS:
+        if pattern in text:
+            return False, "injection", T["injection"]
+
+    safety_level = detect_medical_safety_level(question)
+
+    if safety_level == "urgent":
+        return False, "urgent", T["urgent"]
+
+    if safety_level == "personal_medical":
+        return False, "personal_medical", T["medical"]
+
+    return True, "safe", None
 
 
 # ============================================================
@@ -865,159 +1196,243 @@ def feedback_buttons(message_index, question, answer):
             st.rerun()
 
 
+# ============================================================
+# TABS
+# ============================================================
 
-
-# ============================================================
-# NAVIGATION
-# ============================================================
-if "active_page" not in st.session_state: st.session_state.active_page = "Chat Assistant"
-NAV=[("💬","Chat Assistant"),("🧭","Treatment Journey"),("📖","Treatment Info"),("⚠️","Side Effects"),("🛡️","Safety & Self-Care"),("▶️","Video Guide")]
-navcols=st.columns([1.0,1.25,1.08,0.95,1.18,0.98,0.72])
-for i,(icon,label) in enumerate(NAV):
-    with navcols[i]:
-        active=st.session_state.active_page==label
-        if st.button(f"{icon}  {label}", key=f"nav_{label}", use_container_width=True, type="primary" if active else "secondary"):
-            st.session_state.active_page=label; st.rerun()
-with navcols[6]:
-    with st.popover("More  ˅", use_container_width=True):
-        MORE=[("❓","FAQs"),("📋","Questions for My Doctor"),("📖","Glossary"),("♥","Support & Wellness"),("🌿","After Treatment"),("🔗","Trusted Resources")]
-        for icon,label in MORE:
-            if st.button(f"{icon}  {label}", key=f"more_{label}", use_container_width=True):
-                st.session_state.active_page=label; st.rerun()
-
-# ============================================================
-# CONTENT HELPERS
-# ============================================================
-def add_question(question):
-    st.session_state.messages.append({"role":"user","content":question})
-    allowed, _, safety_message = check_guardrails(question)
-    source=None
-    if not allowed:
-        response=safety_message
-    else:
-        qtype=detect_question_type(question)
-        if qtype=="greeting": response=T["greeting"]
-        elif qtype=="unrelated": response=T["unrelated"]
-        else:
-            result=search_knowledge(question, st.session_state.language)
-            if result:
-                source=result
-                response=(
-                    "**Answer**\n\n"
-                    + result.get("answer", "")
-                    + "\n\n*For personal medical decisions, please follow your treating healthcare team's advice.*"
-                )
-            else: response=T["unknown"]
-    st.session_state.messages.append({"role":"assistant","content":response,"source":source})
-
-# ============================================================
-# CHAT HOME — MATCHING REFERENCE IMAGE
-# ============================================================
-if st.session_state.active_page == "Chat Assistant":
-    st.markdown("""<div class="hero"><div class="hero-text"><div class="hero-status">🟢 AI Assistant Online</div><div class="hero-title">🎗️ Radiation Oncology AI Assistant</div><div class="hero-sub">Your patient education assistant for Radiation Oncology.</div></div></div>""", unsafe_allow_html=True)
-
-    features=[
-      ("🧭","Treatment Journey","Step-by-step guide from consultation to follow-up"),
-      ("💗","Side Effects & Self-Care","Common side effects and general self-care tips"),
-      ("📋","Questions for My Doctor","Prepare for your appointments with a checklist"),
-      ("📖","Radiation Oncology Glossary","Understand medical terms in simple language"),
+tab_chat, tab_info, tab_faq, tab_video = st.tabs(
+    [
+        "💬 Chat Assistant",
+        "📖 Treatment Info",
+        "📚 FAQs",
+        "🎥 Video Guide",
     ]
-    fcols=st.columns(4)
-    for i,(icon,title,desc) in enumerate(features):
-        with fcols[i]:
-            st.markdown(f'<div class="feature-card"><div class="feature-icon">{icon}</div><div class="feature-title">{title}</div><div class="feature-desc">{desc}</div><div style="text-align:right;color:#1769e8;font-size:1.1rem">→</div></div>',unsafe_allow_html=True)
+)
 
-    st.markdown("""<div class="try-panel"><div class="try-title">✨ Try asking</div>""", unsafe_allow_html=True)
-    prompts=["What is IMRT?","What should I expect during treatment?","How can I manage fatigue?","Is radiation therapy safe?"]
-    pcols=st.columns(4)
-    for i,q in enumerate(prompts):
-        with pcols[i]:
-            if st.button(q,key=f"prompt_{i}",use_container_width=True): add_question(q); st.rerun()
-    st.markdown("""</div>""", unsafe_allow_html=True)
-
-    # Chat history
-    if st.session_state.messages and len(st.session_state.messages)>1:
-        for idx,m in enumerate(st.session_state.messages):
-            with st.chat_message(m["role"], avatar="🎗️" if m["role"]=="assistant" else "🧑"):
-                st.markdown(m["content"])
-                if m.get("source"): display_source(m["source"])
-                if m["role"]=="assistant" and idx>0 and st.session_state.messages[idx-1]["role"]=="user": feedback_buttons(idx,st.session_state.messages[idx-1]["content"],m["content"])
-    prompt=st.chat_input("Type your question here...")
-    if prompt: add_question(prompt); st.rerun()
-    st.markdown("""<div class="chat-disclaimer">💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.</div>""", unsafe_allow_html=True)
-
-    st.markdown('<div class="section-heading">Popular Topics</div>',unsafe_allow_html=True)
-    c1,c2,c3=st.columns([1.05,1.05,1])
-    with c1:
-        st.markdown('<div class="lower-card"><div class="lower-head">🔥 &nbsp;Popular Topics</div><div class="lower-list">'+''.join([f'<div class="lower-row">{x}<span>›</span></div>' for x in ["Radiation therapy types","Treatment preparation","Managing side effects","Life after treatment","Safety precautions"]])+'</div></div>',unsafe_allow_html=True)
-    with c2:
-        st.markdown('<div class="lower-card"><div class="lower-head">⭐ &nbsp;Quick Access</div></div>',unsafe_allow_html=True)
-        qitems=[("🧭","Treatment Journey"),("💗","Side Effects"),("🛡️","Safety Guide"),("📖","Glossary"),("♥","Support & Wellness"),("🔗","Trusted Resources")]
-        for row in range(2):
-            qcols=st.columns(3)
-            for j in range(3):
-                icon,label=qitems[row*3+j]
-                with qcols[j]:
-                    st.markdown(f'<div class="quick-box"><span class="quick-icon">{icon}</span>{label}</div>',unsafe_allow_html=True)
-    with c3:
-        st.markdown("""<div class="need-help"><div class="need-icon">🎧</div><div class="need-title">Need Help?</div><div class="need-text">Your questions matter. We’re here to support you with reliable and easy-to-understand information.</div>""",unsafe_allow_html=True)
-        if st.button("💬  Start Chat",key="start_chat",use_container_width=True): st.session_state.active_page="Chat Assistant"; st.rerun()
-        st.markdown('<div class="trust-line">🛡️ &nbsp;Trusted &nbsp;•&nbsp; Accurate &nbsp;•&nbsp; Patient Focused</div></div>',unsafe_allow_html=True)
 
 # ============================================================
-# OTHER TOP-LEVEL PAGES
+# CHAT
 # ============================================================
-else:
-    page=st.session_state.active_page
-    if page=="Treatment Journey":
-        st.markdown('<div class="hero"><div class="hero-title">🧭 Treatment Journey</div><div class="hero-sub">A simple guide from consultation through follow-up.</div></div>',unsafe_allow_html=True)
-        items=[("1","Consultation"),("2","CT Simulation"),("3","Treatment Planning"),("4","Treatment Sessions"),("5","On-Treatment Review"),("6","Follow-up")]
-    elif page=="Treatment Info":
-        st.markdown('<div class="hero"><div class="hero-title">📖 Treatment Info</div><div class="hero-sub">General patient education about radiation therapy.</div></div>',unsafe_allow_html=True)
-        items=[("","External Beam Radiation"),("","IMRT / VMAT"),("","SBRT / SRS"),("","Brachytherapy"),("","Simulation & Planning"),("","Treatment Sessions")]
-    elif page=="Side Effects":
-        st.markdown('<div class="hero"><div class="hero-title">⚠️ Side Effects</div><div class="hero-sub">Common effects and general self-care information.</div></div>',unsafe_allow_html=True)
-        items=[("","Fatigue"),("","Skin Changes"),("","Hair Changes"),("","Nausea"),("","Nutrition Changes"),("","Bowel / Bladder Changes")]
-    elif page=="Safety & Self-Care":
-        st.markdown("""<div class="hero"><div class="hero-title">🛡️ Safety & Self-Care</div><div class="hero-sub">General safety information — always follow your care team's instructions.</div></div>""",unsafe_allow_html=True)
-        items=[("","Radiation Safety"),("","Pregnancy"),("","Fertility"),("","Implanted Devices"),("","Skin Care"),("","When to Contact Your Team")]
-    elif page=="Video Guide":
-        st.markdown('<div class="hero"><div class="hero-title">🎥 Video Guide</div><div class="hero-sub">Generic educational video resources.</div></div>',unsafe_allow_html=True)
-        video_file=None
-        if VIDEO_DIR.exists():
-            for ext in ["*.mp4","*.mov","*.avi","*.mkv","*.webm","*.m4v"]:
-                m=sorted(VIDEO_DIR.glob(ext))
-                if m: video_file=m[0]; break
-        if video_file: st.video(str(video_file))
-        else: st.info("No generic educational video found in the assets folder.")
-        items=[]
-    elif page=="FAQs":
-        st.markdown('<div class="hero"><div class="hero-title">❓ FAQs</div><div class="hero-sub">Frequently asked Radiation Oncology questions.</div></div>',unsafe_allow_html=True)
-        items=[]
-        for key,vals in FAQ_DATA.items():
-            for item in vals:
-                if isinstance(item,dict):
-                    with st.expander(item.get("question", "Frequently Asked Question")): st.write(item.get("answer", ""))
-        if not FAQ_DATA: st.info("FAQ knowledge base is not available.")
-    elif page=="Questions for My Doctor":
-        st.markdown('<div class="hero"><div class="hero-title">📋 Questions for My Doctor</div><div class="hero-sub">Use these prompts to prepare for an appointment.</div></div>',unsafe_allow_html=True)
-        items=[("","What is the goal of my radiation treatment?"),("","How many sessions will I need?"),("","What side effects should I report?"),("","How should I care for the treated area?"),("","Who should I contact after hours?"),("","Are there any activity or nutrition restrictions?")]
-    elif page=="Glossary":
-        st.markdown('<div class="hero"><div class="hero-title">📖 Radiation Oncology Glossary</div><div class="hero-sub">Common terms explained in patient-friendly language.</div></div>',unsafe_allow_html=True)
-        items=[("","IMRT — Intensity-Modulated Radiation Therapy"),("","VMAT — Volumetric Modulated Arc Therapy"),("","SBRT — Stereotactic Body Radiation Therapy"),("","SRS — Stereotactic Radiosurgery"),("","Simulation — Treatment planning appointment"),("","Fraction — One radiation treatment session")]
-    elif page=="Support & Wellness":
-        st.markdown('<div class="hero"><div class="hero-title">♥ Support & Wellness</div><div class="hero-sub">General supportive-care resources for patients and caregivers.</div></div>',unsafe_allow_html=True)
-        items=[("","Emotional Support"),("","Nutrition & Hydration"),("","Sleep & Rest"),("","Gentle Activity"),("","Caregiver Support"),("","Questions to Discuss With Your Team")]
-    elif page=="After Treatment":
-        st.markdown('<div class="hero"><div class="hero-title">🌿 After Treatment</div><div class="hero-sub">General information about recovery and follow-up.</div></div>',unsafe_allow_html=True)
-        items=[("","Follow-up Visits"),("","Managing Ongoing Effects"),("","Skin Recovery"),("","Energy & Activity"),("","When to Call Your Team"),("","Long-term Follow-up")]
+
+with tab_chat:
+    st.markdown("<div class='chat-title-clean'>Ask your Radiation Oncology question</div>", unsafe_allow_html=True)
+
+    for index, message in enumerate(st.session_state.messages):
+        avatar = "🎗️" if message["role"] == "assistant" else "🧑"
+
+        with st.chat_message(message["role"], avatar=avatar):
+            st.markdown(message["content"])
+
+            if message["role"] == "assistant" and message.get("source"):
+                display_source(message["source"])
+
+            if message["role"] == "assistant" and index > 0:
+                previous_message = st.session_state.messages[index - 1]
+
+                if previous_message["role"] == "user":
+                    feedback_buttons(
+                        index,
+                        previous_message["content"],
+                        message["content"],
+                    )
+
+    prompt = st.chat_input(T["placeholder"])
+
+    if prompt:
+        st.session_state.messages.append(
+            {"role": "user", "content": prompt}
+        )
+
+        with st.chat_message("user", avatar="🧑"):
+            st.markdown(prompt)
+
+        allowed, safety_type, safety_message = check_guardrails(prompt)
+        source = None
+
+        if not allowed:
+            response = safety_message
+
+        else:
+            question_type = detect_question_type(prompt)
+
+            if question_type == "greeting":
+                response = T["greeting"]
+
+            elif question_type == "unrelated":
+                response = T["unrelated"]
+
+            else:
+                result = search_knowledge(
+                    prompt,
+                    st.session_state.language,
+                )
+
+                if result:
+                    source = result
+                    answer = result.get("answer", "")
+
+                    response = (
+                        f"**Answer**\n\n"
+                        f"{answer}\n\n"
+                    )
+
+                else:
+                    response = T["unknown"]
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": response,
+                "source": source,
+            }
+        )
+
+        with st.chat_message("assistant", avatar="🎗️"):
+            st.markdown(response)
+
+            if source:
+                display_source(source)
+
+
+# ============================================================
+# TREATMENT INFORMATION
+# ============================================================
+
+with tab_info:
+    st.markdown(f"### {T['treatment']}")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(
+            """<div class="glass-card">
+    <h4>📋 Before Treatment</h4>
+    <p>Learn what to expect before starting radiation therapy, including general preparation and treatment-planning information.</p>
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+        st.write("")
+
+        st.markdown(
+            """<div class="glass-card">
+    <h4>🩺 During Treatment</h4>
+    <p>Understand what typically happens during a radiation treatment session and what patients may experience.</p>
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+        st.markdown(
+            """<div class="glass-card">
+    <h4>✅ After Treatment</h4>
+    <p>Learn about common post-treatment considerations, general self-care, and when to seek professional guidance.</p>
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+        st.write("")
+
+        st.markdown(
+            """<div class="glass-card">
+    <h4>☎️ When to Contact Your Healthcare Team</h4>
+    <p>Understand when treatment-related symptoms or concerns should be discussed with your healthcare team.</p>
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+
+# ============================================================
+# FAQ TAB
+# ============================================================
+
+with tab_faq:
+    st.markdown(f"### {T['faq_header']}")
+
+    search_text = st.text_input(
+        T["faq_search"],
+        placeholder="Example: side effects, pain, skin...",
+    )
+
+    all_faqs = []
+
+    stage_names = {
+        "FAQS_BEFORE": "Before Treatment",
+        "FAQS_DURING": "During Treatment",
+        "FAQS_AFTER": "After Treatment",
+    }
+
+    for stage_key, questions in FAQ_DATA.items():
+        stage_name = stage_names.get(stage_key, "Radiation Oncology")
+
+        for item in questions:
+            if st.session_state.language in item:
+                question, answer = item[st.session_state.language]
+                all_faqs.append((stage_name, question, answer))
+
+    if search_text:
+        search_lower = search_text.lower()
+
+        filtered_faqs = [
+            item
+            for item in all_faqs
+            if search_lower in item[1].lower()
+            or search_lower in item[2].lower()
+        ]
     else:
-        st.markdown('<div class="hero"><div class="hero-title">🔗 Trusted Resources</div><div class="hero-sub">Resources to discuss with your healthcare team.</div></div>',unsafe_allow_html=True)
-        items=[("","Treating Radiation Oncology Team"),("","Hospital / Cancer Center Education"),("","National Cancer Information Resources"),("","Emergency Services")]
-    if 'items' in locals() and items:
-        cols=st.columns(3)
-        for i,(num,title) in enumerate(items):
-            with cols[i%3]: st.markdown(f'<div class="glass-card"><h4>{num} {title}</h4><p>General patient education information. Ask your treating healthcare team for advice specific to your situation.</p></div>',unsafe_allow_html=True)
-            if i%3==2: st.write("")
+        filtered_faqs = all_faqs
 
-st.markdown('<div class="footer-note">This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from your treating doctor or healthcare team.</div>',unsafe_allow_html=True)
+    if not filtered_faqs:
+        st.info(T["no_faq"])
+    else:
+        st.caption(f"{len(filtered_faqs)} FAQ(s)")
+
+        for stage, question, answer in filtered_faqs:
+            with st.expander(f"❓ {question} · {stage}"):
+                st.markdown(answer)
+
+
+# ============================================================
+# VIDEO TAB
+# ============================================================
+
+with tab_video:
+    st.markdown("### 🎥 Radiation Therapy: General Guide")
+
+    st.caption(
+        "An educational video explaining the radiation treatment process. "
+        "Use only generic, non-hospital-specific educational content here."
+    )
+
+    video_extensions = [
+        "*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.m4v"
+    ]
+
+    video_file = None
+
+    if VIDEO_DIR.exists():
+        for extension in video_extensions:
+            matches = sorted(VIDEO_DIR.glob(extension))
+            if matches:
+                video_file = matches[0]
+                break
+
+    if video_file:
+        st.video(str(video_file))
+    else:
+        st.info(
+            "No generic educational video found in the assets folder."
+        )
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.markdown(
+    """<div class="footer-note">
+This assistant provides general patient education information from a curated Radiation Oncology knowledge base.<br>
+It does not replace advice from a treating doctor or healthcare team.
+</div>""",
+    unsafe_allow_html=True,
+)
