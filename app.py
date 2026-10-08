@@ -1831,17 +1831,9 @@ def page_chat():
                 is_answer = message["role"] == "assistant" and message.get("source")
 
                 if is_answer:
-                    display_source(message["source"])
+                    # Keep only the answer and Listen control. Hide source metadata,
+                    # WhatsApp answer sharing, and thumbs up/down feedback from patients.
                     speak_button(message["content"], U["listen"], U["stop"])
-                    whatsapp_share(
-                        message["content"],
-                        U["share_answer"],
-                    )
-
-                if message["role"] == "assistant" and index > 0:
-                    previous = st.session_state.messages[index - 1]
-                    if previous["role"] == "user":
-                        feedback_buttons(index, previous["content"], message["content"])
 
                 # Follow-up suggestions (latest answer only)
                 if is_answer and index == last_index:
