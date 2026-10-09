@@ -1927,7 +1927,10 @@ def page_video():
 
     video_file = pick_video()
     if video_file:
-        st.video(str(video_file))
+        # Keep the video player smaller by placing it in a centered, narrower column.
+        _, video_column, _ = st.columns([1, 2, 1])
+        with video_column:
+            st.video(str(video_file))
     else:
         st.info(U["no_video"])
 
@@ -1936,7 +1939,7 @@ def page_video():
         for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
             photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
     if photo_files:
-        st.markdown("### 📸 Treatment Photos")
+        st.markdown("### 📸 Department and treatment photos")
         # Display smaller photos in a responsive three-column gallery, with a title for each.
         photo_columns = st.columns(3)
         for index, photo in enumerate(photo_files):
