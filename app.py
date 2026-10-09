@@ -1936,7 +1936,7 @@ def page_video():
         for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
             photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
     if photo_files:
-        st.markdown("### 📸 Department and treatment photos")
+        st.markdown("### 📸 Treatment Photos")
         # Display smaller photos in a responsive three-column gallery, with a title for each.
         photo_columns = st.columns(3)
         for index, photo in enumerate(photo_files):
