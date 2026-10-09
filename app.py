@@ -1820,7 +1820,6 @@ def page_chat():
     # ---- Hero ----
     st.markdown(
         f"""<div class="hero">
-<div class="badge"><span class="dot"></span>{U["badge"]}</div>
 <h1>{U["hero_title"]}</h1>
 <p>{T["hero_sub"]}</p>
 </div>""",
@@ -1938,8 +1937,13 @@ def page_video():
             photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
     if photo_files:
         st.markdown("### 📸 Department and treatment photos")
-        for photo in photo_files:
-            st.image(str(photo), use_container_width=True)
+        # Display smaller photos in a responsive three-column gallery, with a title for each.
+        photo_columns = st.columns(3)
+        for index, photo in enumerate(photo_files):
+            title = re.sub(r"[_-]+", " ", photo.stem).strip().title()
+            with photo_columns[index % 3]:
+                st.markdown(f"**{html.escape(title or 'Treatment Photo')}**")
+                st.image(str(photo), width=220)
 
 
 def page_faq():
