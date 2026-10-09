@@ -406,6 +406,7 @@ UI_EXTRA = {
         "pill3": "Source-grounded responses",
         "on": "ON",
         "dev_by": "AI Assistant Developed by",
+        "brand_sub": "Your Patient Education Assistant",
         "hero_title": "🎗️ Radiation Oncology AI Assistant",
         "ask_title": "✨ Ask your question",
         "disclaimer": "💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.",
