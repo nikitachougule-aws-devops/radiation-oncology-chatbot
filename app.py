@@ -1569,16 +1569,16 @@ def feedback_buttons(message_index, question, answer):
 # ============================================================
 
 NAV_ITEMS = [
-    ("chat", "💬"),
-    ("journey", "🧭"),
-    ("info", "📖"),
-    ("video", "▶️"),
-    ("faq", "❓"),
-    ("diet", "🥗"),
-    ("effects", "⚠️"),
-    ("safety", "🛡️"),
-    ("support", "💙"),
-    ("after", "🌿"),
+    ("chat", ""),
+    ("journey", ""),
+    ("info", ""),
+    ("video", ""),
+    ("faq", ""),
+    ("diet", ""),
+    ("effects", ""),
+    ("safety", ""),
+    ("support", ""),
+    ("after", ""),
 ]
 
 
