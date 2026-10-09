@@ -1927,8 +1927,8 @@ def page_video():
 
     video_file = pick_video()
     if video_file:
-        # Keep the video player smaller by placing it in a centered, narrower column.
-        _, video_column, _ = st.columns([1, 2, 1])
+        # Keep the video player smaller and aligned to the left side.
+        video_column, _ = st.columns([1, 1])
         with video_column:
             st.video(str(video_file))
     else:
