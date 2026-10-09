@@ -1937,7 +1937,7 @@ def page_video():
         for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
             photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
     if photo_files:
-        st.markdown("### 📸 Department and treatment photos")
+        st.markdown("### 📸 Treatment photos")
         for photo in photo_files:
             st.image(str(photo), use_container_width=True)
 
