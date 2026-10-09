@@ -133,14 +133,14 @@ st.markdown(
     .hero {
         position: relative; overflow: hidden;
         background: linear-gradient(110deg, #0a3a8f 0%, #0f55b8 55%, #1a72d4 100%);
-        padding: 1.7rem 2rem; border-radius: 16px; margin-bottom: 1.1rem;
-        box-shadow: 0 10px 28px rgba(15,76,160,0.25);
+        padding: 1.25rem 1.75rem; border-radius: 16px; margin-bottom: 1rem;
+        box-shadow: 0 8px 22px rgba(15,76,160,0.20);
     }
-    .hero::after { content: ""; position: absolute; right: -60px; top: -80px; width: 340px; height: 340px;
-        border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.16), rgba(255,255,255,0) 70%); }
-    .hero h1 { color: #fff !important; font-size: 2.4rem; font-weight: 800; margin: .3rem 0 .6rem 0; letter-spacing: -.01em; }
-    .hero p { color: #e4f0fb !important; font-size: 1rem; margin: .15rem 0; }
-    .hero p.hero-sub2 { font-size: .92rem; margin-top: .6rem; }
+    .hero::after { content: ""; position: absolute; right: -60px; top: -80px; width: 300px; height: 300px;
+        border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.14), rgba(255,255,255,0) 70%); }
+    .hero h1 { color: #fff !important; font-size: 2.05rem; line-height: 1.25; font-weight: 800; margin: .15rem 0 .55rem 0; letter-spacing: -.01em; }
+    .hero p { color: #e4f0fb !important; font-size: .96rem; margin: .1rem 0; }
+    .hero p.hero-sub2 { font-size: .88rem; margin-top: .45rem; }
     .badge { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,255,255,0.14);
         border: 1px solid rgba(255,255,255,0.4); color: #fff !important; padding: .25rem .8rem;
         border-radius: 999px; font-size: .78rem; }
@@ -236,7 +236,8 @@ st.markdown(
         }
         [class*="st-key-nav_"] button { height: 3.55rem; }
         [class*="st-key-nav_"] button p { font-size: .68rem; }
-        .hero h1 { font-size: 1.6rem; }
+        .hero { padding: 1rem 1.15rem; }
+        .hero h1 { font-size: 1.45rem !important; line-height: 1.3; }
         .block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
     }
     </style>
@@ -1569,16 +1570,16 @@ def feedback_buttons(message_index, question, answer):
 # ============================================================
 
 NAV_ITEMS = [
-    ("chat", ""),
-    ("journey", ""),
-    ("info", ""),
-    ("video", ""),
-    ("faq", ""),
-    ("diet", ""),
-    ("effects", ""),
-    ("safety", ""),
-    ("support", ""),
-    ("after", ""),
+    ("chat", "💬"),
+    ("journey", "🧭"),
+    ("info", "📖"),
+    ("video", "▶️"),
+    ("faq", "❓"),
+    ("diet", "🥗"),
+    ("effects", "⚠️"),
+    ("safety", "🛡️"),
+    ("support", "💙"),
+    ("after", "🌿"),
 ]
 
 
