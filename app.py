@@ -704,7 +704,7 @@ EXTRA_UI = {
         "hosp_opd": "OPD timings", "hosp_emergency": "After-hours / emergency",
         "reviewed": "Content reviewed by {by} on {date}",
         "download_guide": "📄 Download patient guide",
-                "guide_title": "Radiation Therapy: Patient Guide",
+        "guide_title": "Radiation Therapy: Patient Guide",
         "tab_safety": "Safety", "tab_diet": "Diet & Nutrition",
         "tab_general": "General", "tab_area": "By treatment area",
         "tab_wellbeing": "Wellbeing", "tab_caregivers": "For Caregivers", "tab_costs": "Costs & Schemes",
@@ -717,7 +717,7 @@ EXTRA_UI = {
         "hosp_opd": "ओपीडी का समय", "hosp_emergency": "समय के बाद / आपातकाल",
         "reviewed": "सामग्री की समीक्षा: {by}, दिनांक {date}",
         "download_guide": "📄 रोगी मार्गदर्शिका डाउनलोड करें",
-                "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
+        "guide_title": "रेडिएशन थेरेपी: रोगी मार्गदर्शिका",
         "tab_safety": "सुरक्षा", "tab_diet": "आहार और पोषण",
         "tab_general": "सामान्य", "tab_area": "उपचार क्षेत्र के अनुसार",
         "tab_wellbeing": "कल्याण", "tab_caregivers": "देखभाल करने वालों के लिए", "tab_costs": "खर्च और योजनाएँ",
@@ -1026,6 +1026,8 @@ with st.sidebar:
                 st.button("Open dashboard", on_click=go, args=("admin",), use_container_width=True)
             elif password:
                 st.error("Wrong password")
+
+
 
 # ============================================================
 # RAG
@@ -1632,6 +1634,14 @@ def hospital_box():
     )
 
 
+def render_html_iframe(page, height):
+    """Show an HTML snippet. Uses st.iframe on newer Streamlit, components.html on older ones."""
+    if hasattr(st, "iframe"):
+        st.iframe(page, height=height)
+    else:
+        components.html(page, height=height)
+
+
 def speak_button(text, label, stop_label):
     """Browser read-aloud button (uses the device's own text-to-speech voices)."""
     clean = re.sub(r"[*_#`>]", "", text).strip()
@@ -1661,7 +1671,7 @@ b.onclick=()=>{
         .replace("__LABEL__", json.dumps(label, ensure_ascii=False))
         .replace("__STOP__", json.dumps(stop_label, ensure_ascii=False))
     )
-    components.html(page, height=46)
+    render_html_iframe(page, 46)
 
 
 def read_csv_rows(path):
@@ -1679,49 +1689,131 @@ def read_csv_rows(path):
 # ============================================================
 
 def voice_input_box():
-    """Visible browser speech input. Chrome supports English, Hindi and Marathi speech recognition.
-    The component copies the transcript so it can be pasted into the question box.
+    """One-tap voice question.
+
+    The patient taps the button and speaks. When they stop speaking, the question is
+    sent to the chat box automatically and the answer appears, with no copy or paste.
+    The spoken language follows the language chosen in the sidebar.
+    Works in Chrome and Edge (needs HTTPS or localhost for the microphone).
     """
-    lang_map = {"en": "en-IN", "hi": "hi-IN", "mr": "mr-IN"}
-    selected = lang_map.get(st.session_state.language, "en-IN")
-    page = f"""
-<div style="font-family:Segoe UI,Arial,sans-serif;border:1px solid #bcd3ea;border-radius:12px;padding:10px 12px;background:#f7fbff;">
-  <div style="font-weight:700;color:#0b3d66;margin-bottom:6px;">🎙️ Voice input</div>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-    <button id="mic" style="border:1px solid #1a6fb5;background:#fff;color:#1a6fb5;border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer;">🎙️ Speak</button>
-    <select id="lang" style="border:1px solid #bcd3ea;border-radius:8px;padding:7px;color:#24425f;">
-      <option value="en-IN" {'selected' if selected=='en-IN' else ''}>English</option>
-      <option value="hi-IN" {'selected' if selected=='hi-IN' else ''}>हिन्दी</option>
-      <option value="mr-IN" {'selected' if selected=='mr-IN' else ''}>मराठी</option>
-    </select>
-    <button id="copy" style="border:1px solid #bcd3ea;background:#fff;color:#24425f;border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer;">📋 Copy question</button>
-  </div>
-  <textarea id="out" placeholder="Your spoken question will appear here…" style="margin-top:8px;width:100%;min-height:64px;border:1px solid #bcd3ea;border-radius:9px;padding:8px;box-sizing:border-box;color:#1f3350;resize:vertical;"></textarea>
-  <div id="status" style="font-size:12px;color:#5c7188;margin-top:5px;">Use Chrome for Marathi or Hindi speech recognition. After copying, paste it into the question box below.</div>
-</div>
+    lang = st.session_state.language
+
+    texts = {
+        "en": {
+            "btn": "🎙️ Speak your question",
+            "listening": "Listening… please speak now",
+            "sending": "Sending your question…",
+            "denied": "Microphone access is blocked. Please allow the microphone in your browser.",
+            "nospeech": "I didn't hear anything. Please tap the button and try again.",
+            "unsupported": "Voice input works in Chrome or Edge.",
+            "fail": "Could not send automatically. Please type your question.",
+            "stop": "⏹ Stop",
+        },
+        "hi": {
+            "btn": "🎙️ अपना प्रश्न बोलें",
+            "listening": "सुन रहा हूँ… कृपया अब बोलें",
+            "sending": "आपका प्रश्न भेजा जा रहा है…",
+            "denied": "माइक्रोफ़ोन की अनुमति बंद है। कृपया अपने ब्राउज़र में माइक्रोफ़ोन की अनुमति दें।",
+            "nospeech": "कुछ सुनाई नहीं दिया। कृपया बटन दबाकर दोबारा प्रयास करें।",
+            "unsupported": "वॉइस इनपुट Chrome या Edge में काम करता है।",
+            "fail": "अपने आप नहीं भेज सका। कृपया प्रश्न टाइप करें।",
+            "stop": "⏹ रोकें",
+        },
+        "mr": {
+            "btn": "🎙️ तुमचा प्रश्न बोला",
+            "listening": "ऐकत आहे… कृपया आता बोला",
+            "sending": "तुमचा प्रश्न पाठवत आहे…",
+            "denied": "मायक्रोफोनची परवानगी बंद आहे. कृपया ब्राउझरमध्ये मायक्रोफोनला परवानगी द्या.",
+            "nospeech": "काहीही ऐकू आले नाही. कृपया बटण दाबून पुन्हा प्रयत्न करा.",
+            "unsupported": "व्हॉइस इनपुट Chrome किंवा Edge मध्ये चालते.",
+            "fail": "आपोआप पाठवता आले नाही. कृपया प्रश्न टाइप करा.",
+            "stop": "⏹ थांबवा",
+        },
+    }[lang]
+
+    page = """
+<style>
+  .row{display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;}
+  #mic{border:1.5px solid #1a6fb5;background:#fff;color:#1a6fb5;border-radius:999px;padding:9px 20px;
+       font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}
+  #mic:hover{background:#e8f2fc}
+  #mic.on{background:#1a6fb5;color:#fff}
+  #status{font-size:13px;color:#4d6279;line-height:1.3}
+</style>
+<div class="row"><button id="mic"></button><div id="status"></div></div>
 <script>
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const mic=document.getElementById('mic'), out=document.getElementById('out'), status=document.getElementById('status');
-let rec=null, listening=false;
-if(!SR){{mic.disabled=true; mic.textContent='🎙️ Voice not supported'; status.textContent='Voice input needs a browser with Speech Recognition support, such as Chrome.';}}
-else{{
-  rec=new SR(); rec.continuous=false; rec.interimResults=false;
-  mic.onclick=()=>{{
-    if(listening){{rec.stop();return;}}
-    rec.lang=document.getElementById('lang').value; rec.start(); listening=true; mic.textContent='⏹ Stop'; status.textContent='Listening… please speak your question.';
-  }};
-  rec.onresult=(e)=>{{out.value=e.results[0][0].transcript; status.textContent='Voice captured. Click Copy question, then paste it into the question box.';}};
-  rec.onerror=(e)=>{{status.textContent='Could not capture speech: '+e.error+'. Please try again.';}};
-  rec.onend=()=>{{listening=false; mic.textContent='🎙️ Speak';}};
-}}
-document.getElementById('copy').onclick=async()=>{{
-  const text=out.value.trim(); if(!text){{status.textContent='Please speak a question first.';return;}}
-  try{{await navigator.clipboard.writeText(text); status.textContent='Copied. Paste the question into the chat box below.';}}
-  catch(e){{out.focus(); out.select(); status.textContent='Please copy the selected text and paste it into the chat box below.';}}
-}};
+const T = __TEXTS__;
+const LANG = __LANG__;
+const mic = document.getElementById("mic");
+const status = document.getElementById("status");
+mic.textContent = T.btn;
+
+function sendToChat(text) {
+  try {
+    const doc = window.parent.document;
+    const ta = doc.querySelector('textarea[data-testid="stChatInputTextArea"]')
+            || doc.querySelector('[data-testid="stChatInput"] textarea');
+    if (!ta) return false;
+    const setter = Object.getOwnPropertyDescriptor(
+      window.parent.HTMLTextAreaElement.prototype, "value").set;
+    setter.call(ta, text);
+    ta.dispatchEvent(new Event("input", {bubbles: true}));
+    setTimeout(() => {
+      const btn = doc.querySelector('[data-testid="stChatInputSubmitButton"]')
+               || doc.querySelector('[data-testid="stChatInput"] button');
+      if (btn) { btn.click(); }
+      else {
+        ta.dispatchEvent(new KeyboardEvent("keydown",
+          {key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true}));
+      }
+    }, 200);
+    return true;
+  } catch (e) { return false; }
+}
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) {
+  mic.disabled = true;
+  status.textContent = T.unsupported;
+} else {
+  const rec = new SR();
+  rec.lang = LANG;
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  let listening = false;
+  let gotResult = false;
+
+  mic.onclick = () => {
+    if (listening) { rec.stop(); return; }
+    gotResult = false;
+    status.textContent = T.listening;
+    try { rec.start(); } catch (e) { return; }
+  };
+  rec.onstart = () => { listening = true; mic.classList.add("on"); mic.textContent = T.stop; };
+  rec.onend = () => {
+    listening = false; mic.classList.remove("on"); mic.textContent = T.btn;
+    if (!gotResult && status.textContent === T.listening) { status.textContent = T.nospeech; }
+  };
+  rec.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { status.textContent = T.denied; }
+    else if (e.error === "no-speech") { status.textContent = T.nospeech; }
+    else { status.textContent = e.error; }
+  };
+  rec.onresult = (e) => {
+    const text = e.results[0][0].transcript.trim();
+    if (!text) { return; }
+    gotResult = true;
+    status.textContent = T.sending + "  “" + text + "”";
+    if (!sendToChat(text)) { status.textContent = T.fail + "  “" + text + "”"; }
+  };
+}
 </script>
 """
-    components.html(page, height=175)
+    page = page.replace("__TEXTS__", json.dumps(texts, ensure_ascii=False)).replace(
+        "__LANG__", json.dumps(U["lang_code"])
+    )
+    render_html_iframe(page, 64)
 
 
 def page_chat():
@@ -1753,9 +1845,7 @@ def page_chat():
 
         st.write("")
 
-        last_index = len(st.session_state.messages) - 1
-
-        for index, message in enumerate(st.session_state.messages):
+        for message in st.session_state.messages:
             avatar = "🎗️" if message["role"] == "assistant" else "🧑"
 
             with st.chat_message(message["role"], avatar=avatar):
