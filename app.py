@@ -1875,15 +1875,6 @@ def page_journey():
     """A clearer, phase-based overview of the typical radiation therapy journey."""
     page_header("🧭", U["nav"]["journey"], C["journey_sub"])
 
-    st.markdown(
-        '<div class="journey-overview">'
-        '<h3>What to expect on your treatment journey</h3>'
-        '<p>Explore the steps below, from your first consultation through treatment and follow-up. '
-        'Your exact schedule and care plan will be explained by your radiation oncology team.</p>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-
     steps = C["journey_steps"]
     phases = [
         ("BEFORE TREATMENT", steps[:4]),
