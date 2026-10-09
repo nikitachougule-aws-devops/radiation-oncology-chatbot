@@ -207,6 +207,20 @@ st.markdown(
     .step { display: flex; gap: 1rem; margin-bottom: .9rem; }
     .step-num { min-width: 36px; width: 36px; height: 36px; border-radius: 50%; background: #1a6fb5; color: #fff;
         font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    /* Treatment Journey redesign */
+    .journey-overview { background: linear-gradient(120deg, #eaf4ff 0%, #f8fbff 75%);
+        border: 1px solid #cfe1f5; border-radius: 16px; padding: 1.1rem 1.25rem; margin: .4rem 0 1.2rem; }
+    .journey-overview h3 { color: #123b65; margin: 0 0 .35rem; font-size: 1.12rem; }
+    .journey-overview p { color: #48627e; margin: 0; line-height: 1.55; }
+    .journey-phase { font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+        color: #55718e; margin: .8rem 0 .45rem; }
+    .journey-card { display: flex; gap: 1rem; align-items: flex-start; background: #fff;
+        border: 1px solid #dbe6f1; border-left: 4px solid #4a78c2; border-radius: 13px;
+        padding: 1rem 1.1rem; margin-bottom: .75rem; box-shadow: 0 3px 12px rgba(20,60,110,.045); }
+    .journey-card h4 { color: #123b65; margin: .1rem 0 .35rem; font-size: 1.02rem; }
+    .journey-card p { color: #4d6279; font-size: .9rem; line-height: 1.55; margin: 0; }
+    .journey-badge { min-width: 34px; height: 34px; border-radius: 11px; display: flex; align-items: center;
+        justify-content: center; background: #eaf2ff; color: #2459a6; font-weight: 800; }
     .warn-box { background: #fff4f2; border: 1px solid #f3c6bf; border-radius: 14px; padding: 1rem 1.2rem; }
     .warn-box h4 { color: #a3321f; margin: 0 0 .4rem 0; }
     .warn-box li { color: #6b2a20; }
@@ -1858,14 +1872,40 @@ def page_chat():
 
 
 def page_journey():
+    """A clearer, phase-based overview of the typical radiation therapy journey."""
     page_header("🧭", U["nav"]["journey"], C["journey_sub"])
 
-    for i, (title, desc) in enumerate(C["journey_steps"], start=1):
-        st.markdown(
-            f'<div class="glass-card step"><div class="step-num">{i}</div>'
-            f'<div><h4>{title}</h4><p>{desc}</p></div></div>',
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        '<div class="journey-overview">'
+        '<h3>What to expect on your treatment journey</h3>'
+        '<p>Explore the steps below, from your first consultation through treatment and follow-up. '
+        'Your exact schedule and care plan will be explained by your radiation oncology team.</p>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    steps = C["journey_steps"]
+    phases = [
+        ("BEFORE TREATMENT", steps[:4]),
+        ("DURING TREATMENT", steps[4:6]),
+        ("AFTER TREATMENT", steps[6:]),
+    ]
+    step_number = 1
+    for phase_title, phase_steps in phases:
+        if not phase_steps:
+            continue
+        st.markdown(f'<div class="journey-phase">{phase_title}</div>', unsafe_allow_html=True)
+        for title, desc in phase_steps:
+            safe_title = html.escape(str(title))
+            safe_desc = html.escape(str(desc))
+            st.markdown(
+                f'<div class="journey-card"><div class="journey-badge">{step_number:02d}</div>'
+                f'<div><h4>{safe_title}</h4><p>{safe_desc}</p></div></div>',
+                unsafe_allow_html=True,
+            )
+            step_number += 1
+
+    st.caption("This is a general guide. Your own treatment sequence may differ; ask your care team about your individual plan.")
 
 
 def page_info():
