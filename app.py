@@ -407,6 +407,7 @@ UI_EXTRA = {
         "on": "ON",
         "dev_by": "AI Assistant Developed by",
         "brand_sub": "Your Patient Education Assistant",
+        "badge": "AI Assistant Online",
         "hero_title": "🎗️ Radiation Oncology AI Assistant",
         "ask_title": "✨ Ask your question",
         "disclaimer": "💡 This assistant provides general patient education information from a curated Radiation Oncology knowledge base. It does not replace advice from a treating doctor or healthcare team.",
@@ -1936,7 +1937,7 @@ def page_video():
         for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
             photo_files.extend(sorted(VIDEO_DIR.glob(ext)))
     if photo_files:
-        st.markdown("### 📸 Treatment photos")
+        st.markdown("### 📸 Department and treatment photos")
         for photo in photo_files:
             st.image(str(photo), use_container_width=True)
 
